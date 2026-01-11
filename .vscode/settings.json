@@ -1,0 +1,21 @@
+{
+  // ===== НАСТРОЙКИ ДЛЯ PYTHON ФАЙЛОВ =====
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.suggest.showSnippets": false,
+    "editor.suggest.showWords": true,
+    "editor.acceptSuggestionOnEnter": "on"
+  },
+  // ===== НАСТРОЙКИ RUFF =====
+  // Включить Ruff
+  "ruff.enable": true,
+  // Использовать конфигурационный файл
+  "ruff.configuration": "${workspaceFolder}/pyproject.toml",
+  // Включить линтинг
+  "ruff.lint.enable": true,
+}
