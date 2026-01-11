@@ -1,0 +1,62 @@
+version: "3.9"
+
+x-env: &env
+  env_file:
+    - ${ENV_FILE:-.env}
+
+services:
+  backend:
+    <<: [ *env ]
+    container_name: bms-backend
+    entrypoint: sh -c "alembic upgrade head || true && uvicorn main:app --host 0.0.0.0 --port=80 --log-level=critical"
+    build:
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+    networks:
+      - bms
+    profiles: [ "prod" ]
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+
+  db:
+    <<: [ *env ]
+    image: postgres:18.1-alpine
+    container_name: bms-db
+    restart: always
+    ports:
+      - target: 5432
+        published: 6432
+        protocol: tcp
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - bms
+
+  rediska:
+    image: redis:8.2.1-alpine
+    container_name: bms-redis
+    restart: always
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - bms
+    ports:
+      - target: 6379
+        published: 6379
+        protocol: tcp
+
+volumes:
+  postgres-data:
+    name: bms-db-data
+  redis-data:
+    name: bms-redis-data
+
+networks:
+  bms:
+    name: bms
