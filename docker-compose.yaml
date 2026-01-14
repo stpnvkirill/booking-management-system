@@ -23,6 +23,11 @@ services:
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
       - BOT_REDIS_DSN=redis://rediska:6379/0
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: "service=backend"
 
   db:
     <<: [ *env ]
@@ -37,6 +42,11 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - bms
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: "service=db"
 
   rediska:
     image: redis:8.2.1-alpine
@@ -51,12 +61,57 @@ services:
       - target: 6379
         published: 6379
         protocol: tcp
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: "service=redis"
+
+  # MONITORING
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-config.yaml:/etc/loki/local-config.yaml
+    networks:
+      - bms
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheusdata:/prometheus
+    networks:
+      - bms
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - grafanadata:/var/lib/grafana
+    networks:
+      - bms
 
 volumes:
   postgres-data:
     name: bms-db-data
   redis-data:
     name: bms-redis-data
+
+  # MONITORING
+  grafanadata:
+  prometheusdata:
 
 networks:
   bms:
