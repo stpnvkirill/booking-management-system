@@ -14,5 +14,6 @@ def get_start_router():
 async def start_handler(message: Message):
     if message.text == "/start":
         await message.answer(
-            "Добро пожаловать! Выберите действие:", reply_markup=get_main_menu(),
+            "Добро пожаловать! Выберите действие:",
+            reply_markup=get_main_menu(),
         )
