@@ -22,6 +22,7 @@ services:
     environment:
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
+      - BOT_REDIS_DSN=redis://rediska:6379/0
 
   db:
     <<: [ *env ]
