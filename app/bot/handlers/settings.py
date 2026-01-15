@@ -11,5 +11,5 @@ def get_settings_router():
 
 
 @router.message(lambda m: m.text == "⚙️ Настройки")
-async def start_reviews(message: Message):
+async def start_settings(message: Message):
     await message.answer("Выберите настройки: ", reply_markup=get_settings_keyboard())

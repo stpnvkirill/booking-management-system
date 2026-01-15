@@ -15,6 +15,3 @@ __all__ = [
     "get_time_keyboard",
     "get_confirm_keyboard",
 ]
-
-
-

@@ -23,7 +23,10 @@ RESOURCE_MAP = {
     "🏠 Квартира": ["Квартира Центр", "Квартира Парк"],
 }
 
-def get_slots(start: str = "09:00", end: str = "18:00") -> list[str]: # получение слотов времени
+
+def get_slots(
+    start: str = "09:00", end: str = "18:00",
+) -> list[str]:  # получение слотов времени
     start_dt = datetime.strptime(start, "%H:%M")
     end_dt = datetime.strptime(end, "%H:%M")
     slots: list[str] = []
@@ -33,10 +36,13 @@ def get_slots(start: str = "09:00", end: str = "18:00") -> list[str]: # полу
         current += timedelta(minutes=30)
     return slots
 
-SLOTS = get_slots() # список слотов времени с шагом 30 минут
 
-def get_today() -> date: # получение сегодняшней даты
+SLOTS = get_slots()  # список слотов времени с шагом 30 минут
+
+
+def get_today() -> date:  # получение сегодняшней даты
     return date.today()
+
 
 def parse_date(text: str) -> date | None:
     "Парсим дату в формате ДД.ММ.ГГГГ."
@@ -45,13 +51,18 @@ def parse_date(text: str) -> date | None:
     except ValueError:
         return None
 
-def validate_slot(text: str) -> bool: # валидация слотов времени в bool
+
+def validate_slot(text: str) -> bool:  # валидация слотов времени в bool
     return text in SLOTS
 
-def validate_date(selected: date) -> bool: # проверка даты не в прошлом и возврат в bool
+
+def validate_date(
+    selected: date,
+) -> bool:  # проверка даты не в прошлом и возврат в bool
     return selected >= get_today()
 
-def get_state_summary(data: dict) -> str: # получение сводки состояния бронирования
+
+def get_state_summary(data: dict) -> str:  # получение сводки состояния бронирования
     return (
         f"Тип: {data.get('selected_resource_type')}\n"
         f"Ресурс: {data.get('selected_resource')}\n"
@@ -59,45 +70,74 @@ def get_state_summary(data: dict) -> str: # получение сводки со
         f"Время: {data.get('selected_time')}"
     )
 
+
 def get_booking_router():
     return router
 
+
 @router.message(lambda m: m.text == "📅 Забронировать")
 async def start_booking(message: Message, state: FSMContext):
-    await state.set_state(BookingStates.resource_type) # установка состояния выбора типа ресурса
+    await state.set_state(
+        BookingStates.resource_type,
+    )  # установка состояния выбора типа ресурса
     await message.answer(
-        "Выберите тип ресурса:",
-        reply_markup=get_resource_type_keyboard(), # клавиатура выбора типа ресурса
+        "Отлично! Что вы хотите забронировать?:",
+        reply_markup=get_resource_type_keyboard(),  # клавиатура выбора типа ресурса
     )
 
-@router.message(BookingStates.resource_type) # говорим что мы на этапе выбора типа ресурса
-async def choose_resource_type(message: Message, state: FSMContext): # получаем на вход сообщение и состояние
-    resource_type_text = message.text # получаем ввод пользователя
-    if resource_type_text not in RESOURCE_MAP: # проверяем правильность ввода
-        await message.answer("Неверный тип. Выберите из списка.", reply_markup=get_resource_type_keyboard()) 
+
+@router.message( BookingStates.resource_type,)  # говорим что мы на этапе выбора типа ресурса
+async def choose_resource_type( message: Message, state: FSMContext,):  # получаем на вход сообщение и состояние
+    selected_resource_type = message.text  # ввод пользователя
+    if selected_resource_type not in RESOURCE_MAP:  # проверяем правильность ввода
+        await message.answer(
+            "Неверный тип. Выберите из списка.",
+            reply_markup=get_resource_type_keyboard(),
+        )
         return
-    await state.update_data(resource_type=resource_type_text) # сохраняем выбранный тип ресурса в состояние resource_type
-    await state.set_state(BookingStates.resource) # переходим к следующему состоянию - выбор конкретного ресурса
-    await message.answer( # пишем ответ пользователю
-        f"Вы выбрали: {resource_type_text}\nТеперь выберите ресурс:",
-        reply_markup=get_resources_keyboard(RESOURCE_MAP[resource_type_text]), # открываем клавиатуру с конкретными ресурсами
+    await state.update_data(selected_resource_type=selected_resource_type, )  # сохраняем выбранный тип ресурса
+    await state.set_state(BookingStates.resource, )  # переходим к следующему состоянию - выбор конкретного ресурса
+    busy_resources = store.get_busy_resources(selected_resource_type)
+    await message.answer(  # пишем ответ пользователю
+        f"Вы выбрали: {selected_resource_type}\nТеперь выберите ресурс:",
+        reply_markup=get_resources_keyboard(RESOURCE_MAP[selected_resource_type], busy=busy_resources),  # открываем клавиатуру с конкретными ресурсами и статусом занятости
     )
+
 
 @router.message(BookingStates.resource)
 async def choose_resource(message: Message, state: FSMContext):
-    data = await state.get_data() # получаем данные из состояния в data
-    resource_type = data.get("resource_type") # получаем выбранный тип ресурса
-    available_resources = RESOURCE_MAP.get(resource_type, []) # получаем доступные ресурсы для выбранного типа
-    selected_resource_text = message.text # получаем ввод пользователя
-    if selected_resource_text not in available_resources: # проверяем правильность ввода 
-        await message.answer("Неверный ресурс. Выберите из списка.", reply_markup=get_resources_keyboard(available_resources))
+    data = await state.get_data()  # получаем данные из состояния в data
+    selected_resource_type = data.get(
+        "selected_resource_type",  )  # получаем выбранный тип ресурса
+    available_resources = RESOURCE_MAP.get( selected_resource_type, [], )  # получаем доступные ресурсы для выбранного типа
+    busy_resources = store.get_busy_resources(selected_resource_type)
+    selected_resource_text = (
+        message.text.replace("🔴 ", "").replace("🟢 ", "") )  # получаем ввод пользователя
+    if selected_resource_text not in available_resources:  # проверяем правильность ввода
+        await message.answer(
+            "Неверный ресурс. Выберите из списка.",
+            reply_markup=get_resources_keyboard(available_resources, busy=busy_resources, ),
+        )
         return
-    await state.update_data(selected_resource=selected_resource_text) # сохраняем выбранный ресурс в состояние selected_resource
-    await state.set_state(BookingStates.date) # переходим к следующему состоянию - выбор даты
-    await message.answer( # пишем ответ пользователю
-        "Выберите дату: сегодня/завтра или введите в формате YYYY-MM-DD",
-        reply_markup=get_date_keyboard(), # открываем клавиатуру выбора даты
+    if selected_resource_text in busy_resources:
+        await message.answer(
+            "Ресурс занят. Выберите другой.",
+            reply_markup=get_resources_keyboard(
+                available_resources, busy=busy_resources,
+            ),
+        )
+        return
+    await state.update_data(
+        selected_resource=selected_resource_text,
+    )  # сохраняем выбранный ресурс в состояние selected_resource
+    await state.set_state(
+        BookingStates.date,
+    )  # переходим к следующему состоянию - выбор даты
+    await message.answer(  # пишем ответ пользователю
+        "Выберите дату: сегодня/завтра или введите в формате ДД.ММ.ГГГГ",
+        reply_markup=get_date_keyboard(),  # открываем клавиатуру выбора даты
     )
+
 
 @router.message(BookingStates.date)
 async def choose_date(message: Message, state: FSMContext):
@@ -126,11 +166,15 @@ async def choose_date(message: Message, state: FSMContext):
         reply_markup=get_time_keyboard(SLOTS),
     )
 
+
 @router.message(BookingStates.time)
 async def choose_time(message: Message, state: FSMContext):
     selected_time_slot = message.text
     if not validate_slot(selected_time_slot):
-        await message.answer("Неверный слот. Выберите из клавиатуры.", reply_markup=get_time_keyboard(SLOTS))
+        await message.answer(
+            "Неверный слот. Выберите из клавиатуры.",
+            reply_markup=get_time_keyboard(SLOTS),
+        )
         return
     await state.update_data(selected_time=selected_time_slot)
     data = await state.get_data()
@@ -140,6 +184,7 @@ async def choose_time(message: Message, state: FSMContext):
         reply_markup=get_confirm_keyboard(),
     )
 
+
 @router.message(BookingStates.confirm)
 async def confirm_booking(message: Message, state: FSMContext):
     text = message.text
@@ -148,7 +193,9 @@ async def confirm_booking(message: Message, state: FSMContext):
         await message.answer("Бронирование отменено.", reply_markup=get_main_menu())
         return
     if text != "✅ Подтвердить":
-        await message.answer("Нажмите Подтвердить или Отменить.", reply_markup=get_confirm_keyboard())
+        await message.answer(
+            "Нажмите Подтвердить или Отменить.", reply_markup=get_confirm_keyboard(),
+        )
         return
 
     data = await state.get_data()
@@ -174,5 +221,6 @@ async def confirm_booking(message: Message, state: FSMContext):
         )
 
     # Имитация фонового подтверждения
-    asyncio.create_task(auto_confirm(message.from_user.id, booking["id"], delay_sec=3, notify=notify))
-
+    asyncio.create_task(
+        auto_confirm(message.from_user.id, booking["id"], delay_sec=3, notify=notify),
+    )

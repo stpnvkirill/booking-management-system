@@ -1,6 +1,5 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
-
 RESOURCE_TYPE_BUTTONS = [
     "🏨 Отель",
     "🏠 Квартира",
@@ -29,9 +28,14 @@ def get_resource_type_keyboard() -> ReplyKeyboardMarkup:
     )
 
 
-def get_resources_keyboard(resources: list[str]) -> ReplyKeyboardMarkup:
-    "Клавиатура для выбора конкретного ресурса"
-    rows = [[KeyboardButton(text=resource)] for resource in resources]
+def get_resources_keyboard(resources: list[str], busy: set[str] | None = None) -> ReplyKeyboardMarkup:
+    "Клавиатура для выбора конкретного ресурса c индикатором занятости"
+    busy = busy or set()
+    rows = []
+    for resource in resources:
+        is_busy = resource in busy
+        prefix = "🔴" if is_busy else "🟢"
+        rows.append([KeyboardButton(text=f"{prefix} {resource}")])
     rows.append([KeyboardButton(text="◀️ Назад")])
     return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
 

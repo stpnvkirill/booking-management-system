@@ -115,7 +115,7 @@ class BotManager:
                     await bot.delete_webhook(drop_pending_updates=True)
                 except Exception:  # noqa: BLE001
                     pass
-            
+
             task = asyncio.create_task(
                 dp.start_polling(
                     bot,
@@ -150,24 +150,23 @@ class BotManager:
         bot = self.bots.get(bot_id)
         if bot is None:
             return
-        
+
         bot_username = (await bot.get_me()).username
-        
+
         if bot_id in self.tasks:
             if config.bot.USE_WEBHOOK:
                 await bot.delete_webhook()
             self.tasks[bot_id].cancel()
             stop_type = "delete webhook" if config.bot.USE_WEBHOOK else "stop polling"
+        # Если бот не в tasks, но есть в runners, возможно он был запущен с webhook
+        elif config.bot.USE_WEBHOOK:
+            await bot.delete_webhook()
+            stop_type = "delete webhook"
         else:
-            # Если бот не в tasks, но есть в runners, возможно он был запущен с webhook
-            if config.bot.USE_WEBHOOK:
-                await bot.delete_webhook()
-                stop_type = "delete webhook"
-            else:
-                stop_type = "stop"
-        
+            stop_type = "stop"
+
         await self.remove_bot(bot_id)
-        
+
         log(
             level="info",
             method="stop_bot",

@@ -1,7 +1,7 @@
 import asyncio
-import uuid
 from datetime import datetime
 from typing import Any
+import uuid
 
 from app.log import log
 
@@ -31,7 +31,9 @@ class BookingStore:
     def list_bookings(self, user_id: int) -> list[dict[str, Any]]:
         return list(self._store.get(user_id, []))
 
-    def set_status(self, user_id: int, booking_id: str, status: str) -> dict[str, Any] | None:
+    def set_status(
+        self, user_id: int, booking_id: str, status: str,
+    ) -> dict[str, Any] | None:
         bookings = self._store.get(user_id, [])
         for b in bookings:
             if b["id"] == booking_id:
@@ -39,6 +41,18 @@ class BookingStore:
                 b["updated_at"] = datetime.utcnow()
                 return b
         return None
+
+    def get_busy_resources(self, resource_type: str) -> set[str]:
+        """Ресурсы, которые заняты (pending/confirmed) по типу."""
+        busy: set[str] = set()
+        for bookings in self._store.values():
+            for b in bookings:
+                if (
+                    b.get("resource_type") == resource_type
+                    and b.get("status") in ("pending", "confirmed")
+                ):
+                    busy.add(b.get("resource"))
+        return busy
 
 
 store = BookingStore()
@@ -69,5 +83,3 @@ async def auto_confirm(user_id: int, booking_id: str, delay_sec: int, notify):
             text_detail=f"Booking {booking_id} auto-confirmed",
             user_id=user_id,
         )
-
-
