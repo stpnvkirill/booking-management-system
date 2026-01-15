@@ -25,7 +25,8 @@ RESOURCE_MAP = {
 
 
 def get_slots(
-    start: str = "09:00", end: str = "18:00",
+    start: str = "09:00",
+    end: str = "18:00",
 ) -> list[str]:  # получение слотов времени
     start_dt = datetime.strptime(start, "%H:%M")
     end_dt = datetime.strptime(end, "%H:%M")
@@ -86,8 +87,13 @@ async def start_booking(message: Message, state: FSMContext):
     )
 
 
-@router.message( BookingStates.resource_type,)  # говорим что мы на этапе выбора типа ресурса
-async def choose_resource_type( message: Message, state: FSMContext,):  # получаем на вход сообщение и состояние
+@router.message(
+    BookingStates.resource_type,
+)  # говорим что мы на этапе выбора типа ресурса
+async def choose_resource_type(
+    message: Message,
+    state: FSMContext,
+):  # получаем на вход сообщение и состояние
     selected_resource_type = message.text  # ввод пользователя
     if selected_resource_type not in RESOURCE_MAP:  # проверяем правильность ввода
         await message.answer(
@@ -95,12 +101,18 @@ async def choose_resource_type( message: Message, state: FSMContext,):  # пол
             reply_markup=get_resource_type_keyboard(),
         )
         return
-    await state.update_data(selected_resource_type=selected_resource_type, )  # сохраняем выбранный тип ресурса
-    await state.set_state(BookingStates.resource, )  # переходим к следующему состоянию - выбор конкретного ресурса
+    await state.update_data(
+        selected_resource_type=selected_resource_type,
+    )  # сохраняем выбранный тип ресурса
+    await state.set_state(
+        BookingStates.resource,
+    )  # переходим к следующему состоянию - выбор конкретного ресурса
     busy_resources = store.get_busy_resources(selected_resource_type)
     await message.answer(  # пишем ответ пользователю
         f"Вы выбрали: {selected_resource_type}\nТеперь выберите ресурс:",
-        reply_markup=get_resources_keyboard(RESOURCE_MAP[selected_resource_type], busy=busy_resources),  # открываем клавиатуру с конкретными ресурсами и статусом занятости
+        reply_markup=get_resources_keyboard(
+            RESOURCE_MAP[selected_resource_type], busy=busy_resources,
+        ),  # открываем клавиатуру с конкретными ресурсами и статусом занятости
     )
 
 
@@ -108,22 +120,33 @@ async def choose_resource_type( message: Message, state: FSMContext,):  # пол
 async def choose_resource(message: Message, state: FSMContext):
     data = await state.get_data()  # получаем данные из состояния в data
     selected_resource_type = data.get(
-        "selected_resource_type",  )  # получаем выбранный тип ресурса
-    available_resources = RESOURCE_MAP.get( selected_resource_type, [], )  # получаем доступные ресурсы для выбранного типа
+        "selected_resource_type",
+    )  # получаем выбранный тип ресурса
+    available_resources = RESOURCE_MAP.get(
+        selected_resource_type,
+        [],
+    )  # получаем доступные ресурсы для выбранного типа
     busy_resources = store.get_busy_resources(selected_resource_type)
-    selected_resource_text = (
-        message.text.replace("🔴 ", "").replace("🟢 ", "") )  # получаем ввод пользователя
-    if selected_resource_text not in available_resources:  # проверяем правильность ввода
+    selected_resource_text = message.text.replace("🔴 ", "").replace(
+        "🟢 ", "",
+    )  # получаем ввод пользователя
+    if (
+        selected_resource_text not in available_resources
+    ):  # проверяем правильность ввода
         await message.answer(
             "Неверный ресурс. Выберите из списка.",
-            reply_markup=get_resources_keyboard(available_resources, busy=busy_resources, ),
+            reply_markup=get_resources_keyboard(
+                available_resources,
+                busy=busy_resources,
+            ),
         )
         return
     if selected_resource_text in busy_resources:
         await message.answer(
             "Ресурс занят. Выберите другой.",
             reply_markup=get_resources_keyboard(
-                available_resources, busy=busy_resources,
+                available_resources,
+                busy=busy_resources,
             ),
         )
         return
@@ -194,7 +217,8 @@ async def confirm_booking(message: Message, state: FSMContext):
         return
     if text != "✅ Подтвердить":
         await message.answer(
-            "Нажмите Подтвердить или Отменить.", reply_markup=get_confirm_keyboard(),
+            "Нажмите Подтвердить или Отменить.",
+            reply_markup=get_confirm_keyboard(),
         )
         return
 

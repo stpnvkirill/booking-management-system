@@ -28,7 +28,9 @@ def get_resource_type_keyboard() -> ReplyKeyboardMarkup:
     )
 
 
-def get_resources_keyboard(resources: list[str], busy: set[str] | None = None) -> ReplyKeyboardMarkup:
+def get_resources_keyboard(
+    resources: list[str], busy: set[str] | None = None,
+) -> ReplyKeyboardMarkup:
     "Клавиатура для выбора конкретного ресурса c индикатором занятости"
     busy = busy or set()
     rows = []

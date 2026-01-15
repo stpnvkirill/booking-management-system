@@ -32,7 +32,10 @@ class BookingStore:
         return list(self._store.get(user_id, []))
 
     def set_status(
-        self, user_id: int, booking_id: str, status: str,
+        self,
+        user_id: int,
+        booking_id: str,
+        status: str,
     ) -> dict[str, Any] | None:
         bookings = self._store.get(user_id, [])
         for b in bookings:
@@ -47,9 +50,9 @@ class BookingStore:
         busy: set[str] = set()
         for bookings in self._store.values():
             for b in bookings:
-                if (
-                    b.get("resource_type") == resource_type
-                    and b.get("status") in ("pending", "confirmed")
+                if b.get("resource_type") == resource_type and b.get("status") in (
+                    "pending",
+                    "confirmed",
                 ):
                     busy.add(b.get("resource"))
         return busy
