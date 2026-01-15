@@ -1,0 +1,69 @@
+from dataclasses import dataclass
+from typing import Any
+
+from aiogram import Bot
+
+
+@dataclass
+class ReminderResult:
+    """Результат отправки напоминания"""
+
+    booking_id: int
+    user_id: int
+    success: bool
+    error_message: str | None = None
+
+
+class ReminderService:
+    """Сервис для отправки напоминаний"""
+
+    def __init__(self, bot: Bot):
+        self.bot = bot
+
+    async def send_24h_reminders(self) -> list[ReminderResult]:
+        """Отправляет напоминания за 24 часа"""
+        # Реализовать логику
+        return []
+
+    async def send_1h_reminders(self) -> list[ReminderResult]:
+        """Отправляет напоминания за 1 час"""
+        # Реализовать логику
+        return []
+
+    async def send_reminders(self, log_notification: bool = True) -> dict[str, Any]:  # noqa: ARG002
+        """Отправляет все напоминания"""
+        # Реализовать логику
+        return {"24h": [], "1h": []}
+
+    async def send_telegram_message(
+        self,
+        chat_id: int,  # noqa: ARG002
+        message: str,  # noqa: ARG002
+        parse_mode: str = "HTML",  # noqa: ARG002
+    ) -> bool:
+        """
+        Отправляет сообщение в Telegram.
+
+        Args:
+            chat_id: ID чата пользователя
+            message: Текст сообщения
+            parse_mode: Режим парсинга (HTML, Markdown)
+        """
+        # Реализовать отправку
+        return False
+
+
+class ReminderScheduler:
+    """Планировщик напоминаний"""
+
+    def __init__(self, bot_token: str):
+        self.bot = Bot(token=bot_token)
+        self.service = ReminderService(self.bot)
+
+    async def start(self) -> None:
+        # Реализовать запуск планировщика
+        pass
+
+    async def stop(self) -> None:
+        # Реализовать остановку планировщика
+        pass
