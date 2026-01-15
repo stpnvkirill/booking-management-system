@@ -57,14 +57,14 @@ class ReminderScheduler:
     def __init__(self, bot_token: str):
         self.bot = Bot(token=bot_token)
         self.service = ReminderService(self.bot)
+        self.is_running = False
 
     async def start(self) -> None:
-        # Реализовать запуск планировщика
-        pass
+        self.is_running = True
 
     async def stop(self) -> None:
-        # Реализовать остановку планировщика
-        pass
+        if not self.is_running:
+            return
 
     async def _check_and_send_reminders(self):
         pass
