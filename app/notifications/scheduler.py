@@ -31,7 +31,7 @@ class ReminderService:
     async def send_reminders(self, log_notification: bool = True) -> dict[str, Any]:  # noqa: ARG002
         """Отправляет все напоминания"""
         # Реализовать логику
-        return {"24h": [], "1h": []}
+        return None
 
     async def send_telegram_message(
         self,
