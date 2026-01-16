@@ -95,9 +95,4 @@ class BotConfig(BaseWithDt):
         sa.ForeignKey(Customer.id),
         unique=True,
     )
-    customer_id: so.Mapped[uuid_lib.UUID] = so.mapped_column(
-        UUID,
-        sa.ForeignKey("customers.id", ondelete="CASCADE"),
-        nullable=False,
-    )
     settings: so.Mapped[dict] = so.mapped_column(JSONB, server_default="{}")
