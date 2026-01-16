@@ -24,7 +24,7 @@ class Booking:
 
     id: int
     user_id: int
-    start_time: Any  # Замените на соответствующий тип времени
+    start_time: Any  # Заменить Any на фактический тип времени бронирования
 
 
 @dataclass
