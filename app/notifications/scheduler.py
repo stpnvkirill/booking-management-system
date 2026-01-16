@@ -1,9 +1,12 @@
 import asyncio  # noqa: INP001
 from dataclasses import dataclass
+import datetime
 from typing import Any
 
 from aiogram import Bot
 from aiogram.exceptions import TelegramAPIError, TelegramForbiddenError
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.interval import IntervalTrigger
 from depends import Provider as provider  # noqa: N813
 from fastapi import logger
 import sqlalchemy as sa
@@ -128,14 +131,60 @@ class ReminderScheduler:
     def __init__(self, bot_token: str):
         self.bot = Bot(token=bot_token)
         self.service = ReminderService(self.bot)
+        self.scheduler = AsyncIOScheduler(
+            timezone="UTC",
+            job_defaults={
+                "coalesce": True,
+                "max_instances": 3,
+                "misfire_grace_time": 300,
+            },
+        )
         self.is_running = False
 
     async def start(self) -> None:
-        self.is_running = False
+        if self.is_running:
+            logger.warning("Планировщик уже запущен")
+            return
+
+        # Проверяем соединение c Telegram
+        if not await self._check_telegram_connection():
+            logger.error("Не удалось подключиться к Telegram")  # noqa: RUF001
+            return
+
+        # Добавляем задачу проверки
+        trigger = IntervalTrigger(
+            minutes=config.CHECK_INTERVAL,
+            start_date=datetime.utcnow() + datetime.timedelta(seconds=10),
+        )
+
+        self.scheduler.add_job(
+            self._check_and_send_reminders,
+            trigger=trigger,
+            id="check_reminders",
+            name="Проверка и отправка напоминаний",
+            replace_existing=True,
+        )
+
+        # Запускаем планировщик
+        self.scheduler.start()
+        self.is_running = True
+
+        # Сразу выполняем первую проверку
+        await self._check_and_send_reminders()
 
     async def stop(self) -> None:
         if not self.is_running:
             return
+
+    async def _check_telegram_connection(self) -> bool:
+        """Проверяет соединение c Telegram"""
+        try:
+            me = await self.bot.get_me()
+            logger.info(f"✅ Подключено к Telegram как @{me.username}")
+            return True
+        except Exception as e:  # noqa: BLE001
+            logger.error(f"❌ Ошибка подключения к Telegram: {e}")
+            return False
 
     async def _check_and_send_reminders(self):
         """Проверяет и отправляет напоминания"""
