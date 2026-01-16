@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   loki:
     image: grafana/loki:latest
@@ -11,9 +9,6 @@ services:
     volumes:
       - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
       - loki-data:/loki
-    networks:
-      - bms-monitoring
-      - bms  
     command: -config.file=/etc/loki/local-config.yaml
 
   prometheus:
@@ -26,9 +21,6 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml
       - prometheus-data:/prometheus
-    networks:
-      - bms-monitoring
-      - bms
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
@@ -52,8 +44,6 @@ services:
     volumes:
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - grafana-data:/var/lib/grafana
-    networks:
-      - bms-monitoring
     depends_on:
       - prometheus
       - loki
@@ -66,9 +56,3 @@ volumes:
   grafana-data:
     name: bms-grafana-data
 
-networks:
-  bms-monitoring:
-    name: bms-monitoring
-    driver: bridge
-  bms:
-    name: bms
