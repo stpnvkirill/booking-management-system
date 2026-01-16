@@ -1,4 +1,4 @@
- # ruff: noqa: RUF001
+# ruff: noqa: RUF001
 
 from aiogram import F, Router
 from aiogram.types import (
@@ -53,7 +53,7 @@ def get_mybooking_router():
     return router
 
 
-@router.message(lambda m: m.text == "🗓️ Мои бронирования")
+@router.message(lambda m: m.text in {"🗓 Мои бронирования", "🗓️ Мои бронирования"})
 async def list_bookings(message: Message):
     bookings = store.list_bookings(message.from_user.id)
     if not bookings:

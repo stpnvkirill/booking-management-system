@@ -1,17 +1,11 @@
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 
-RESOURCE_TYPE_BUTTONS = [
-    "🏨 Отель",
-    "🏠 Квартира",
-]
-
-
-def get_main_menu():
+def get_main_menu() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text="🗓️ Мои бронирования")],
             [KeyboardButton(text="📅 Забронировать")],
-            [KeyboardButton(text="⭐ Оставить отзыв")],
+            [KeyboardButton(text="🗓 Мои бронирования")],
+            [KeyboardButton(text="⭐️ Оставить отзыв")],
             [KeyboardButton(text="⚙️ Настройки")],
         ],
         resize_keyboard=True,
@@ -19,34 +13,33 @@ def get_main_menu():
 
 
 def get_resource_type_keyboard() -> ReplyKeyboardMarkup:
-    "Клавиатура для выбора типа ресурса"
-    rows = [[KeyboardButton(text=btn)] for btn in RESOURCE_TYPE_BUTTONS]
-    rows.append([KeyboardButton(text="◀️ Назад")])
     return ReplyKeyboardMarkup(
-        keyboard=rows,
+        keyboard=[
+            [KeyboardButton(text="🏢 Переговорная")],
+            [KeyboardButton(text="💻 Рабочее место")],
+            [KeyboardButton(text="◀️ Назад")],
+        ],
         resize_keyboard=True,
     )
 
 
 def get_resources_keyboard(
-    resources: list[str], busy: set[str] | None = None,
+    resources: list[str],
+    busy: set[str] | None = None,
 ) -> ReplyKeyboardMarkup:
-    "Клавиатура для выбора конкретного ресурса c индикатором занятости"
     busy = busy or set()
     rows = []
     for resource in resources:
-        is_busy = resource in busy
-        prefix = "🔴" if is_busy else "🟢"
-        rows.append([KeyboardButton(text=f"{prefix} {resource}")])
+        status = "🔴" if resource in busy else "🟢"
+        rows.append([KeyboardButton(text=f"{status} {resource}")])
     rows.append([KeyboardButton(text="◀️ Назад")])
     return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
 
 
 def get_date_keyboard() -> ReplyKeyboardMarkup:
-    "Клавиатура для выбора даты"
     return ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text="Сегодня"), KeyboardButton(text="Завтра")],
+            [KeyboardButton(text="📅 Сегодня"), KeyboardButton(text="📅 Завтра")],
             [KeyboardButton(text="Ввести дату")],
             [KeyboardButton(text="◀️ Назад")],
         ],
@@ -55,18 +48,14 @@ def get_date_keyboard() -> ReplyKeyboardMarkup:
 
 
 def get_time_keyboard(slots: list[str]) -> ReplyKeyboardMarkup:
-    "Клавиатура для выбора времени (слоты)"
     rows: list[list[KeyboardButton]] = []
-    step = 3
-    for i in range(0, len(slots), step):
-        chunk = slots[i : i + step]
-        rows.append([KeyboardButton(text=slot) for slot in chunk])
+    for slot in slots:
+        rows.append([KeyboardButton(text=slot)])
     rows.append([KeyboardButton(text="◀️ Назад")])
     return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
 
 
 def get_confirm_keyboard() -> ReplyKeyboardMarkup:
-    "Клавиатура подтверждения бронирования"
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="✅ Подтвердить")],
@@ -77,21 +66,97 @@ def get_confirm_keyboard() -> ReplyKeyboardMarkup:
     )
 
 
+def get_backbutton_keyboard() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(
+        keyboard=[[KeyboardButton(text="◀️ Назад")]],
+        resize_keyboard=True,
+    )
+
+def get_resource_type_inline() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🏢 Переговорная", callback_data="type:meeting")],
+        [InlineKeyboardButton(text="💻 Рабочее место", callback_data="type:workspace")],
+        [InlineKeyboardButton(text="⬅️ Назад", callback_data="back:main")],
+    ])
+
+def get_resources_inline(
+    resources: list[str],
+    busy: set[str] | None = None,
+) -> InlineKeyboardMarkup:
+    busy = busy or set()
+    rows = []
+
+    for idx, resource in enumerate(resources, start=1):
+        status = "🔴" if resource in busy else "🟢"
+        rows.append([
+            InlineKeyboardButton(
+                text=f"{status} {resource}",
+                callback_data=f"resource:{idx}",
+            )
+        ])
+
+    rows.append([InlineKeyboardButton(text="⬅️ Назад", callback_data="back:type")])
+    return InlineKeyboardMarkup(inline_keyboard=rows)
+
+def get_date_inline() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="📅 Сегодня", callback_data="date:today")],
+        [InlineKeyboardButton(text="📅 Завтра", callback_data="date:tomorrow")],
+        [InlineKeyboardButton(text="⬅️ Назад", callback_data="back:resource")],
+    ])
+
+def get_time_inline(slots: list[str]) -> InlineKeyboardMarkup:
+    rows = [
+        [
+            InlineKeyboardButton(
+                text=slot,
+                callback_data=f"time:{slot}",
+            )
+        ]
+        for slot in slots
+    ]
+
+    rows.append([InlineKeyboardButton(text="⬅️ Назад", callback_data="back:date")])
+    return InlineKeyboardMarkup(inline_keyboard=rows)
+
+def get_confirm_inline() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ Подтвердить", callback_data="confirm:yes")],
+        [InlineKeyboardButton(text="❌ Отменить", callback_data="confirm:no")],
+        [InlineKeyboardButton(text="⬅️ Назад", callback_data="back:time")],
+    ])
+
+def get_success_inline() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="⬅️ В главное меню", callback_data="back:main")],
+    ])
+
+def get_my_bookings_inline(bookings: list[str]) -> InlineKeyboardMarkup:
+    rows = [
+        [
+            InlineKeyboardButton(
+                text=booking,
+                callback_data=f"booking:{idx}",
+            )
+        ]
+        for idx, booking in enumerate(bookings, start=1)
+    ]
+
+    rows.append([InlineKeyboardButton(text="⬅️ Назад", callback_data="back:main")])
+    return InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+def get_booking_details_inline() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="❌ Отменить", callback_data="booking:cancel")],
+        [InlineKeyboardButton(text="⬅️ Назад", callback_data="booking:list")],
+    ])
+
 def get_settings_keyboard() -> ReplyKeyboardMarkup:
     "Клавиатура для настроек"
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="🔔 Уведомления")],
-            [KeyboardButton(text="◀️ Назад")],
-        ],
-        resize_keyboard=True,
-    )
-
-
-def get_backbutton_keyboard() -> ReplyKeyboardMarkup:
-    "Клавиатура с кнопкой назад"
-    return ReplyKeyboardMarkup(
-        keyboard=[
             [KeyboardButton(text="◀️ Назад")],
         ],
         resize_keyboard=True,
