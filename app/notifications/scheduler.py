@@ -4,9 +4,6 @@ from typing import Any
 
 from aiogram import Bot
 from aiogram.exceptions import TelegramAPIError, TelegramForbiddenError
-from app.infrastructure.database.models.booking import (
-    Booking,  # type: ignore  # noqa: PGH003
-)
 from depends import Provider as provider  # noqa: N813
 from fastapi import logger
 import sqlalchemy as sa
@@ -20,6 +17,14 @@ config = Config()
 
 def get_db():
     """Получает сессию базы данных"""
+
+
+class Booking:
+    """Модель бронирования (заглушка)"""
+
+    id: int
+    user_id: int
+    start_time: Any  # Замените на соответствующий тип времени
 
 
 @dataclass
