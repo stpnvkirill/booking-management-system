@@ -1,3 +1,5 @@
+# ruff: noqa: RUF001, E501
+
 from aiogram import Router
 from aiogram.types import Message
 

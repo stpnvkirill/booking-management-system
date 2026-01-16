@@ -1,12 +1,12 @@
 from aiogram import Router
 
 from app.api.routes import routes
-from app.bot.handlers.booking import get_booking_router
-from app.bot.handlers.my_booking import get_mybooking_router
-from app.bot.handlers.reviews import get_reviews_router
-from app.bot.handlers.settings import get_settings_router
-from app.bot.handlers.start import get_start_router
-from app.bot.keyboards.button_handler import get_button_handler_router
+from app.bot.routes.booking import get_booking_router
+from app.bot.routes.button_handler import get_button_handler_router
+from app.bot.routes.my_booking import get_mybooking_router
+from app.bot.routes.reviews import get_reviews_router
+from app.bot.routes.settings import get_settings_router
+from app.bot.routes.start import get_start_router
 
 from .echo import get_echo_router
 

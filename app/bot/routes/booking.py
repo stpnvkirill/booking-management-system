@@ -1,3 +1,5 @@
+# ruff: noqa: DTZ007, DTZ011, RUF001, RUF002, RUF003
+
 import asyncio
 from datetime import date, datetime, timedelta
 
@@ -111,7 +113,8 @@ async def choose_resource_type(
     await message.answer(  # пишем ответ пользователю
         f"Вы выбрали: {selected_resource_type}\nТеперь выберите ресурс:",
         reply_markup=get_resources_keyboard(
-            RESOURCE_MAP[selected_resource_type], busy=busy_resources,
+            RESOURCE_MAP[selected_resource_type],
+            busy=busy_resources,
         ),  # открываем клавиатуру с конкретными ресурсами и статусом занятости
     )
 
@@ -128,7 +131,8 @@ async def choose_resource(message: Message, state: FSMContext):
     )  # получаем доступные ресурсы для выбранного типа
     busy_resources = store.get_busy_resources(selected_resource_type)
     selected_resource_text = message.text.replace("🔴 ", "").replace(
-        "🟢 ", "",
+        "🟢 ",
+        "",
     )  # получаем ввод пользователя
     if (
         selected_resource_text not in available_resources
@@ -143,7 +147,7 @@ async def choose_resource(message: Message, state: FSMContext):
         return
     if selected_resource_text in busy_resources:
         await message.answer(
-            "Ресурс занят. Выберите другой.",
+            "❌ К сожалению, это время уже занято.Пожалуйста, выберите другой слот.",
             reply_markup=get_resources_keyboard(
                 available_resources,
                 busy=busy_resources,
@@ -195,7 +199,8 @@ async def choose_time(message: Message, state: FSMContext):
     selected_time_slot = message.text
     if not validate_slot(selected_time_slot):
         await message.answer(
-            "Неверный слот. Выберите из клавиатуры.",
+            "🤔 Кажется, что-то пошло не так."
+            "Давайте попробуем ещё раз.Выберите из клавиатуры.",
             reply_markup=get_time_keyboard(SLOTS),
         )
         return
@@ -213,7 +218,10 @@ async def confirm_booking(message: Message, state: FSMContext):
     text = message.text
     if text == "❌ Отменить":
         await state.clear()
-        await message.answer("Бронирование отменено.", reply_markup=get_main_menu())
+        await message.answer(
+            "❌ Бронирование отменено.Надеемся, вы вернётесь к нам снова!",
+            reply_markup=get_main_menu(),
+        )
         return
     if text != "✅ Подтвердить":
         await message.answer(
@@ -235,7 +243,7 @@ async def confirm_booking(message: Message, state: FSMContext):
     )
 
     await message.answer(
-        "Бронь создана (pending):\n" + format_booking(booking),
+        "✅ Готово!Ваша бронь успешно создана.\n" + format_booking(booking),
     )
 
     async def notify(updated_booking: dict):
@@ -245,6 +253,7 @@ async def confirm_booking(message: Message, state: FSMContext):
         )
 
     # Имитация фонового подтверждения
-    asyncio.create_task(
+    task = asyncio.create_task(
         auto_confirm(message.from_user.id, booking["id"], delay_sec=3, notify=notify),
     )
+    task
