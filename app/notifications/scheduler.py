@@ -60,7 +60,7 @@ class ReminderScheduler:
         self.is_running = False
 
     async def start(self) -> None:
-        self.is_running = True
+        self.is_running = False
 
     async def stop(self) -> None:
         if not self.is_running:
