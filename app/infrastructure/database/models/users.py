@@ -30,10 +30,6 @@ class User(BaseWithDt):
         UUID,
         server_default=sa.func.uuidv7(),
     )
-    customer_id: so.Mapped[uuid_lib.UUID] = so.mapped_column(
-        UUID,
-        sa.ForeignKey("customers.id", ondelete="CASCADE"),
-    )
 
     def __repr__(self):
         return f"User #{self.id}"
