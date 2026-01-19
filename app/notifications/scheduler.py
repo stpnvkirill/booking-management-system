@@ -12,6 +12,7 @@ from app.infrastructure.database.models.booking import Booking
 from app.infrastructure.database.models.users import User
 
 from .config import Config
+from .models import Booking_cl as mdl
 
 config = Config()
 
@@ -147,6 +148,8 @@ class ReminderService:
             # Фильтруем те, которым уже отправляли напоминания
             filtered_bookings = []
             for booking in bookings:
+                if not mdl.is_active(booking):
+                    continue
                 if not NotificationManager.is_notification_sent(
                     booking.id,
                     reminder_type,
@@ -203,12 +206,17 @@ class ReminderService:
         bookings = await self.get_bookings_for_24h_reminder()
         results = []
 
+        if not mdl.is_24h_notification_due():
+            return results
         if not bookings:
             return results
 
         for booking in bookings:
             try:
                 user = await self.get_user_for_booking(booking)
+
+                if not mdl.is_active(booking):
+                    continue
                 if not user or not user.tlg_id:
                     continue
 
@@ -249,11 +257,15 @@ class ReminderService:
         bookings = await self.get_bookings_for_1h_reminder()
         results = []
 
+        if not mdl.is_1h_notification_due():
+            return results
         if not bookings:
             return results
 
         for booking in bookings:
             try:
+                if not mdl.is_active(booking):
+                    continue
                 user = await self.get_user_for_booking(booking)
                 if not user or not user.tlg_id:
                     continue
