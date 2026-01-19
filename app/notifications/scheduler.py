@@ -14,7 +14,7 @@ from app.infrastructure.database.models.booking import Booking
 from app.infrastructure.database.models.users import User
 
 from .config import Config
-from .models import Booking_cl as mdl
+from .models import Booking as Mdl
 
 config = Config()
 
@@ -82,7 +82,7 @@ class ReminderService:
         """Форматирует сообщение для 24-часового напоминания"""
         start_time = booking.start_time.strftime("%d.%m.%Y v %H:%M")
         user_name = user.first_name or user.username or "Uvazhaemyj klient"
-        duration_text = self._format_duration(booking)
+        duration_text = Mdl.duration(booking)
 
         return (
             f"🔔 <b>Napominanie o bronirovanii</b>\n\n"
@@ -97,7 +97,7 @@ class ReminderService:
         """Форматирует сообщение для 1-часового напоминания"""
         start_time = booking.start_time.strftime("%H:%M")
         user_name = user.first_name or user.username or "Uvazhaemyj klient"
-        duration_text = self._format_duration(booking)
+        duration_text = Mdl.duration(booking)
 
         return (
             f"⏰ <b>Skoro nachinaem!</b>\n\n"
@@ -150,7 +150,13 @@ class ReminderService:
             # Фильтруем те, которым уже отправляли напоминания
             filtered_bookings = []
             for booking in bookings:
-                if not mdl.is_active(booking):
+                if Mdl.is_current(booking):
+                    continue
+                if not Mdl.is_upcoming(booking):
+                    continue
+                if Mdl.is_completed(booking):
+                    continue
+                if not Mdl.is_active(booking):
                     continue
                 if not NotificationManager.is_notification_sent(
                     booking.id,
@@ -208,16 +214,21 @@ class ReminderService:
         bookings = await self.get_bookings_for_24h_reminder()
         results = []
 
-        if not mdl.is_24h_notification_due():
+        if not Mdl.is_24h_notification_due():
             return results
         if not bookings:
             return results
 
         for booking in bookings:
             try:
+                if Mdl.is_current(booking):
+                    continue
+                if not Mdl.is_upcoming(booking):
+                    continue
                 user = await self.get_user_for_booking(booking)
-
-                if not mdl.is_active(booking):
+                if not Mdl.is_active(booking):
+                    continue
+                if Mdl.is_completed(booking):
                     continue
                 if not user or not user.tlg_id:
                     continue
@@ -259,14 +270,20 @@ class ReminderService:
         bookings = await self.get_bookings_for_1h_reminder()
         results = []
 
-        if not mdl.is_1h_notification_due():
+        if not Mdl.is_1h_notification_due():
             return results
         if not bookings:
             return results
 
         for booking in bookings:
             try:
-                if not mdl.is_active(booking):
+                if Mdl.is_current(booking):
+                    continue
+                if not Mdl.is_upcoming(booking):
+                    continue
+                if Mdl.is_completed(booking):
+                    continue
+                if not Mdl.is_active(booking):
                     continue
                 user = await self.get_user_for_booking(booking)
                 if not user or not user.tlg_id:
