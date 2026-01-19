@@ -61,7 +61,7 @@ class ReminderService:
     def __init__(self, bot: Bot):
         self.bot = bot
         self.max_retries = 3
-        self.retry_delay = 2  # секунды
+        self.retry_delay = 2
 
     def _format_duration(self, booking: Booking) -> str:
         """Форматирует длительность бронирования"""
