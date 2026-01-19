@@ -72,6 +72,7 @@ select = [
   "W",      # pycodestyle warnings
   "YTT",    # yesqa
 ]
+ignore = ["RUF001", "RUF002"]
 
 
 [tool.ruff.lint.isort]
