@@ -1,83 +1,71 @@
 from datetime import datetime, timedelta
 from typing import Optional
-
-from config import config
-from sqlalchemy import Boolean, create_engine
+from sqlalchemy import Column, Integer, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 
-
-from app.infrastructure.database.models.booking import Booking
-
-# Создаем базовый класс для моделей
 Base = declarative_base()
 
-
-
-class Booking_cl(Base):
-    """
-    Модель бронирования.
-    Хранит информацию о бронировании и статусах отправки уведомлений.
-    """
-
-
-    def is_24h_notification_due(self, booking: Booking) -> bool:
-        """Проверяет, нужно ли отправить уведомление за 24 часа до начала."""
-        if not self.is_active():
-            return False
-        
-        now = datetime.utcnow()
-        notification_time = booking.start_time - timedelta(hours=24)
-        return now >= notification_time and booking.start_time > now
-
-    def is_1h_notification_due(self, booking: Booking) -> bool:
-        """Проверяет, нужно ли отправить уведомление за 1 час до начала."""
-        if not self.is_active():
-            return False
-        
-        now = datetime.utcnow()
-        notification_time = booking.start_time - timedelta(hours=1)
-        return now >= notification_time and booking.start_time > now
-
-   
-
-    def is_active(self, booking: Booking) -> bool:
+class Booking(Base):
+    __tablename__ = 'bookings'
+    
+    id = Column(Integer, primary_key=True)
+    start_time = Column(DateTime, nullable=False)
+    end_time = Column(DateTime, nullable=False)
+    user_id = Column(Integer, nullable=False)
+    
+    @property
+    def is_active(self) -> bool:
         """Проверяет, активно ли бронирование (еще не началось)."""
-        now = datetime.utcnow()
-        return now < booking.start_time
-
-    def is_current(self, booking: Booking) -> bool:
+        return datetime.utcnow() < self.start_time
+    
+    @property
+    def is_current(self) -> bool:
         """Проверяет, идет ли бронирование в данный момент."""
         now = datetime.utcnow()
-        return booking.start_time <= now < booking.end_time
-
-    def is_completed(self, booking: Booking) -> bool:
+        return self.start_time <= now < self.end_time
+    
+    @property
+    def is_completed(self) -> bool:
         """Проверяет, завершено ли бронирование."""
-        return datetime.utcnow() >= booking.end_time
-
-    def is_upcoming(self, booking: Booking) -> bool:
-        """Проверяет, является ли бронирование предстоящим."""
+        return datetime.utcnow() >= self.end_time
+    
+    @property
+    def is_24h_notification_due(self) -> bool:
+        """Проверяет, нужно ли отправить уведомление за 24 часа до начала."""
+        if not self.is_active:
+            return False
+        
         now = datetime.utcnow()
-        return now < booking.start_time
-
-    def duration(self, booking: Booking) -> timedelta:
+        notification_time = self.start_time - timedelta(hours=24)
+        return now >= notification_time
+    
+    @property
+    def is_1h_notification_due(self) -> bool:
+        """Проверяет, нужно ли отправить уведомление за 1 час до начала."""
+        if not self.is_active:
+            return False
+        
+        now = datetime.utcnow()
+        notification_time = self.start_time - timedelta(hours=1)
+        return now >= notification_time
+    
+    @property
+    def duration(self) -> timedelta:
         """Возвращает длительность бронирования."""
-        return booking.end_time - booking.start_time
-
-    def time_until_start(self, booking: Booking) -> Optional[timedelta]:
-        """Возвращает время до начала бронирования, если оно еще не началось."""
+        return self.end_time - self.start_time
+    
+    @property
+    def time_until_start(self) -> Optional[timedelta]:
+        """Возвращает время до начала бронирования."""
         now = datetime.utcnow()
-        if now < booking.start_time:
-            return booking.start_time - now
+        if self.is_active:
+            return self.start_time - now
         return None
-
-    def time_remaining(self, booking: Booking) -> Optional[timedelta]:
-        """Возвращает оставшееся время бронирования, если оно активно."""
+    
+    @property
+    def time_remaining(self) -> Optional[timedelta]:
+        """Возвращает оставшееся время бронирования."""
         now = datetime.utcnow()
-        if self.is_current():
-            return booking.end_time - now
+        if self.is_current:
+            return self.end_time - now
         return None
-
-
-
-
