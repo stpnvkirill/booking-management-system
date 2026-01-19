@@ -89,11 +89,10 @@ class BotConfig(BaseWithDt):
     )
     token: so.Mapped[str] = so.mapped_column(unique=True)
     username: so.Mapped[str] = so.mapped_column(unique=True)
-    name: so.Mapped[str] = so.mapped_column(unique=True)
+    name: so.Mapped[str] = so.mapped_column()
     owner_id: so.Mapped[uuid_lib.UUID] = so.mapped_column(
         UUID,
         sa.ForeignKey(Customer.id),
         unique=True,
     )
-
     settings: so.Mapped[dict] = so.mapped_column(JSONB, server_default="{}")
