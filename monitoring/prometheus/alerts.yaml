@@ -1,0 +1,55 @@
+groups:
+  - name: bms_alerts
+    interval: 30s
+    rules:
+      #сервис недоступен
+      - alert: ServiceDown
+        expr: up{job="bms-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Сервис {{ $labels.job }} недоступен"
+          description: "Сервис {{ $labels.job }} не отвечает более 1 минуты"
+
+      # ошибки 5XX
+      - alert: High5xxErrorRate
+        expr: |
+          sum(rate(http_requests_total{status=~"5.."}[5m])) by (job)
+          /
+          sum(rate(http_requests_total[5m])) by (job)
+          > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Высокий уровень ошибок 5XX в {{ $labels.job }}"
+          description: "Более 5% запросов возвращают ошибки 5XX в течение 5 минут"
+
+      # ошибки 4XX
+      - alert: High4xxErrorRate
+        expr: |
+          sum(rate(http_requests_total{status=~"4.."}[5m])) by (job)
+          /
+          sum(rate(http_requests_total[5m])) by (job)
+          > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Высокий уровень ошибок 4XX в {{ $labels.job }}"
+          description: "Более 10% запросов возвращают ошибки 4XX в течение 5 минут"
+
+      - alert: SlowAPIResponse
+        expr: |
+          histogram_quantile(0.95, 
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le, job)
+          ) > 1.0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Медленные ответы API в {{ $labels.job }}"
+          description: "95-й перцентиль времени ответа превышает 1 секунду в течение 5 минут"
+
+ 

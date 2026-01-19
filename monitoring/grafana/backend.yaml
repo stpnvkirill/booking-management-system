@@ -1,0 +1,13 @@
+apiVersion: 1
+
+datasources:
+  - name: Backend API
+    type: prometheus
+    access: proxy
+    url: http://backend:80
+    isDefault: false
+    editable: true
+    jsonData:
+      timeInterval: "5s"
+      queryTimeout: "30s"
+      httpMethod: "GET"
