@@ -41,10 +41,10 @@ class Booking_cl(Base):
 
    
 
-    def is_active(self) -> bool:
+    def is_active(self, booking: Booking) -> bool:
         """Проверяет, активно ли бронирование (еще не началось)."""
         now = datetime.utcnow()
-        return now < self.start_time
+        return now < booking.start_time
 
     def is_current(self, booking: Booking) -> bool:
         """Проверяет, идет ли бронирование в данный момент."""
@@ -77,6 +77,7 @@ class Booking_cl(Base):
         if self.is_current():
             return booking.end_time - now
         return None
+
 
 
 
