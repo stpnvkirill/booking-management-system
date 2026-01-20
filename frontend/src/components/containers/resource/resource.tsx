@@ -189,7 +189,7 @@ export const renderResourceDetails = () => {
                     ↗
                 </button>
             </div>
-            {(renderCalendarScreen())}
+            {(renderMiniCalendar())}
             {/* Календарь */}
             
 
