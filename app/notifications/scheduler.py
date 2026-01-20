@@ -7,26 +7,15 @@ from aiogram import Bot
 from aiogram.exceptions import TelegramAPIError, TelegramForbiddenError
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
+from config.bot import config as config
 from depends import Provider
+
+# fix
+from infrastructure.database.models.booking import Booking as Mdl
 import sqlalchemy as sa
 
 from app.infrastructure.database.models.booking import Booking
 from app.infrastructure.database.models.users import User
-
-from .config import Config
-from .models import Booking as Mdl
-
-config = Config()
-
-
-def get_db():
-    """Получает сессию базы данных через Provider"""
-
-    @Provider.inject_session
-    async def get_session(session=None):
-        return session
-
-    return get_session()
 
 
 @dataclass
@@ -119,12 +108,10 @@ class ReminderService:
 
     @Provider.inject_session
     async def get_bookings_for_reminder(self, hours_before: int, session=None):
-        """Получает бронирования для напоминания за указанное количество часов"""
         try:
             now = datetime.now(timezone.utc)
-            reminder_type = "24h" if hours_before == 24 else "1h"  # noqa: PLR2004
+            reminder_type = "24h" if hours_before == 24 else "1h"
 
-            # Вычисляем временное окно: часы до брони ± половина интервала проверки
             window_start = (
                 now
                 + timedelta(hours=hours_before)
@@ -136,28 +123,18 @@ class ReminderService:
                 + timedelta(minutes=config.CHECK_INTERVAL / 2)
             )
 
-            # Получаем бронирования в этом временном окне
             stmt = sa.select(Booking).where(
                 sa.and_(
                     Booking.start_time.between(window_start, window_end),
-                    Booking.start_time > now,  # Только будущие брони
+                    Booking.start_time > now,
                 ),
             )
 
             result = await session.execute(stmt)
             bookings = result.scalars().all()
 
-            # Фильтруем те, которым уже отправляли напоминания
             filtered_bookings = []
             for booking in bookings:
-                if Mdl.is_current(booking):
-                    continue
-                if not Mdl.is_upcoming(booking):
-                    continue
-                if Mdl.is_completed(booking):
-                    continue
-                if not Mdl.is_active(booking):
-                    continue
                 if not NotificationManager.is_notification_sent(
                     booking.id,
                     reminder_type,
