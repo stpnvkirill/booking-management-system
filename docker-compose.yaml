@@ -4,6 +4,7 @@ x-logging: &default-logging
     loki-url: "${LOKI_URL:-http://bms-loki:3100/loki/api/v1/push}"
     loki-batch-size: "400"
     loki-batch-wait: "1s"
+    loki-external-labels: "job=${LOKI_SERVICE:-unknown},service=bms"
 
 x-env: &env
   env_file:
@@ -13,7 +14,7 @@ services:
   backend:
     <<: [ *env ]
     container_name: bms-backend
-    entrypoint: sh -c "alembic upgrade head || true && uvicorn main:app --host 0.0.0.0 --port=80 --log-level=critical"
+    entrypoint: sh -c "alembic upgrade head || true && uvicorn main:app --host 0.0.0.0 --port=80 --log-level=info 2>&1"
     build:
       dockerfile: Dockerfile
     restart: always
@@ -28,6 +29,7 @@ services:
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
       - BOT_REDIS_DSN=redis://rediska:6379/0
+      - LOKI_SERVICE=bms-backend
     logging: *default-logging
 
   db:
