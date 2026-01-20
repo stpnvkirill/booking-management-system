@@ -97,17 +97,11 @@ async def create_booking(
     },
 )
 async def list_user_bookings(
-    customer_id: UUID | None = None,
-    current_user: Annotated[User, Depends(security.get_current_user)] = None,
-    session: Annotated[AsyncSession, Depends(provider.get_session)] = None,
+    customer_id: UUID,
+    current_user: Annotated[User, Depends(security.get_current_user)],
+    session: Annotated[AsyncSession, Depends(provider.get_session)],
 ):
     """Get all bookings for the current user."""
-    if not customer_id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="customer_id parameter is required",
-        )
-
     # Verify customer exists
     customer = await Customer.get(id=customer_id, session=session)
     if not customer:
