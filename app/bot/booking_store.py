@@ -61,15 +61,23 @@ class BookingStore:
 store = BookingStore()
 
 
-def format_booking(booking: dict[str, Any]) -> str:
-    "Человекочитаемое описание брони."
+STATUS_MAP = {
+    "pending": "⏳ В ожидании",
+    "confirmed": "✅ Подтверждена",
+    "cancelled": "❌ Отменена",
+}
+
+
+def format_booking(b: dict) -> str:
+    status = STATUS_MAP.get(b.get("status"), b.get("status"))
+
     return (
-        f"Бронь #{booking['id']}\n"
-        f"Тип: {booking['resource_type']}\n"
-        f"Ресурс: {booking['resource']}\n"
-        f"Дата: {booking['date']}\n"
-        f"Время: {booking['time']}\n"
-        f"Статус: {booking['status']}"
+        f"Бронь #{b['id']}\n"
+        f"Тип: {b.get('resource_type')}\n"
+        f"Ресурс: {b.get('resource')}\n"
+        f"Дата: {b.get('date')}\n"
+        f"Время: {b.get('time')}\n"
+        f"Статус: {status}"
     )
 
 

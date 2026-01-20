@@ -52,7 +52,7 @@ class LoggingMiddleware(BaseMiddleware):
                 if user
                 else None,
                 bot_id=event.bot.id,
-                bot_username=event.bot._me.username,  # noqa: SLF001
+                bot_username=getattr(getattr(event.bot, "_me", None), "username", None),
             )
             return res
         except Exception as err:  # noqa: BLE001
@@ -69,5 +69,5 @@ class LoggingMiddleware(BaseMiddleware):
                 else None,
                 exception=err,
                 bot_id=event.bot.id,
-                bot_username=event.bot.username,
+                bot_username=getattr(getattr(event.bot, "_me", None), "username", None),
             )

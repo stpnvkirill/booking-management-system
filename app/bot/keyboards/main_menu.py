@@ -1,4 +1,14 @@
+<<<<<<< HEAD
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
+=======
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+)
+
+>>>>>>> d829fa3 (fix button)
 
 def get_main_menu() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
@@ -13,6 +23,7 @@ def get_main_menu() -> ReplyKeyboardMarkup:
 
 
 def get_resource_type_keyboard() -> ReplyKeyboardMarkup:
+<<<<<<< HEAD
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="🏢 Переговорная")],
@@ -21,6 +32,13 @@ def get_resource_type_keyboard() -> ReplyKeyboardMarkup:
         ],
         resize_keyboard=True,
     )
+=======
+    buttons = [
+        [InlineKeyboardButton(text="🏢 Переговорная", callback_data="type:meeting")],
+        [InlineKeyboardButton(text="💻 Рабочее место", callback_data="type:workspace")],
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+>>>>>>> d829fa3 (fix button)
 
 
 def get_resources_keyboard(
@@ -32,7 +50,10 @@ def get_resources_keyboard(
     for resource in resources:
         status = "🔴" if resource in busy else "🟢"
         rows.append([KeyboardButton(text=f"{status} {resource}")])
+<<<<<<< HEAD
     rows.append([KeyboardButton(text="◀️ Назад")])
+=======
+>>>>>>> d829fa3 (fix button)
     return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
 
 
@@ -72,12 +93,34 @@ def get_backbutton_keyboard() -> ReplyKeyboardMarkup:
         resize_keyboard=True,
     )
 
+<<<<<<< HEAD
 def get_resource_type_inline() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🏢 Переговорная", callback_data="type:meeting")],
         [InlineKeyboardButton(text="💻 Рабочее место", callback_data="type:workspace")],
         [InlineKeyboardButton(text="⬅️ Назад", callback_data="back:main")],
     ])
+=======
+
+def get_resource_type_inline() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="🏢 Переговорная",
+                    callback_data="type:meeting",
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    text="💻 Рабочее место",
+                    callback_data="type:workspace",
+                ),
+            ],
+        ],
+    )
+
+>>>>>>> d829fa3 (fix button)
 
 def get_resources_inline(
     resources: list[str],
@@ -88,22 +131,46 @@ def get_resources_inline(
 
     for idx, resource in enumerate(resources, start=1):
         status = "🔴" if resource in busy else "🟢"
+<<<<<<< HEAD
         rows.append([
             InlineKeyboardButton(
                 text=f"{status} {resource}",
                 callback_data=f"resource:{idx}",
             )
         ])
+=======
+        rows.append(
+            [
+                InlineKeyboardButton(
+                    text=f"{status} {resource}",
+                    callback_data=f"resource:{idx}",
+                ),
+            ],
+        )
+>>>>>>> d829fa3 (fix button)
 
     rows.append([InlineKeyboardButton(text="⬅️ Назад", callback_data="back:type")])
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
+<<<<<<< HEAD
 def get_date_inline() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="📅 Сегодня", callback_data="date:today")],
         [InlineKeyboardButton(text="📅 Завтра", callback_data="date:tomorrow")],
         [InlineKeyboardButton(text="⬅️ Назад", callback_data="back:resource")],
     ])
+=======
+
+def get_date_inline() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="📅 Сегодня", callback_data="date:today")],
+            [InlineKeyboardButton(text="📅 Завтра", callback_data="date:tomorrow")],
+            [InlineKeyboardButton(text="⬅️ Назад", callback_data="back:resource")],
+        ],
+    )
+
+>>>>>>> d829fa3 (fix button)
 
 def get_time_inline(slots: list[str]) -> InlineKeyboardMarkup:
     rows = [
@@ -111,7 +178,11 @@ def get_time_inline(slots: list[str]) -> InlineKeyboardMarkup:
             InlineKeyboardButton(
                 text=slot,
                 callback_data=f"time:{slot}",
+<<<<<<< HEAD
             )
+=======
+            ),
+>>>>>>> d829fa3 (fix button)
         ]
         for slot in slots
     ]
@@ -119,6 +190,7 @@ def get_time_inline(slots: list[str]) -> InlineKeyboardMarkup:
     rows.append([InlineKeyboardButton(text="⬅️ Назад", callback_data="back:date")])
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
+<<<<<<< HEAD
 def get_confirm_inline() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="✅ Подтвердить", callback_data="confirm:yes")],
@@ -130,6 +202,26 @@ def get_success_inline() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="⬅️ В главное меню", callback_data="back:main")],
     ])
+=======
+
+def get_confirm_inline() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="✅ Подтвердить", callback_data="confirm:yes")],
+            [InlineKeyboardButton(text="❌ Отменить", callback_data="confirm:no")],
+            [InlineKeyboardButton(text="⬅️ Назад", callback_data="back:time")],
+        ],
+    )
+
+
+def get_success_inline() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="⬅️ В главное меню", callback_data="back:main")],
+        ],
+    )
+
+>>>>>>> d829fa3 (fix button)
 
 def get_my_bookings_inline(bookings: list[str]) -> InlineKeyboardMarkup:
     rows = [
@@ -137,7 +229,11 @@ def get_my_bookings_inline(bookings: list[str]) -> InlineKeyboardMarkup:
             InlineKeyboardButton(
                 text=booking,
                 callback_data=f"booking:{idx}",
+<<<<<<< HEAD
             )
+=======
+            ),
+>>>>>>> d829fa3 (fix button)
         ]
         for idx, booking in enumerate(bookings, start=1)
     ]
@@ -147,10 +243,20 @@ def get_my_bookings_inline(bookings: list[str]) -> InlineKeyboardMarkup:
 
 
 def get_booking_details_inline() -> InlineKeyboardMarkup:
+<<<<<<< HEAD
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="❌ Отменить", callback_data="booking:cancel")],
         [InlineKeyboardButton(text="⬅️ Назад", callback_data="booking:list")],
     ])
+=======
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="❌ Отменить", callback_data="booking:cancel")],
+            [InlineKeyboardButton(text="⬅️ Назад", callback_data="booking:list")],
+        ],
+    )
+
+>>>>>>> d829fa3 (fix button)
 
 def get_settings_keyboard() -> ReplyKeyboardMarkup:
     "Клавиатура для настроек"
@@ -160,4 +266,8 @@ def get_settings_keyboard() -> ReplyKeyboardMarkup:
             [KeyboardButton(text="◀️ Назад")],
         ],
         resize_keyboard=True,
+<<<<<<< HEAD
     )
+=======
+    )
+>>>>>>> d829fa3 (fix button)

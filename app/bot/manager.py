@@ -75,6 +75,47 @@ class BotManager:
                 allowed_updates=dp.resolve_used_update_types(),
             )
         else:
+            # Удаляем webhook перед запуском polling, чтобы избежать конфликтов
+            try:
+                webhook_info = await bot.get_webhook_info()
+                if webhook_info.url:
+                    log(
+                        level="info",
+                        method="start_bot",
+                        path="BotManager",
+                        bot_id=bot_id,
+                        text_detail=f"Found existing webhook: {webhook_info.url}, deleting...",
+                    )
+                    await bot.delete_webhook(drop_pending_updates=True)
+                    # Увеличиваем задержку после удаления webhook для надежности
+                    await asyncio.sleep(3)
+                    log(
+                        level="info",
+                        method="start_bot",
+                        path="BotManager",
+                        bot_id=bot_id,
+                        text_detail="Webhook deleted successfully",
+                    )
+                else:
+                    # Все равно пытаемся удалить на случай, если есть скрытый webhook
+                    try:
+                        await bot.delete_webhook(drop_pending_updates=True)
+                    except Exception:  # noqa: BLE001
+                        pass
+            except Exception as e:  # noqa: BLE001
+                log(
+                    level="warning",
+                    method="start_bot",
+                    path="BotManager",
+                    bot_id=bot_id,
+                    text_detail=f"Failed to check/delete webhook: {e}",
+                )
+                # Пытаемся удалить webhook в любом случае
+                try:
+                    await bot.delete_webhook(drop_pending_updates=True)
+                except Exception:  # noqa: BLE001
+                    pass
+
             task = asyncio.create_task(
                 dp.start_polling(
                     bot,
@@ -106,23 +147,34 @@ class BotManager:
 
     async def stop_bot(self, bot_id: str):
         """Остановка конкретного бота"""
+        bot = self.bots.get(bot_id)
+        if bot is None:
+            return
+
+        bot_username = (await bot.get_me()).username
+
         if bot_id in self.tasks:
-            bot = self.bots.get(bot_id)
-            bot_username = (await bot.get_me()).username
             if config.bot.USE_WEBHOOK:
                 await bot.delete_webhook()
             self.tasks[bot_id].cancel()
-            await self.remove_bot(bot_id)
             stop_type = "delete webhook" if config.bot.USE_WEBHOOK else "stop polling"
+        # Если бот не в tasks, но есть в runners, возможно он был запущен с webhook
+        elif config.bot.USE_WEBHOOK:
+            await bot.delete_webhook()
+            stop_type = "delete webhook"
+        else:
+            stop_type = "stop"
 
-            log(
-                level="info",
-                method="stop_bot",
-                path="BotManager",
-                bot_id=bot_id,
-                bot_username=bot_username,
-                text_detail=f"Bot {stop_type}",
-            )
+        await self.remove_bot(bot_id)
+
+        log(
+            level="info",
+            method="stop_bot",
+            path="BotManager",
+            bot_id=bot_id,
+            bot_username=bot_username,
+            text_detail=f"Bot {stop_type}",
+        )
 
     async def run_all(self):
         """Запуск всех ботов из конфига"""
@@ -144,7 +196,7 @@ class BotManager:
                 level="error",
                 method="feed_update",
                 path="BotManager",
-                url=config.bot.WEBHOOK_URL.format(bot_id=bot_id),
+                url=config.bot.webhook_url.format(bot_id=bot_id),
                 message=f"Bot or Dispatcher not found for bot_id={bot_id}",
             )
             return None
