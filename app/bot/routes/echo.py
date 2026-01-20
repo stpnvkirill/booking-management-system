@@ -1,16 +1,18 @@
-from aiogram import Router, types
+from aiogram import Router
+from aiogram.types import Message
 
-from app.bot.filters import OnlyPrivateChatFilter
-from app.bot.handler import handler
-from app.infrastructure.database import User
+from app.bot.keyboards.main_menu import get_main_menu
+
+router = Router()
 
 
-def get_echo_router() -> Router:
-    router: Router = Router()
+async def echo_handler(message: Message):
+    await message.answer(
+        f"Не знаю что вам ответить: {message.from_user.id}",
+        reply_markup=get_main_menu(),
+    )
 
-    @router.message(OnlyPrivateChatFilter())
-    @handler
-    async def process_any_message(message: types.Message, user: User):
-        await message.reply(text=f"Не знаю что вам ответить: {user.tlg_id}")  # noqa: RUF001
 
+def get_echo_router():
+    router.message.register(echo_handler)
     return router
