@@ -1,1 +1,4 @@
 @import "tailwindcss";
+@plugin "flyonui";
+/* @plugin "@iconify/tailwind4"; */
+@source "./node_modules/flyonui/flyonui.js";

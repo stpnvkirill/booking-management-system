@@ -1,3 +1,4 @@
+import Button from "./components/small/button/button";
 function App() {
   window.Telegram?.WebApp?.ready();
 
@@ -20,9 +21,20 @@ function App() {
           color: textColor,
           minHeight: "100vh",
         }}
-        className="p-4 flex items-center justify-center"
-      >
-        Загрузка или приложение открыто не в Telegram...
+        className="p-4 flex items-center justify-center">
+
+      <Button label="Загрузка или приложение открыто не в Telegram..." size="lg" variant="danger" onClick={function (): void {
+          throw new Error("Function not implemented.");
+        } }></Button>
+
+         <Button label="Загрузка или приложение открыто не в Telegram..." size="md" variant="danger" onClick={function (): void {
+          throw new Error("Function not implemented.");
+        } }></Button>
+
+         <Button label="Загрузка или приложение открыто не в Telegram..." size="xs" variant="danger" onClick={function (): void {
+          throw new Error("Function not implemented.");
+        } }></Button>
+        
       </div>
     );
   }

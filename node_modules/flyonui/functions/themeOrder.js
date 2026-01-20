@@ -1,0 +1,19 @@
+export default [
+  'light',
+  'dark',
+  'black',
+  'claude',
+  'corporate',
+  'ghibli',
+  'gourmet',
+  'luxury',
+  'mintlify',
+  'pastel',
+  'perplexity',
+  'shadcn',
+  'slack',
+  'soft',
+  'spotify',
+  'valorant',
+  'vscode'
+]
