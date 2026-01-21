@@ -80,6 +80,20 @@ class CustomerMember(Base, CreatedMixin):
     )
 
 
+class UserBot(Base, CreatedMixin):
+    __tablename__ = "bot_users"
+
+    user_id: so.Mapped[uuid_lib.UUID] = so.mapped_column(
+        UUID,
+        sa.ForeignKey(User.id),
+        primary_key=True,
+    )
+    bot_id: so.Mapped[int] = so.mapped_column(
+        sa.BigInteger,
+        primary_key=True,
+    )
+
+
 class BotConfig(BaseWithDt):
     __tablename__ = "bot_configs"
 
