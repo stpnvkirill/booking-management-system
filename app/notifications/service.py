@@ -152,7 +152,7 @@ class ReminderService:
                         success=success,
                         error_message=None
                         if success
-                        else "Ne udalos' otpravit' soobshenie",
+                        else "Ne udalos' otpravit' soobsheniee",
                     ),
                 )
 

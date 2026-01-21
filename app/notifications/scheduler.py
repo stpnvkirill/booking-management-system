@@ -52,7 +52,7 @@ class ReminderScheduler:
         asyncio.create_task(self._check_and_send_reminders())  # noqa: RUF006
 
     async def stop(self) -> None:
-        """Останавливает планировщик"""
+        """Останавливает планирoвщик"""  # noqa: RUF002
         if not self.is_running:
             return
         self.scheduler.shutdown(wait=True)

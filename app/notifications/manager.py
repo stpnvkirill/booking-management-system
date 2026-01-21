@@ -14,7 +14,7 @@ class ReminderResult:
 class NotificationManager:
     """Менеджер для управления состоянием уведомлений"""
 
-    _sent_notifications = set()  # поменять  # noqa: RUF012
+    _sent_notifications = set()  # поменять на бд  # noqa: RUF012
 
     @classmethod
     def is_notification_sent(cls, booking_id: int, reminder_type: str) -> bool:
