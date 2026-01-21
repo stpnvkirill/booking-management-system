@@ -6,7 +6,7 @@
 //import { timeSlots, handleBackClick, calendarDays, filters, bookings, handleResourceClick, handleConfirmBooking } from '../../../views/main-page/main-page.tsx'
 import { useBookingContext } from '../bookingContext/bookingContext.tsx'
 import {renderMiniCalendar} from '../calendar/miniCalendar.tsx'
-import { renderCalendarScreen } from '../calendar/calendar.tsx';
+
 
 export const renderResourcesScreen = () => {
 
