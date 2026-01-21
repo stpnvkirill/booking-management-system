@@ -165,34 +165,4 @@ pre-commit install
 pre-commit run --all-files
 ```
 
-## 📊 Мониторинг
 
-### Как запустить?
-1. cd monitoring
-2. docker compose -f docker-compose.monitoring.yaml up -d
-
-## Доступ к интерфейсам 
-
-После запуска будут доступны:
-Grafana - http://localhost:3000
-Prometheus - http://localhost:9090	
-
-Логин и пароль: admin, admin
-
-## Конфигурация компонентов 
-```
-monitoring/
-├── docker-compose.monitoring.yaml  # Основной compose файл
-├── grafana/
-│   └── provisioning/
-│       └── datasources/        # Настройки источников данных
-│           ├── backend.yaml
-│           ├── loki.yaml
-│           └── prometheus.yaml
-├── loki/
-│   └── loki-config.yaml          # Конфиг Loki
-└── prometheus/
-    ├── alerts.yml/              
-    ├── prometheus.yml/           # Конфиг Prometheus (который используется)
-    ├── alerts.yaml              # Правила алертинга
-    └── prometheus.yaml          # Конфиг Prometheus (дубликат/другой файл)
