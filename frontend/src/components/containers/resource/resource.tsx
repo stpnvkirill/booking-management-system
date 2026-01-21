@@ -5,10 +5,14 @@
 // import type React from 'react';
 //import { timeSlots, handleBackClick, calendarDays, filters, bookings, handleResourceClick, handleConfirmBooking } from '../../../views/main-page/main-page.tsx'
 import { useBookingContext } from '../bookingContext/bookingContext.tsx'
+
 import { renderMiniCalendar } from '../calendar/miniCalendar.tsx'
 import { renderCalendarScreen } from '../calendar/calendar.tsx';
 import Button from '../../small/button/button.tsx';
 import { blockMiniCalendar } from '../calendar/blockMiniCalendar.tsx';
+
+
+
 
 
 export const renderResourcesScreen = () => {
