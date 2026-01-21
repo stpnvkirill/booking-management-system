@@ -6,7 +6,7 @@ import { createRoot } from "react-dom/client";
 import {App4} from './views/main-page/main-page.tsx'
 
 import {BookingProvider} from './components/containers/bookingContext/bookingContext.tsx'
-import { plugin } from "postcss";
+// import { plugin } from "postcss";
 
 
 
