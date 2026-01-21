@@ -138,13 +138,27 @@ async def choose_resource(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data.startswith("date:"))
 async def choose_date(callback: CallbackQuery, state: FSMContext):
     code = callback.data.split(":", 1)[1]
+    
     if code == "today":
         selected_date = "Сегодня"
     elif code == "tomorrow":
         selected_date = "Завтра"
-    else:
-        await callback.answer("Некорректная дата.", show_alert=True)
+    elif code == "custom":
+        await callback.message.edit_text(
+            "📅 Введите дату в формате **ДД.ММ.ГГГГ** (например, 25.12.2024):"
+        )
+        await callback.answer()
         return
+    else:
+        parsed_date = parse_date(code)
+        if parsed_date:
+            if not validate_date(parsed_date):
+                await callback.answer("❌ Дата не может быть в прошлом", show_alert=True)
+                return
+            selected_date = parsed_date.strftime("%d.%m.%Y")
+        else:
+            await callback.answer("Некорректная дата.", show_alert=True)
+            return
 
     await state.update_data(selected_date=selected_date)
     await state.set_state(BookingStates.time)
