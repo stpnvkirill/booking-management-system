@@ -46,7 +46,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - bms
-    profiles: ["prod"]
+    
     environment:
       - LOKI_SERVICE=db
     logging: *default-logging
@@ -64,7 +64,7 @@ services:
       - target: 6379
         published: 6379
         protocol: tcp
-    profiles: ["prod"]
+    
     environment:
       - LOKI_SERVICE=redis
     logging: *default-logging
