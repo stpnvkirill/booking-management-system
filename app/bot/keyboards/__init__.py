@@ -15,7 +15,6 @@ from app.bot.keyboards.main_menu import (
 )
 
 __all__ = [
-<<<<<<< HEAD
     "get_main_menu",
     "get_resource_type_keyboard",
     "get_resources_keyboard",
@@ -29,7 +28,6 @@ __all__ = [
     "get_confirm_inline",
     "get_success_inline",
     "get_backbutton_keyboard",
-=======
     "get_backbutton_keyboard",
     "get_confirm_inline",
     "get_confirm_keyboard",
