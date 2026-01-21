@@ -173,7 +173,7 @@ pre-commit run --all-files
 ### Инструкция по проверке работы админ‑бота
 
 1) Откройте файл .env
-2) Добавить переменные окружения:AdminBotToken, AdminBotID
+2) Добавить переменные окружения: ADMINBOT_TOKEN, ADMINBOT_ID
 3) Запустить DBeaver
 4) Открыть telegram, отправьте боту тестовое сообщение (@practika123_admin_bot)
 5) Если бот отвечает — он работает корректно, и в таблицу bot_users добавятся данные
@@ -184,15 +184,15 @@ pre-commit run --all-files
 1. cd monitoring
 2. docker compose -f docker-compose.monitoring.yaml up -d
 
-## Доступ к интерфейсам 
+## Доступ к интерфейсам
 
 После запуска будут доступны:
 Grafana - http://localhost:3000
-Prometheus - http://localhost:9090	
+Prometheus - http://localhost:9090
 
 Логин и пароль: admin, admin
 
-## Конфигурация компонентов 
+## Конфигурация компонентов
 ```
 monitoring/
 ├── docker-compose.monitoring.yaml  # Основной compose файл
@@ -205,7 +205,7 @@ monitoring/
 ├── loki/
 │   └── loki-config.yaml          # Конфиг Loki
 └── prometheus/
-    ├── alerts.yml/              
+    ├── alerts.yml/
     ├── prometheus.yml/           # Конфиг Prometheus (который используется)
     ├── alerts.yaml              # Правила алертинга
     └── prometheus.yaml          # Конфиг Prometheus (дубликат/другой файл)
