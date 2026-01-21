@@ -2,13 +2,14 @@
 
 // import { selectedDate, setSelectedDate, setSelectedResource, setActiveTab } from '../../../App.tsx'
 import { useBookingContext } from '../bookingContext/bookingContext.tsx'
+import Button from '../../small/button/button.tsx';
 
 export const renderCalendarScreen = () => {
 
     const { selectedDate, setSelectedDate, setSelectedResource, setActiveTab, calendarDays, bookings } = useBookingContext();
 
     const getSelectedDayNumber = () => {
-        // Извлекаем первое число из строки даты
+        
         const match = selectedDate.match(/\d+/);
         return match ? match[0] : null;
     };
@@ -87,14 +88,14 @@ export const renderCalendarScreen = () => {
                     textAlign: 'center'
                 }}>
                     {calendarDays.map((day, index) => {
-                        // Проверяем, есть ли бронирования на этот день
+                       
                         const dayString = day ? `${day} янв` : '';
                         const hasBooking = dayString && bookings.some(booking =>
                             booking.date === dayString || booking.date?.includes(day || '')
                         )
 
                         if (!day) return null;
-                        // Определяем, является ли этот день выбранным
+                        
                         const isSelected = day === selectedDayNumber;
 
                         return (
@@ -180,7 +181,17 @@ export const renderCalendarScreen = () => {
                                     <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>
                                         {booking.price.toLocaleString('ru-RU')} ₽
                                     </div>
-                                    <button
+                                    <Button label={'подробнее'} onClick={() => {
+                                            setSelectedResource(booking);
+                                            setActiveTab('Ресурсы');
+                                            } }
+                                            variant='secondary'
+                                            size="md">
+                                        
+                                    </Button>
+
+
+                                    {/* <button
                                         onClick={() => {
                                             setSelectedResource(booking);
                                             setActiveTab('Ресурсы');
@@ -197,7 +208,7 @@ export const renderCalendarScreen = () => {
                                         }}
                                     >
                                         Подробнее
-                                    </button>
+                                    </button> */}
                                 </div>
                             </div>
                         </div>

@@ -5,141 +5,144 @@
 // import type React from 'react';
 //import { timeSlots, handleBackClick, calendarDays, filters, bookings, handleResourceClick, handleConfirmBooking } from '../../../views/main-page/main-page.tsx'
 import { useBookingContext } from '../bookingContext/bookingContext.tsx'
-import {renderMiniCalendar} from '../calendar/miniCalendar.tsx'
+import { renderMiniCalendar } from '../calendar/miniCalendar.tsx'
 import { renderCalendarScreen } from '../calendar/calendar.tsx';
+import Button from '../../small/button/button.tsx';
+import { blockMiniCalendar } from '../calendar/blockMiniCalendar.tsx';
+
 
 export const renderResourcesScreen = () => {
 
     const { setSelectedFilter, selectedFilter, bookings, filters, handleResourceClick } = useBookingContext();
 
     return (
-    <div style={{ padding: '16px' }}>
-        {/* Заголовок */}
-        <div style={{ marginBottom: '24px' }}>
-            <h1 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '8px' }}>NightBook</h1>
-            <p style={{ color: '#6b7280', fontSize: '14px' }}>Ресурсы</p>
-        </div>
+        <div style={{ padding: '16px' }}>
+            {/* Заголовок */}
+            <div style={{ marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '8px' }}>NightBook</h1>
+                <p style={{ color: '#6b7280', fontSize: '14px' }}>Ресурсы</p>
+            </div>
 
-        {/* Фильтры */}
-        <div style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#9ca3af' }}>Фильтры</h2>
-            <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '8px' }}>
-                {filters.map(filter => (
-                    <button
-                        key={filter}
-                        onClick={() => setSelectedFilter(filter)}
+            {/* Фильтры */}
+            <div style={{ marginBottom: '24px' }}>
+                <h2 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#9ca3af' }}>Фильтры</h2>
+                <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '8px' }}>
+                    {filters.map(filter => (
+                        <button
+                            key={filter}
+                            onClick={() => setSelectedFilter(filter)}
+                            style={{
+                                padding: '8px 16px',
+                                borderRadius: '20px',
+                                border: 'none',
+                                backgroundColor: selectedFilter === filter ? '#3b82f6' : '#1f2937',
+                                color: selectedFilter === filter ? '#ffffff' : '#9ca3af',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                whiteSpace: 'nowrap',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            {filter}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Список бронирований */}
+            <div>
+                <div style={{ marginBottom: '16px', color: '#9ca3af', fontSize: '14px' }}>
+                    Список (5 бронирований)
+                </div>
+
+                {bookings.map(booking => (
+                    <div
+                        key={booking.id}
+                        onClick={() => handleResourceClick(booking)}
                         style={{
-                            padding: '8px 16px',
-                            borderRadius: '20px',
-                            border: 'none',
-                            backgroundColor: selectedFilter === filter ? '#3b82f6' : '#1f2937',
-                            color: selectedFilter === filter ? '#ffffff' : '#9ca3af',
-                            fontSize: '14px',
-                            fontWeight: '500',
-                            whiteSpace: 'nowrap',
-                            cursor: 'pointer'
+                            backgroundColor: '#1f2937',
+                            borderRadius: '16px',
+                            padding: '20px',
+                            marginBottom: '16px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease'
                         }}
+                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#374151'}
+                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#1f2937'}
                     >
-                        {filter}
-                    </button>
-                ))}
-            </div>
-        </div>
-
-        {/* Список бронирований */}
-        <div>
-            <div style={{ marginBottom: '16px', color: '#9ca3af', fontSize: '14px' }}>
-                Список (5 бронирований)
-            </div>
-
-            {bookings.map(booking => (
-                <div
-                    key={booking.id}
-                    onClick={() => handleResourceClick(booking)}
-                    style={{
-                        backgroundColor: '#1f2937',
-                        borderRadius: '16px',
-                        padding: '20px',
-                        marginBottom: '16px',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease'
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#374151'}
-                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#1f2937'}
-                >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                        <div>
-                            <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '4px' }}>{booking.title}</h3>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                                <span style={{
-                                    backgroundColor: '#374151',
-                                    color: '#9ca3af',
-                                    padding: '2px 8px',
-                                    borderRadius: '12px',
-                                    fontSize: '12px',
-                                    fontWeight: '500'
-                                }}>
-                                    {booking.type}
-                                </span>
-                                <span style={{ color: '#9ca3af', fontSize: '14px' }}>•</span>
-                                <span style={{ color: '#9ca3af', fontSize: '14px' }}>{booking.capacity}</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                            <div>
+                                <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '4px' }}>{booking.title}</h3>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                    <span style={{
+                                        backgroundColor: '#374151',
+                                        color: '#9ca3af',
+                                        padding: '2px 8px',
+                                        borderRadius: '12px',
+                                        fontSize: '12px',
+                                        fontWeight: '500'
+                                    }}>
+                                        {booking.type}
+                                    </span>
+                                    <span style={{ color: '#9ca3af', fontSize: '14px' }}>•</span>
+                                    <span style={{ color: '#9ca3af', fontSize: '14px' }}>{booking.capacity}</span>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span style={{ color: '#9ca3af', fontSize: '14px' }}>📌 {booking.location}</span>
+                                    <span style={{ color: '#fbbf24' }}>★ {booking.rating}</span>
+                                    {booking.timeLeft && (
+                                        <span style={{ color: '#6b7280', fontSize: '14px' }}>🔽 {booking.timeLeft}</span>
+                                    )}
+                                </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <span style={{ color: '#9ca3af', fontSize: '14px' }}>📌 {booking.location}</span>
-                                <span style={{ color: '#fbbf24' }}>★ {booking.rating}</span>
-                                {booking.timeLeft && (
-                                    <span style={{ color: '#6b7280', fontSize: '14px' }}>🔽 {booking.timeLeft}</span>
-                                )}
-                            </div>
-                        </div>
 
-                        <div style={{ textAlign: 'right' }}>
-                            <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>
-                                {booking.price.toLocaleString('ru-RU')} ₽
-                            </div>
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleResourceClick(booking);
-                                    }}
-                                    style={{
-                                        padding: '8px 16px',
-                                        backgroundColor: 'transparent',
-                                        border: '1px solid #4b5563',
-                                        borderRadius: '8px',
-                                        color: '#ffffff',
-                                        fontSize: '14px',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    Открыть
-                                </button>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleResourceClick(booking);
-                                    }}
-                                    style={{
-                                        padding: '8px 16px',
-                                        backgroundColor: '#3b82f6',
-                                        border: 'none',
-                                        borderRadius: '8px',
-                                        color: '#ffffff',
-                                        fontSize: '14px',
-                                        fontWeight: '500',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    Бронь
-                                </button>
+                            <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>
+                                    {booking.price.toLocaleString('ru-RU')} ₽
+                                </div>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleResourceClick(booking);
+                                        }}
+                                        style={{
+                                            padding: '8px 16px',
+                                            backgroundColor: 'transparent',
+                                            border: '1px solid #4b5563',
+                                            borderRadius: '8px',
+                                            color: '#ffffff',
+                                            fontSize: '14px',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        Открыть
+                                    </button>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleResourceClick(booking);
+                                        }}
+                                        style={{
+                                            padding: '8px 16px',
+                                            backgroundColor: '#3b82f6',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                                            color: '#ffffff',
+                                            fontSize: '14px',
+                                            fontWeight: '500',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        Бронь
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
-    </div>
     )
 }
 
@@ -151,6 +154,8 @@ export const renderResourceDetails = () => {
         setSelectedTimeSlot, selectedTimeSlot, handleBackClick, timeSlots, handleConfirmBooking } = useBookingContext();
 
     if (!selectedResource) return null;
+
+    
 
     return (
         <div style={{ padding: '16px', maxWidth: '500px', margin: '0 auto' }}>
@@ -189,14 +194,14 @@ export const renderResourceDetails = () => {
                     ↗
                 </button>
             </div>
-            {(renderMiniCalendar())}
+            {(blockMiniCalendar())}
             {/* Календарь */}
-            
+
 
             {/* Слоты времени */}
             <div style={{ marginBottom: '32px' }}>
-                <h2 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}>
-                    Слоты на {selectedDate}
+                <h2 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '30px' }}>
+                    {/* Слоты на {selectedDate} */}
                 </h2>
                 <div style={{
                     display: 'grid',
@@ -204,22 +209,32 @@ export const renderResourceDetails = () => {
                     gap: '12px'
                 }}>
                     {timeSlots.map((slot) => (
-                        <button
-                            key={slot.time}
-                            onClick={() => setSelectedTimeSlot(slot.time)}
-                            style={{
-                                padding: '12px 8px',
-                                backgroundColor: selectedTimeSlot === slot.time ? '#3b82f6' : '#1f2937',
-                                border: 'none',
-                                borderRadius: '8px',
-                                color: selectedTimeSlot === slot.time ? '#ffffff' : '#9ca3af',
-                                fontSize: '14px',
-                                fontWeight: '500',
-                                cursor: 'pointer'
-                            }}
-                        >
-                            {slot.time}
-                        </button>
+
+                        <Button label={slot.time} onClick={() => setSelectedTimeSlot(slot.time) }
+                         size="md" variant={selectedTimeSlot === slot.time ? "primary" : "secondary"} isCircle={false}>
+
+                        </Button>
+
+
+
+
+
+                        // <button
+                        //     key={slot.time}
+                        //     onClick={() => setSelectedTimeSlot(slot.time)}
+                        //     style={{
+                        //         padding: '12px 8px',
+                        //         backgroundColor: selectedTimeSlot === slot.time ? '#3b82f6' : '#1f2937',
+                        //         border: 'none',
+                        //         borderRadius: '8px',
+                        //         color: selectedTimeSlot === slot.time ? '#ffffff' : '#9ca3af',
+                        //         fontSize: '14px',
+                        //         fontWeight: '500',
+                        //         cursor: 'pointer'
+                        //     }}
+                        // >
+                        //     {slot.time}
+                        // </button>
                     ))}
                 </div>
             </div>
@@ -243,7 +258,14 @@ export const renderResourceDetails = () => {
             </div>
 
             {/* Кнопка подтверждения */}
-            <button
+
+            <Button label={'подтвердить'} onClick={handleConfirmBooking} disabled={!selectedTimeSlot}
+             size="xl" variant='primary' isCircle={true}>
+
+            </Button>
+
+
+            {/* <button
                 onClick={handleConfirmBooking}
                 disabled={!selectedTimeSlot}
                 style={{
@@ -259,7 +281,7 @@ export const renderResourceDetails = () => {
                 }}
             >
                 Подтвердить
-            </button>
+            </button> */}
         </div>
     )
 }
