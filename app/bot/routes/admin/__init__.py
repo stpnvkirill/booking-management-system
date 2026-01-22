@@ -1,16 +1,9 @@
-from aiogram import Router, types
+from aiogram import Router
 
-from app.bot.filters import OnlyPrivateChatFilter
-from app.bot.handler import handler
-from app.infrastructure.database import User
+from .handlers import get_admin_handlers_router
 
 
 def create_admin_router() -> Router:
     router: Router = Router()
-
-    @router.message(OnlyPrivateChatFilter())
-    @handler
-    async def process_any_message(message: types.Message, user: User):
-        await message.reply(text=f"Это админ бот: {user.tlg_id}")
-
+    router.include_router(get_admin_handlers_router())
     return router
