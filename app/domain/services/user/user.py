@@ -12,6 +12,7 @@ from app.infrastructure.database.models.users import (
     CustomerAdmin,
     CustomerMember,
     User,
+    UserBot,
 )
 
 from .customer import customer_service
@@ -40,6 +41,26 @@ class UserService:
             .on_conflict_do_update(index_elements=["tlg_id"], set_=kwargs)
             .returning(User)
         )
+
+        usr = await session.scalar(stmt)
+        stmt_userbot = (
+            pg_insert(UserBot)
+            .values(
+                {
+                    "user_id": (
+                        sa.select(User.id)
+                        .where(User.tlg_id == tlg_user.id)
+                        .scalar_subquery()
+                    ),
+                    "bot_id": bot_id,
+                },
+            )
+            .on_conflict_do_nothing()
+        )
+        await session.execute(stmt_userbot)
+
+        if bot_id == config.bot.ADMINBOT_ID:
+            return usr
         stmt_member = (
             pg_insert(CustomerMember)
             .values(
@@ -58,7 +79,6 @@ class UserService:
             )
             .on_conflict_do_nothing()
         )
-        usr = await session.scalar(stmt)
         await session.execute(stmt_member)
         return usr
 

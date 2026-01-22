@@ -11,6 +11,9 @@ class BotConfig(BaseModel):
     TEST_USER_TLG_ID: int | None = None
     CREATE_TEST_USER: bool = False
 
+    ADMINBOT_TOKEN: str
+    ADMINBOT_ID: int
+
     @property
     def webhook_url(self) -> str:
         return f"https://{self.BOT_DOMAIN}{self.WEBHOOK_ENDPOINT}"

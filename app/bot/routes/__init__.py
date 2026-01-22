@@ -1,5 +1,6 @@
 from aiogram import Router
 
+from .admin import create_admin_router
 from .echo import get_echo_router
 from .ping import get_ping_router
 
