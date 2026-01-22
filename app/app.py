@@ -45,9 +45,13 @@ def get_application() -> FastAPI:
         on_shutdown=[bot_manager.stop_all],
     )
 
-    Instrumentator().instrument(application).expose(application)
     application.middleware("http")(LoggingMiddleware())
     for route in routes:
         application.include_router(route, prefix="/api")
+
+    Instrumentator(
+        should_group_status_codes=True,
+        should_ignore_untemplated=False,
+    ).instrument(application).expose(application, include_in_schema=False)
 
     return application
