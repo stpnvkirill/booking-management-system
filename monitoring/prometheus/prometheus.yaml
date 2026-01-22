@@ -5,6 +5,12 @@ global:
     cluster: "bms-local"
     environment: "development"
 
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - bms-alertmanager:9093
+
 rule_files:
   - "alerts.yml"
 

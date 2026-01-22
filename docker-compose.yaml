@@ -132,6 +132,23 @@ services:
       - prometheus
       - loki
 
+  alertmanager:
+    image: prom/alertmanager:v0.28.0
+    container_name: bms-alertmanager
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager/alerts.yaml:/etc/alertmanager/alerts.yaml
+      - alertmanager-data:/alertmanager
+    networks:
+      - bms-monitoring
+      - bms
+    profiles: ["monitoring"]
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+      - "--storage.path=/alertmanager"
+
 volumes:
   postgres-data:
     name: bms-db-data
@@ -143,6 +160,8 @@ volumes:
     name: bms-prometheus-data
   grafana-data:
     name: bms-grafana-data
+  alertmanager-data:
+    name: bms-alertmanager-data
 
 networks:
   bms:
