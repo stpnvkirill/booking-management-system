@@ -101,15 +101,14 @@ class Notification(BaseWithDt):
     booking: so.Mapped["Booking"] = so.relationship(
         "Booking",
         back_populates="notifications",
-        lazy="selectin",
+        lazy="select",
     )
 
     user: so.Mapped["User"] = so.relationship(
         "User",
         backref="notifications",
-        lazy="selectin",
+        lazy="select",
     )
-
 
     @property
     def is_due(self) -> bool:
