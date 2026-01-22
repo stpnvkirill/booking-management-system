@@ -1,22 +1,23 @@
-
 // import reactLogo from './assets/react.svg'
 // import reactLogo from '../../assets/react.svg'
 // import viteLogo from '/vite.svg'
 // import './App.css'
-import {renderResourceDetails, renderResourcesScreen, } from  '../../components/containers/resource/resource.tsx'
-import {renderCalendarScreen} from  '../../components/containers/calendar/calendar.tsx'
-import {renderProfileScreen}from '../../components/containers/profile/profile.tsx'
-import { renderBottomNav } from '../../components/containers/bottomNav/bottomNav.tsx'
-//import {renderBottomNav} from '../../components/containers/bottomNav/bottomNav.tsx'
+import {
+  ResourceDetails,
+  ResourcesScreen,
+} from "../../components/containers/resource/resource.tsx";
+import { Calendar } from "../../components/containers/calendar/calendar.tsx";
+import { renderProfileScreen } from "../../components/containers/profile/profile.tsx";
+import { BottomNav } from "../../components/containers/bottomNav/bottomNav.tsx";
+//import {BottomNav} from '../../components/containers/bottomNav/bottomNav.tsx'
 // import {type  FilterType,  type BookingItem , type TimeSlot} from '../../App.tsx'
 // import {activeTab, setSelectedResource,  selectedTimeSlot, selectedResource} from '../../App.tsx'
-import { useBookingContext } from '../../components/containers/bookingContext/bookingContext.tsx'
-
+import { useBookingContext } from "../../components/containers/bookingContext/bookingContext.tsx";
 
 export interface BookingItem {
   id: string;
   title: string;
-  type: 'Площадка' | 'Работа' | 'Жильё';
+  type: "Площадка" | "Работа" | "Жильё";
   capacity?: string;
   location: string;
   rating: number;
@@ -32,38 +33,38 @@ export interface TimeSlot {
   available: boolean;
 }
 
-export type FilterType = 'Все' | 'Площадки' | 'Работа' | 'Здоровье' | 'Авто' | 'Жильё';
+export type FilterType =
+  | "Все"
+  | "Площадки"
+  | "Работа"
+  | "Здоровье"
+  | "Авто"
+  | "Жильё";
 
-
-
-
-
- 
-export function App4() {
+export function MainPage() {
   // Основной стиль приложения
- const appStyle: React.CSSProperties = {
-    backgroundColor: '#0a0a0a',
-    color: '#ffffff',
-    minHeight: '100vh',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+  const appStyle: React.CSSProperties = {
+    backgroundColor: "#0a0a0a",
+    color: "#ffffff",
+    minHeight: "100vh",
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   };
-
-  const {activeTab,  selectedResource} = useBookingContext();
-
-  
+  const { activeTab, selectedResource } = useBookingContext();
   return (
     <div style={appStyle}>
       {/* Контент в зависимости от выбранного таба */}
-      <div style={{ paddingBottom: '80px' }}>
-        {selectedResource ? renderResourceDetails() : (
-          activeTab === 'Ресурсы' ? renderResourcesScreen() :
-            activeTab === 'Календарь' ? renderCalendarScreen() : 
-              renderProfileScreen()
-        )}
+      <div style={{ paddingBottom: "80px" }}>
+        {selectedResource
+          ? ResourceDetails()
+          : activeTab === "Ресурсы"
+            ? ResourcesScreen()
+            : activeTab === "Календарь"
+              ? Calendar()
+              : renderProfileScreen()}
       </div>
-
       {/* Нижняя навигация */}
-      {!selectedResource && renderBottomNav()}
+      {!selectedResource && BottomNav()}
     </div>
-  )
+  );
 }

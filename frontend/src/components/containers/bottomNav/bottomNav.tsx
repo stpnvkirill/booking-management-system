@@ -2,10 +2,8 @@
 // import { activeTab, setActiveTab } from '../../../App.tsx'
 import { useBookingContext } from '../bookingContext/bookingContext.tsx'
 
-export const renderBottomNav = () => {
-
-const {activeTab, setActiveTab} = useBookingContext();
-
+export const BottomNav = () => {
+    const {activeTab, setActiveTab} = useBookingContext();
     return (
         <div style={{
             position: 'fixed',
