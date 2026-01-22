@@ -1,5 +1,5 @@
-import { createContext, useContext, useState,  type ReactNode} from 'react';
-import {type FilterType, type BookingItem, type TimeSlot} from '../../../views/main-page/main-page.tsx'
+import { createContext, useContext, useState, type ReactNode } from 'react';
+import { type FilterType, type BookingItem, type TimeSlot } from '../../../views/main-page/main-page.tsx'
 
 
 interface BookingContextType {
@@ -11,11 +11,11 @@ interface BookingContextType {
   setSelectedDate: (date: string) => void;
   selectedTimeSlot: string | null;
   setSelectedTimeSlot: (timeSlot: string | null) => void;
-  
+
   selectedResource: BookingItem | null;
   setSelectedResource: (resource: BookingItem | null) => void;
 
-    filters: FilterType[];
+  filters: FilterType[];
   bookings: BookingItem[];
   timeSlots: TimeSlot[];
   calendarDays: string[];
@@ -31,18 +31,18 @@ const BookingContext = createContext<BookingContextType | undefined>(undefined);
 
 //провайдер
 export const BookingProvider = ({ children }: { children: ReactNode }) => {
-  
+
   const [activeTab, setActiveTab] = useState<'Ресурсы' | 'Календарь' | 'Профиль'>('Ресурсы');
- const [selectedFilter, setSelectedFilter] = useState<FilterType>('Все');
- const [selectedDate, setSelectedDate] = useState<string>('15 янв');
- const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
- const [selectedResource, setSelectedResource] = useState<BookingItem | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState<FilterType>('Все');
+  const [selectedDate, setSelectedDate] = useState<string>('15 янв');
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
+  const [selectedResource, setSelectedResource] = useState<BookingItem | null>(null);
 
 
   const filters: FilterType[] = ['Все', 'Площадки', 'Работа', 'Здоровье', 'Авто', 'Жильё'];
 
-const bookings: BookingItem[] = [
-{
+  const bookings: BookingItem[] = [
+    {
       id: '1',
       title: 'Loft Noir',
       type: 'Площадка',
@@ -87,7 +87,7 @@ const bookings: BookingItem[] = [
     }
   ];
 
-    const timeSlots: TimeSlot[] = [
+  const timeSlots: TimeSlot[] = [
     { time: '18:00', available: true },
     { time: '18:30', available: true },
     { time: '19:00', available: true },
@@ -97,12 +97,12 @@ const bookings: BookingItem[] = [
     { time: '21:00', available: true }
   ];
 
-    const calendarDays = [
+  const calendarDays = [
     '', '', '14', '15', '16', '17', '18',
     '19', '20', '21', '22', '23', '24', '25'
   ];
 
-    const handleResourceClick = (resource: BookingItem) => {
+  const handleResourceClick = (resource: BookingItem) => {
     setSelectedResource(resource);
   };
 
@@ -111,26 +111,27 @@ const bookings: BookingItem[] = [
   };
 
   const handleConfirmBooking = () => {
+    alert("Забронировано успешно!")
     if (selectedTimeSlot && selectedResource) {
       alert(`Бронирование подтверждено: ${selectedResource.title} на ${selectedTimeSlot}`);
-      
+
       setSelectedResource(null);
       setSelectedTimeSlot(null);
     }
   };
 
-    const value: BookingContextType = {
+  const value: BookingContextType = {
     activeTab, setActiveTab,
     selectedFilter, setSelectedFilter,
     selectedDate, setSelectedDate,
     selectedTimeSlot, setSelectedTimeSlot,
     selectedResource, setSelectedResource,
-    
+
     filters,
     bookings,
     timeSlots,
     calendarDays,
-    
+
     handleResourceClick,
     handleBackClick,
     handleConfirmBooking,
@@ -146,6 +147,7 @@ const bookings: BookingItem[] = [
 };
 
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useBookingContext = () => {
   const context = useContext(BookingContext);
   if (context === undefined) {
