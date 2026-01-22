@@ -27,9 +27,19 @@ def get_application() -> FastAPI:
     openapi_url = None
     redoc_url = None
 
+
+    scheduler = NotificationScheduler(config.bot.TEST_BOT_TOKEN)
+
     if config.server.SWAGGER_ENABLE:
         swagger_url = "/docs"
         openapi_url = "/openapi.json"
+
+
+    async def startup_tasks():
+        await scheduler.start()
+
+    async def shutdown_tasks():
+        await scheduler.stop()
 
     application = FastAPI(
         title=config.server.SERVER_NAME,
@@ -41,8 +51,8 @@ def get_application() -> FastAPI:
         redoc_url=redoc_url,
         responses=config.server.server_responces,
         swagger_ui_parameters=config.server.swagger_ui_parameters,
-        on_startup=[bot_manager.run_all, user_service.create_test_user],
-        on_shutdown=[bot_manager.stop_all],
+        on_startup=[bot_manager.run_all, user_service.create_test_user,scheduler.start],
+        on_shutdown=[bot_manager.stop_all,scheduler.stop],
     )
 
     application.middleware("http")(LoggingMiddleware())
