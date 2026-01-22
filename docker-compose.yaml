@@ -109,7 +109,6 @@ services:
       - "--web.enable-lifecycle"
 
   grafana:
-    <<: [ *env ]
     image: grafana/grafana:12.3.1
     container_name: bms-grafana
     restart: unless-stopped
@@ -126,7 +125,6 @@ services:
       - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000}
       - GF_INSTALL_PLUGINS=
     volumes:
-    - ./monitoring/grafana/provisioning/alerting/contactpoints.yaml:/etc/grafana/provisioning/alerting/contactpoints.yaml
     - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
     - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
     - grafana-data:/var/lib/grafana
@@ -135,7 +133,7 @@ services:
       - loki
 
   alertmanager:
-    image: prom/alertmanager:v0.28.0
+    image: prom/alertmanager:v0.30.1
     container_name: bms-alertmanager
     restart: unless-stopped
     ports:
@@ -146,10 +144,26 @@ services:
     networks:
       - bms-monitoring
       - bms
+    depends_on:
+      - alertserver
+      - prometheus
     profiles: ["monitoring"]
     command:
-      - "--config.file=/etc/alertmanager/alertmanager.yml"
+      - "--config.file=/etc/alertmanager/alertmanager.yaml"
       - "--storage.path=/alertmanager"
+
+  alertserver:
+    container_name: alertserver
+    restart: always
+    build: ./monitoring/alertserver
+    ports:
+      - "8080:8080"
+    environment:
+      TELEGRAM_TOKEN: ${TG_BOT_ALERT_TOKEN}
+      CHAT_ID: ${TG_ALERT_CHAT_ID}
+    profiles: ["monitoring"]
+    networks:
+      - bms-monitoring
 
 volumes:
   postgres-data:

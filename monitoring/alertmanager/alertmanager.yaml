@@ -2,12 +2,14 @@ global:
   resolve_timeout: 5m
 
 route:
-  receiver: "default"
-  group_by: ["alertname", "job"]
+  receiver: "telegram-alerts"
+  group_by: ['alertname']
   group_wait: 30s
   group_interval: 5m
-  repeat_interval: 4h
+  repeat_interval: 3h
 
 receivers:
-- name: "default"
-
+  - name: "telegram-alerts"
+    webhook_configs:
+      - url: "http://alertserver:8080/alert"
+        send_resolved: true
