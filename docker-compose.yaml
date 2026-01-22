@@ -109,6 +109,7 @@ services:
       - "--web.enable-lifecycle"
 
   grafana:
+    <<: [ *env ]
     image: grafana/grafana:12.3.1
     container_name: bms-grafana
     restart: unless-stopped
@@ -125,9 +126,10 @@ services:
       - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000}
       - GF_INSTALL_PLUGINS=
     volumes:
-      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-      - grafana-data:/var/lib/grafana
+    - ./monitoring/grafana/provisioning/alerting/contactpoints.yaml:/etc/grafana/provisioning/alerting/contactpoints.yaml
+    - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+    - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+    - grafana-data:/var/lib/grafana
     depends_on:
       - prometheus
       - loki
