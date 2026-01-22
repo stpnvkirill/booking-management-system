@@ -53,7 +53,7 @@ export const BlockMiniCalendar = () => {
               variant={
                 isSelected ? "primary" : hasBooking ? "secondary" : "tertiary"
               }
-              shape="outline"
+              shape="rounded"
             >
               {day}
               {hasBooking && (
