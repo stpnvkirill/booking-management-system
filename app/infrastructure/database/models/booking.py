@@ -48,8 +48,10 @@ class Booking(BaseWithDt):
         sa.DateTime(timezone=True),
     )
 
-    notifications: so.Mapped[list["Notification"]] = so.relationship(
+    notifications: so.Query["Notification"] = so.relationship(
         "Notification",
         back_populates="booking",
+        lazy="dynamic",
         cascade="all, delete-orphan",
+        viewonly=True,
     )
