@@ -1,8 +1,8 @@
-import {  type PropsWithChildren } from "react";
+import { type PropsWithChildren } from "react";
 
 export type ButtonVariant = // Варианты стиля
   | "primary"
-  |"gradient"
+  | "gradient"
   | "secondary"
   | "tertiary"
   | "info"
@@ -10,41 +10,48 @@ export type ButtonVariant = // Варианты стиля
   | "error"
   | "warning";
 type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl";
-
+type ButtonWidth = "full" | "auto" | "responsive";
 interface ButtonProps {
   label: string;
   onClick: () => void;
   variant?: ButtonVariant;
-  size?: ButtonSize; // Варианты размера
-  disabled?: boolean; // Состояние блокировки
-  isLoading?: boolean; // Состояние загрузки
+  size?: ButtonSize;
+  width?: ButtonWidth;
+  disabled?: boolean;
+  isLoading?: boolean;
   isCircle?: boolean;
   className?: string;
-  children?: React.ReactNode; 
+  children?: React.ReactNode;
 }
 const Button = ({
   label,
   children,
   onClick = () => {},
   size = "xs",
+  width = "auto",
   variant = "primary",
   disabled = false,
   isLoading = false,
-  isCircle = false
+  isCircle = false,
 }: PropsWithChildren<ButtonProps>): React.ReactElement => {
   const baseStyles =
-    "btn-block font-semibold transition-all duration-200 focus:outline-none";
-    
-    const shape = isCircle ? "btn-circle" : "rounded-lg";
+    "font-semibold transition-all duration-200 focus:outline-none";
+  const shape = isCircle ? "btn-circle" : "rounded-lg";
   const variants: Record<ButtonVariant, string> = {
     primary: "btn-primary",
-    gradient: "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 border-none text-white hover:opacity-90",
-    secondary: "btn-secondary",
     tertiary: "btn-tertiary",
     info: "btn-info",
     success: "btn-success",
     error: "btn-error",
     warning: "btn-warning",
+    gradient:
+      "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 border-none text-white hover:opacity-90",
+    secondary: "btn-secondary",
+  };
+  const widths = {
+    full: "btn-block",
+    auto: "btn-wide",
+    responsive: "w-auto pl-3 pr-3",
   };
   const sizes = {
     xs: "btn-xs",
@@ -59,9 +66,9 @@ const Button = ({
       disabled={disabled || isLoading}
       className={`btn ${baseStyles} ${variants[variant]} ${sizes[size]} ${shape}${
         isLoading ? "opacity-70 cursor-not-allowed" : ""
-      }`}
+      } ${widths[width]}`}
     >
-      {isLoading ? "Loading..." : (children || label)}
+      {isLoading ? "Loading..." : children || label}
     </button>
   );
 };
