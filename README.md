@@ -227,30 +227,17 @@ alertmanager - http://localhost:9093
 4. Вы увидите папку BMS в которую нужно провалиться
 5. После чего вы увидите dashboard под названием Backend, тыкаем по нему и дашборд покажется
 
-### Проверка работоспособности и алертов
+### Проверка работоспособности Alerts
 
-Заходим в Prometheus → Status → Targets.  
+1. Заходим в Prometheus -> Alerts.  
+2. У вас должно появиться 5 алёртов
 
-Все сервисы, включая bms-backend, должны быть UP (зелёный).
+Для того чтобы проверить отрабатываются алёрты или нет, то достаточно остановить профиль prod:
+``` bash
+docker compose --profile prod stop
+```
 
-Проверка алертов:  
-
-Останавливаем бэкенд:
-
-```bash
-docker compose --profile prod stop bms-backend
-
-### Как остановть?
-1. Останавливаем bms-db, bms-redis, bms-backend
-   
-   ``` bash
-   docker compose --profile prod stop
-   ```
-2. Останавливаем bms-loki, bms-prometheus, bms-grafana, alertmanager, alertserver
-   
-   ``` bash 
-   docker compose --profile monitoring stop
-   ```
+В течении минуты отработает алёрт ServiceDown и сообщит об этом в ваш канал.
 
 ### Конфигурация компонентов 
 ```
