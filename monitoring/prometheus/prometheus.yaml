@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: "bms-local"
+    environment: "development"
+
+rule_files:
+  - "alerts.yml"
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "bms-backend"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["backend:80"]
+        labels:
+          service: "backend"
+          component: "api"

@@ -20,7 +20,7 @@ class BotManager:
         self.dispatchers: dict[uuid.UUID, Dispatcher] = {}
         self.storages: dict[uuid.UUID, RedisStorage | MemoryStorage] = {}
 
-    def create_storage(self, bot_id: uuid.UUID):
+    def create_storage(self, bot_id: int):
         storage = self.storages.get(bot_id)
         if storage is not None:
             return storage
@@ -37,13 +37,16 @@ class BotManager:
         self.storages[bot_id] = ms
         return ms
 
-    def get_dispatcher(self, bot_id: uuid.UUID) -> Dispatcher:
+    def get_dispatcher(self, bot_id: int) -> Dispatcher:
         exist_dp = self.dispatchers.get(bot_id)
         if exist_dp is not None:
             return exist_dp
         dp: Dispatcher = Dispatcher(storage=self.create_storage(bot_id))
 
-        from .routes import create_router  # noqa: PLC0415
+        if bot_id == config.bot.ADMINBOT_ID:
+            from .routes import create_admin_router as create_router  # noqa: PLC0415
+        else:
+            from .routes import create_router  # noqa: PLC0415
 
         router = create_router()
         dp.include_router(router)
@@ -52,20 +55,24 @@ class BotManager:
         self.dispatchers[bot_id] = dp
         return dp
 
-    async def start_bot(self, bot_id: uuid.UUID):
+    async def start_bot(self, bot_id: int, bot_token: str | None = None):
         if bot_id in self.runners:
             await self.stop_bot(bot_id)
         bot = self.bots.get(bot_id)
         dp = self.dispatchers.get(bot_id)
         if bot is None:
-            bot_config = await BotConfig.get(id=bot_id)
+            if bot_token is None:
+                bot_config = await BotConfig.get(id=bot_id)
+                bot_token = bot_config.token
 
             bot: Bot = Bot(
-                token=bot_config.token,
+                token=bot_token,
             )
             self.bots[bot_id] = bot
             dp = self.get_dispatcher(bot_id)
+            await self.run_bot(bot_id=bot_id, bot=bot, dp=dp)
 
+    async def run_bot(self, bot_id: int, bot, dp):
         if config.bot.USE_WEBHOOK:
             webhook_url = config.bot.webhook_url.format(
                 bot_id=bot_id,
@@ -96,7 +103,7 @@ class BotManager:
             text_detail=f"Bot {start_type}",
         )
 
-    async def remove_bot(self, bot_id: str):
+    async def remove_bot(self, bot_id: int):
         """Удаление бота"""
         if bot_id in self.bots:
             await self.bots[bot_id].session.close()
@@ -104,7 +111,7 @@ class BotManager:
             del self.dispatchers[bot_id]
             self.runners.remove(bot_id)
 
-    async def stop_bot(self, bot_id: str):
+    async def stop_bot(self, bot_id: int):
         """Остановка конкретного бота"""
         if bot_id in self.tasks:
             bot = self.bots.get(bot_id)
@@ -126,6 +133,11 @@ class BotManager:
 
     async def run_all(self):
         """Запуск всех ботов из конфига"""
+        await self.start_bot(
+            config.bot.ADMINBOT_ID,
+            bot_token=config.bot.ADMINBOT_TOKEN,
+        )
+
         bot_configs = await BotConfig.get_all()
         for bc in bot_configs:
             await self.start_bot(bc.id)
