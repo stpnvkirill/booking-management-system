@@ -30,7 +30,6 @@ groups:
       summary: "🔥 bms-postgres-exporter упал и не встаёт!"
       description: "😱 Система мониторинга ослепла. Наш брат bms-postgres-exporter перестал отвечать на запросы Prometheus."
 
-
   - alert: High5xxErrorRate
     expr: |
       (
