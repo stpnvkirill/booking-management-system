@@ -189,7 +189,7 @@ pre-commit run --all-files
    ``` bash 
    docker compose --profile prod up -d
    ```
-3. Устанавливаем и запускаем bms-loki, bms-prometheus, bms-grafana
+3. Устанавливаем и запускаем bms-loki, bms-prometheus, bms-grafana, alertmanager, alertserver
    ``` bash
    docker compose --profile monitoring up -d
    ```
@@ -199,6 +199,7 @@ pre-commit run --all-files
 После запуска будут доступны:
 Grafana - http://localhost:3000
 Prometheus - http://localhost:9090
+alertmanager - http://localhost:9093
 
 Логин и пароль: admin, admin
 
@@ -222,7 +223,7 @@ Prometheus - http://localhost:9090
    ``` bash
    docker compose --profile prod stop
    ```
-2. Останавливаем bms-loki, bms-prometheus, bms-grafana
+2. Останавливаем bms-loki, bms-prometheus, bms-grafana, alertmanager, alertserver
    ``` bash 
    docker compose --profile monitoring stop
    ```
@@ -234,15 +235,24 @@ BMS/
 ├── docker-compose-prod.yaml      # Основная конфигурация docker-compose, которая будет использоваться на хосте
 monitoring/
 ├── docker-compose.monitoring.yaml   # Основная конфигурация docker-compose, которая будет использоваться на хосте
+├── alertmanager/
+│   └── alertmanager.yaml        # Конфигурация Alertmanager
+├── alertserver/
+│   ├── __init__.py
+│   ├── Dockerfile
+│   └── telegram_alert.py        # Скрипт для Telegram-оповещений
 ├── grafana/
 │   └── provisioning/
+│       ├── dashboards/
+│       │   ├── dashboard.json       # Конфигурация дашборда
+│       │   └── dashboard.yaml       # Настройка дашбордов
 │       └── datasources/
 │           ├── backend.yaml
 │           ├── loki.yaml
 │           └── prometheus.yaml
 ├── loki/
-│   └── loki-config.yaml          # конфигурация Loki
+│   └── loki-config.yaml          # Конфигурация Loki
 └── prometheus/
-    ├── prometheus.yaml           # конфигурация Prometheus
-    └── alerts.yaml               # правила алертов
+    ├── prometheus.yaml           # Конфигурация Prometheus
+    └── alerts.yaml               # Правила алертов Prometheus
 ```
