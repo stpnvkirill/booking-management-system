@@ -159,8 +159,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      TELEGRAM_TOKEN: ${TG_BOT_ALERT_TOKEN}
-      CHAT_ID: ${TG_ALERT_CHAT_ID}
+      TG_BOT_ALERT_TOKEN: ${TG_BOT_ALERT_TOKEN}
+      TG_ALERT_CHAT_ID: ${TG_ALERT_CHAT_ID}
     profiles: ["monitoring"]
     networks:
       - bms-monitoring

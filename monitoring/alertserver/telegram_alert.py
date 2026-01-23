@@ -64,11 +64,6 @@ async def _handle(data: AlertManagerPayload) -> dict:
     return {"status": "ok", "sent": sent}
 
 
-@app.post("/")
-async def alert_webhook_root(data: AlertManagerPayload):
-    return await _handle(data)
-
-
 @app.post("/alert")
 async def alert_webhook_alert(data: AlertManagerPayload):
     return await _handle(data)
