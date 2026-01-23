@@ -181,15 +181,30 @@ pre-commit run --all-files
 ## 📊 Мониторинг
 
 ### Как запустить?
-1. Устанавливаем loki-docker-driver
+1. Добавляем в файл .env
+   ``` bash
+   EXCEPT_LOG=true
+
+   POSTGRES_USER=bms_user
+   POSTGRES_PASSWORD=bms_pwd
+   POSTGRES_DB=bms_db
+   POSTGRES_HOST=localhost
+   POSTGRES_PORT=6432
+
+   USE_REDIS_STORAGE=true
+   CREATE_TEST_USER=true
+   TG_BOT_ALERT_TOKEN= "<Ваш токен для админ бота (взять в botfather)>"
+   TG_ALERT_CHAT_ID= "<Ваш айди канала для уведомлений>"
+   ```
+2 Устанавливаем loki-docker-driver
    ``` bash
    docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
    ```
-2. Устанавливаем и запускаем bms-db, bms-redis, bms-backend
+3 Устанавливаем и запускаем bms-db, bms-redis, bms-backend
    ``` bash 
    docker compose --profile prod up -d
    ```
-3. Устанавливаем и запускаем bms-loki, bms-prometheus, bms-grafana, alertmanager, alertserver
+4. Устанавливаем и запускаем bms-loki, bms-prometheus, bms-grafana, alertmanager, alertserver
    ``` bash
    docker compose --profile monitoring up -d
    ```
@@ -208,7 +223,7 @@ alertmanager - http://localhost:9093
 1. Заходим в Prometheus
 2. Переходим в Status -> Target health
 3. Вы должны увидеть bms-backend и prometheus в state = UP
-4. Если у вас bms-backend в state = DOWN, то необходимо оставноить все профили, запустить профиль prod и ~10 секунд запусить проофиль monitoring
+4. Если у вас bms-backend в state = DOWN, то необходимо остановить все профили, запустить профиль prod и ~10 секунд запусить проофиль monitoring
 
 ### Просмотр dashboard
 
