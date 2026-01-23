@@ -51,8 +51,8 @@ async def _send_telegram(token: str, chat_id: str, text: str) -> None:
 
 
 async def _handle(data: AlertManagerPayload) -> dict:
-    token = os.getenv("TELEGRAM_TOKEN")
-    chat_id = os.getenv("CHAT_ID")
+    token = os.getenv("TG_BOT_ALERT_TOKEN")
+    chat_id = os.getenv("TG_ALERT_CHAT_ID")
     if not token or not chat_id:
         raise HTTPException(status_code=500, detail="Telegram env vars not set")
 
