@@ -28,12 +28,19 @@ def _telegram_url(token: str) -> str:
 def _format_alert(alert: Alert) -> str:
     name = alert.labels.get("alertname", "Unknown")
     severity = alert.labels.get("severity", "unknown")
-    description = alert.annotations.get(
-        "description",
-        alert.annotations.get("summary", ""),
-    )
 
-    emoji = "🚨" if alert.status == "firing" else "✅"
+    if alert.status == "firing":
+        emoji = "🚨"
+        description = alert.annotations.get(
+            "description",
+            alert.annotations.get("summary", ""),
+        )
+    else:
+        emoji = "✅"
+        description = alert.annotations.get(
+            "resolved_description",
+            f"Сервис {name} вернулся в норму ✅",  # дефолтное сообщение
+        )
 
     lines = [
         f"{emoji} ALERT",
