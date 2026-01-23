@@ -13,8 +13,7 @@ def get_start_router() -> Router:
     @router.message(OnlyPrivateChatFilter(), command.Command("start"))
     @handler
     async def start_handler(message: Message):
-        if message.text == "/start":
-            await message.answer(
+        await message.answer(
                 "👋 Привет!\n"
                 "Я помогу тебе забронировать ресурс, посмотреть твои бронирования и управлять настройками.",
                 reply_markup=get_main_menu(),
