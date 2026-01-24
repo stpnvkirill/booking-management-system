@@ -9,7 +9,7 @@ export const RenderProfileScreen = () => {
   window.Telegram?.WebApp?.ready();
   const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
 
-  const { bookings, handleCancelBooking } = useBookingContext();
+  const { bookings, handleCancelBooking, setIsAuthenticated } = useBookingContext();
   const activeBookings = bookings.filter(b => b.active);
 
 
@@ -78,7 +78,7 @@ export const RenderProfileScreen = () => {
             >
               <ActiveBookingCard
                 data={booking}
-                onCancel={() => handleCancelBooking(booking.id)}
+                onCancel={() => handleCancelBooking(booking.id!)}
               />
             </motion.div>
           ))}
@@ -109,7 +109,7 @@ export const RenderProfileScreen = () => {
           variant="error"
           size="lg"
           width="full"
-          onClick={() => { }}
+          onClick={() => setIsAuthenticated(false)}
         ></Button>
       </div>
     </div>

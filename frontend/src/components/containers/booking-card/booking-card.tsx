@@ -12,7 +12,7 @@ export const BookingCard = ({
   data,
 }: PropsWithChildren<CardProps>): React.ReactElement => {
   const {
-    handleConfirmBooking,
+
     handleResourceClick = (item?: BookingItem) => {
       if (!item) {
         return;

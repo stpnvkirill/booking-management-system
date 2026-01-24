@@ -14,7 +14,7 @@ import { BottomNav } from '../../components/containers/bottomNav/bottomNav.tsx';
 // import {activeTab, setSelectedResource,  selectedTimeSlot, selectedResource} from '../../App.tsx'
 import { useBookingContext } from '../../components/containers/bookingContext/bookingContext.tsx';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AuthContainer } from '../../components/containers/auth/auth.tsx';
+import { AuthContainer } from '../../components/containers/auth/auth.tsx'
 
 
 
@@ -46,17 +46,17 @@ export interface TimeSlot {
 
 export type FilterType =
   | 'Все'
-  | 'Площадки'
+  | 'Площадка'
   | 'Работа'
   | 'Здоровье'
   | 'Авто'
   | 'Жильё';
 
 export function MainPage() {
-   //Основной стиль приложени
-const {isAuthenticated } = useBookingContext();
-console.log("Status Auth:", isAuthenticated);
+  const { isAuthenticated } = useBookingContext();
+  console.log("Status Auth:", isAuthenticated);
 
+  //Основной стиль приложени
   const appStyle: React.CSSProperties = {
     backgroundColor: '#0a0a0a',
     color: '#ffffff',
@@ -70,10 +70,10 @@ console.log("Status Auth:", isAuthenticated);
   if (!isAuthenticated) {
     return (
       <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black">
-         {/* Добавим временный бордер, чтобы увидеть границы */}
-         <div className="border-2 border-red-500 p-4">
-            <AuthContainer />
-         </div>
+        {/*  временный бордер*/}
+        <div className="border-2 border-red-500 p-4">
+          <AuthContainer />
+        </div>
       </div>
     );
   }
@@ -86,7 +86,7 @@ console.log("Status Auth:", isAuthenticated);
         <AnimatePresence mode="wait">
 
           <motion.div
-            key={selectedResource ? 'details' : activeTab} // Ключ заставляет анимацию срабатывать при смене
+            key={selectedResource ? 'details' : activeTab} // Ключ для анимки, без него не ворк
             initial="initial"
             animate="animate"
             exit="exit"
@@ -100,7 +100,6 @@ console.log("Status Auth:", isAuthenticated);
             ) : activeTab === 'Календарь' ? (
               <Calendar />
             ) : (
-              /* Вызываем как компонент, а не функцию */
               <RenderProfileScreen />
             )}
           </motion.div>
@@ -116,7 +115,7 @@ console.log("Status Auth:", isAuthenticated);
         </AnimatePresence>
       </div>
       {/* Нижняя навигация */}
-      {!selectedResource && <BottomNav/>}
+      {!selectedResource && <BottomNav />}
     </div>
   );
 }

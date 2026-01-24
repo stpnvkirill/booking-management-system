@@ -3,7 +3,7 @@ import Button from '../../small/button/button';
 import { useBookingContext } from '../bookingContext/bookingContext.tsx';
 
 import type { BookingItem } from '../bookingContext/bookingContext.tsx';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 export interface CalendarCardProps {
   bookings?: BookingItem[];
   selectedDate?: string;
