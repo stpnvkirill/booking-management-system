@@ -9,15 +9,18 @@ from app.bot.routes.settings import get_settings_router
 from app.bot.routes.start import get_start_router
 
 from .echo import get_echo_router
+from .ping import get_ping_router
 
 
-def create_router():
-    router = Router()
+def create_router() -> Router:
+    router: Router = Router()
+
+    router.include_router(get_ping_router())
+    router.include_router(get_echo_router())
     router.include_router(get_mybooking_router())
     router.include_router(get_button_handler_router())
     router.include_router(get_settings_router())
     router.include_router(get_reviews_router())
     router.include_router(get_booking_router())
     router.include_router(get_start_router())
-    router.include_router(get_echo_router())
     return router
