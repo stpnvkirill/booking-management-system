@@ -40,7 +40,13 @@ export const RenderProfileScreen = () => {
         <div className="rounded-2xl p-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center font-semibold">
-              {user?.username || '404'}
+              {user?.photo_url ? (
+                <img src={user?.photo_url} alt={user?.photo_url || '404'} />
+              ) : user?.first_name && user?.last_name ? (
+                `${user?.first_name?.charAt(0) || ''} ${user?.last_name?.charAt(0) || ''}`
+              ) : (
+                `404`
+              )}
             </div>
             <div>
               <div className="text-base font-semibold mb-1">
@@ -48,7 +54,7 @@ export const RenderProfileScreen = () => {
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <span className="w-2 h-2 rounded-full" />
-                Уведомления включены  {user?.photo_url || "penis"}
+                Уведомления включены
               </div>
             </div>
           </div>
