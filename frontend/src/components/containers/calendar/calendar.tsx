@@ -24,16 +24,18 @@ export const Calendar = () => {
   return (
     <div style={{ padding: '16px' }}>
       {/* Заголовок */}
-      <div style={{ marginBottom: '24px' }}>
-        <h1
-          style={{ fontSize: '28px', fontWeight: '700', marginBottom: '8px' }}
-        >
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold mb-2 text-base-content">
           Календарь
         </h1>
-        <p style={{ color: '#6b7280', fontSize: '14px' }}>
+        <p className="text-sm text-base-content/60">
           Расписание бронирований
         </p>
       </div>
+
+      <div className="mb-6 rounded-2xl p-5 bg-base-200">
+      </div>
+      
       {/* Текущий месяц */}
       <div
         style={{
@@ -43,7 +45,7 @@ export const Calendar = () => {
           marginBottom: '24px',
         }}
       >
-        <div
+        <div  
           style={{
             display: 'flex',
             justifyContent: 'space-between',
