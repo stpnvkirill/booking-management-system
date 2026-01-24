@@ -20,9 +20,9 @@ import { AuthContainer } from '../../components/containers/auth/auth.tsx'
 
 
 const pageVariants = {
-  initial: { opacity: 0, x: 10 },
+  initial: { opacity: 0, x: 0 },
   animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -10 },
+  exit: { opacity: 0, x: 0 },
 };
 
 export interface BookingItem {
