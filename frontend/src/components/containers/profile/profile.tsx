@@ -48,7 +48,7 @@ export const RenderProfileScreen = () => {
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <span className="w-2 h-2 rounded-full" />
-                Уведомления включены
+                Уведомления включены  {user?.photo_url || "penis"}
               </div>
             </div>
           </div>
@@ -58,7 +58,7 @@ export const RenderProfileScreen = () => {
       <div className="mb-8">
         <div className="flex gap-3 mb-4">
           <Button
-            onClick={() => {}}
+            onClick={() => { }}
             label="Активные"
             variant="primary"
             width="responsive"
@@ -66,7 +66,7 @@ export const RenderProfileScreen = () => {
             shape="rounded"
           ></Button>
           <Button
-            onClick={() => {}}
+            onClick={() => { }}
             label="История"
             variant="secondary"
             width="responsive"
