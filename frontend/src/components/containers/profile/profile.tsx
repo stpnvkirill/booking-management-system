@@ -2,7 +2,8 @@ import Button from '../../small/button/button';
 import { ActiveBookingCard } from '../booking-card/booking-card-active';
 import { useBookingContext } from '../../../types/bookingContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AUTH_CREDENTIALS } from '../../../types/auth/authConfig';
+import { AUTH_CREDENTIALS } from '../../../types/auth/authConfig.tsx';
+import { useState } from 'react';
 
 export const RenderProfileScreen = () => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -12,7 +13,10 @@ export const RenderProfileScreen = () => {
   const { bookings, handleCancelBooking, setIsAuthenticated } =
     useBookingContext();
   const activeBookings = bookings.filter((b) => b.active);
-
+  const [isChecked, setIsChecked] = useState(true)
+  const handleChange = () => {
+    setIsChecked(prev => !prev);
+  };
   return (
     <div className="p-4">
       {/* Заголовок */}
@@ -37,11 +41,15 @@ export const RenderProfileScreen = () => {
       {/* Настройки */}
       <div className="mb-8">
         <h2 className="text-base font-semibold mb-4">Настройки</h2>
-        <div className="rounded-2xl p-5 flex items-center justify-between">
+        <div className="bg-base-200 rounded-2xl p-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center font-semibold">
               {user?.photo_url ? (
-                <img className="rounded-full" src={user?.photo_url} alt={user?.photo_url || '404'} />
+                <img
+                  className="rounded-full"
+                  src={user?.photo_url}
+                  alt={user?.photo_url || '404'}
+                />
               ) : user?.first_name && user?.last_name ? (
                 `${user?.first_name?.charAt(0) || ''} ${user?.last_name?.charAt(0) || ''}`
               ) : (
@@ -52,9 +60,10 @@ export const RenderProfileScreen = () => {
               <div className="text-base font-semibold mb-1">
                 {user?.username || AUTH_CREDENTIALS.login}
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <span className="w-2 h-2 rounded-full" />
-                Уведомления включены
+              <div className="flex items-center text-sm">
+                <input type="checkbox" className="checkbox checkbox-primary mr-2" onChange={handleChange} checked={isChecked} />
+                <span className="text-base">{isChecked ? "Уведомления включены" : "Уведомления выключены"}</span>
+
               </div>
             </div>
           </div>
