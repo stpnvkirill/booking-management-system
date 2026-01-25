@@ -21,7 +21,6 @@ export const BookingCardCalendar = ({
     ) || [];
 
   if (bookings !== undefined) {
-
     return (
       <AnimatePresence mode="popLayout">
         <div>
@@ -95,7 +94,7 @@ export const BookingCardCalendar = ({
           )}
         </div>
       </AnimatePresence>
-    )
+    );
   } else {
     return <>data lost...</>;
   }
