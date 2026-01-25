@@ -22,7 +22,7 @@ export const Calendar = () => {
   const selectedDayNumber = getSelectedDayNumber();
   // console.log(bookings);
   return (
-    <div style={{ padding: '16px' }}>
+    <div className='p-4'>
       {/* Заголовок */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-2 text-base-content">
@@ -33,69 +33,37 @@ export const Calendar = () => {
         </p>
       </div>
 
-      <div className="mb-6 rounded-2xl p-5 bg-base-200">
-      </div>
-      
       {/* Текущий месяц */}
-      <div
-        style={{
-          backgroundColor: '#1f2937',
-          borderRadius: '16px',
-          padding: '20px',
-          marginBottom: '24px',
-        }}
-      >
-        <div  
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '20px',
-          }}
-        >
+      <div className="mb-6 rounded-2xl p-5 bg-base-200" >
+        <div className='flex justify-between items-center mb-5'>
           <Button
             variant="primary"
             size="lg"
             width="responsive"
             shape="text"
-            onClick={() => {}}
+            onClick={() => { }}
             label="←"
           />
-          <h2 style={{ fontSize: '18px', fontWeight: '600' }}>Январь 2024</h2>
+          <h2 className='text-lg font-semibold'>Январь 2024</h2>
           <Button
             variant="primary"
             size="lg"
             width="responsive"
             shape="text"
-            onClick={() => {}}
+            onClick={() => { }}
             label="→"
           />
         </div>
         {/* Дни недели */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '2px',
-            marginBottom: '16px',
-            textAlign: 'center',
-          }}
-        >
+        <div className="grid grid-cols-[repeat(7,1fr)] gap-0.5 mb-4 text-center">
           {['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map((day) => (
-            <div key={day} style={{ color: '#6b7280', fontSize: '14px' }}>
+            <div key={day} className='text-accent text-sm'>
               {day}
             </div>
           ))}
         </div>
         {/* Числа месяца с бронированиями */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '8px',
-            textAlign: 'center',
-          }}
-        >
+        <div className='grid grid-cols-[repeat(7,1fr)] gap-2 text-center'>
           {calendarDays.map((day, index) => {
             const dayString = day ? `${day} янв` : '';
             const hasBooking =
@@ -119,18 +87,7 @@ export const Calendar = () => {
                 className={`relative ${hasBooking ? 'btn-active' : ''}`}
               >
                 {hasBooking && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      bottom: '4px',
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      width: '4px',
-                      height: '4px',
-                      backgroundColor: '#000000',
-                      borderRadius: '50%',
-                    }}
-                  ></div>
+                  <div className='absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-neutral-content rounded-full'></div>
                 )}
               </Button>
             );
