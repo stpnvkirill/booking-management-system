@@ -5,7 +5,8 @@ import { useBookingContext } from '../../../types/bookingContext.tsx';
 // import { useState } from 'react';
 
 export const BlockMiniCalendar = () => {
-  const { setSelectedDate, calendarDays, selectedDate, bookings } = useBookingContext();
+  const { setSelectedDate, calendarDays, selectedDate, bookings } =
+    useBookingContext();
 
   // const monthNames = [
   //   'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
@@ -61,7 +62,7 @@ export const BlockMiniCalendar = () => {
               variant="primary"
               width="auto"
               shape="default"
-              className={`relative ${hasBooking ? 'btn-active' : ''} ${isSelected ? '' : 'bg-base-100! border-none! shadow-none! hover:bg-[#374151]!' }`} //
+              className={`relative ${hasBooking ? 'btn-active' : ''} ${isSelected ? '' : 'bg-base-100! border-none! shadow-none! hover:bg-[#374151]!'}`} //
             >
               {hasBooking && (
                 <div className="absolute bottom-1 left-[50%] transform -translate-x-1/2 w-1 h-1 bg-accent-content rounded-full"></div>
