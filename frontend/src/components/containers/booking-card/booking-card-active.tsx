@@ -6,6 +6,7 @@ export interface ActiveBookingProps {
   // selectedDate?: string;
   bookings?: string; //потом будет подругому
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any; // Позже замени на BookingItem
   onCancel: () => void;
 }

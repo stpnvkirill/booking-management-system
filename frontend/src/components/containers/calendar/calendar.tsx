@@ -111,17 +111,14 @@ export const Calendar = () => {
                 label={day.toString()}
                 size="md"
                 width="auto"
+                variant="primary"
                 onClick={() => {
                   if (day && !isSelected) {
                     setSelectedDate(dayString);
                   }
                 }}
                 shape="default"
-                className={`relative ${
-                  isSelected
-                    ? ''
-                    : 'bg-[#1f2937]! border-none! shadow-none! hover:bg-[#374151]!'
-                } ${hasBooking ? 'btn-active' : ''}`}
+                className={`relative${hasBooking ? 'btn-active' : ''} ${isSelected ? '' : 'bg-base-100! border-none! shadow-none! hover:bg-[#374151]!'}`} //
               >
                 {hasBooking && (
                   <div className="absolute bottom-1 left-[50%] transform -translate-x-1/2 w-1 h-1 bg-accent-content rounded-full"></div>
