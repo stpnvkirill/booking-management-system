@@ -7,7 +7,7 @@
 import { useBookingContext } from '../../../types/bookingContext.tsx';
 // import {  } from "../../../views/main-page/main-page.tsx"
 // import { MiniCalendar } from '../calendar/miniCalendar.tsx'
-// import { Calendar } from '../calendar/calendar.tsx';
+import { Calendar } from '../calendar/calendar.tsx';
 import Button from '../../small/button/button.tsx';
 import { BlockMiniCalendar } from '../calendar/blockMiniCalendar.tsx';
 import { BookingCard } from '../booking-card/booking-card.tsx';

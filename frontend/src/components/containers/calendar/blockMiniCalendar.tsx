@@ -5,8 +5,26 @@ import { useBookingContext } from '../../../types/bookingContext.tsx';
 // import { useState } from 'react';
 
 export const BlockMiniCalendar = () => {
-  const { setSelectedDate, calendarDays, selectedDate, bookings } =
+  const { setSelectedDate, calendarDays, selectedDate, bookings,
+    viewDate, setViewDate, getDaysInMonth } =
     useBookingContext();
+
+  const monthNames = [
+    'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+  ];
+  const currentMonth = viewDate.getMonth();
+  const currentYear = viewDate.getFullYear();
+
+  const handlePrevMonth = () => {
+    setViewDate(new Date(currentYear, currentMonth - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setViewDate(new Date(currentYear, currentMonth + 1, 1));
+  };
+  const days = getDaysInMonth(currentYear, currentMonth);
+
 
   const selectedDayNumber = selectedDate.match(/\d+/)?.[0];
 
@@ -37,16 +55,21 @@ export const BlockMiniCalendar = () => {
             <Button
               label={day?.toString() || ''}
               onClick={() => {
-                if (day) {
+                if (day && !isSelected) {
                   setSelectedDate(`${day} янв`);
                 }
               }}
               size="md"
-              variant={
-                isSelected ? 'primary' : hasBooking ? 'secondary' : 'tertiary'
-              }
-              shape="rounded"
-              className="relative"
+              width='auto'
+              // variant={
+              //   isSelected ? 'primary' : hasBooking ? 'secondary' : 'tertiary'
+              // }
+
+              shape="default"
+              className={`relative ${isSelected
+                ? ''
+                : '!bg-base-100 !border-none !shadow-none hover:!bg-[#374151]'
+                } ${hasBooking ? 'btn-active' : ''}`}
             >
               {hasBooking && (
                 <div

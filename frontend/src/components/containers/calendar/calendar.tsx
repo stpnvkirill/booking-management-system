@@ -5,24 +5,38 @@ import { BookingCardCalendar } from '../booking-card/booking-card-calendar.tsx';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const Calendar = () => {
-  const {
-    selectedDate,
-    setSelectedDate,
-    // setSelectedResource,
-    // setActiveTab,
-    calendarDays,
-    bookings,
-  } = useBookingContext();
+    const {
+        selectedDate,
+        setSelectedDate,
+        bookings,
+        // viewDate, setViewDate, getDaysInMonth
+    } = useBookingContext();
 
-  const getSelectedDayNumber = () => {
-    const match = selectedDate.match(/\d+/);
-    return match ? match[0] : null;
-  };
+    // const monthNames = [
+    //     'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+    //     'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+    // ];
+    // const currentMonth = viewDate.getMonth();
+    // const currentYear = viewDate.getFullYear();
 
-  const selectedDayNumber = getSelectedDayNumber();
+    // const handlePrevMonth = () => {
+    //     setViewDate(new Date(currentYear, currentMonth - 1, 1));
+    // };
+
+    // const handleNextMonth = () => {
+    //     setViewDate(new Date(currentYear, currentMonth + 1, 1));
+    // };
+    // const days = getDaysInMonth(currentYear, currentMonth);
+
+    // const getSelectedDayNumber = () => {
+    //     const match = selectedDate.match(/\d+/);
+    //     return match ? match[0] : null;
+    // };
+
+  // const selectedDayNumber = getSelectedDayNumber();
   // console.log(bookings);
   return (
-    <div className='p-4'>
+    <div style={{ padding: '16px' }}>
       {/* Заголовок */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-2 text-base-content">
@@ -33,37 +47,69 @@ export const Calendar = () => {
         </p>
       </div>
 
+      <div className="mb-6 rounded-2xl p-5 bg-base-200">
+      </div>
+      
       {/* Текущий месяц */}
-      <div className="mb-6 rounded-2xl p-5 bg-base-200" >
-        <div className='flex justify-between items-center mb-5'>
+      <div
+        style={{
+          backgroundColor: '#1f2937',
+          borderRadius: '16px',
+          padding: '20px',
+          marginBottom: '24px',
+        }}
+      >
+        <div  
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '20px',
+          }}
+        >
           <Button
             variant="primary"
             size="lg"
             width="responsive"
             shape="text"
-            onClick={() => { }}
+            onClick={() => {}}
             label="←"
           />
-          <h2 className='text-lg font-semibold'>Январь 2024</h2>
+          <h2 style={{ fontSize: '18px', fontWeight: '600' }}>Январь 2024</h2>
           <Button
             variant="primary"
             size="lg"
             width="responsive"
             shape="text"
-            onClick={() => { }}
+            onClick={() => {}}
             label="→"
           />
         </div>
         {/* Дни недели */}
-        <div className="grid grid-cols-[repeat(7,1fr)] gap-0.5 mb-4 text-center">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(7, 1fr)',
+            gap: '2px',
+            marginBottom: '16px',
+            textAlign: 'center',
+          }}
+        >
           {['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map((day) => (
-            <div key={day} className='text-accent text-sm'>
+            <div key={day} style={{ color: '#6b7280', fontSize: '14px' }}>
               {day}
             </div>
           ))}
         </div>
         {/* Числа месяца с бронированиями */}
-        <div className='grid grid-cols-[repeat(7,1fr)] gap-2 text-center'>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(7, 1fr)',
+            gap: '8px',
+            textAlign: 'center',
+          }}
+        >
           {calendarDays.map((day, index) => {
             const dayString = day ? `${day} янв` : '';
             const hasBooking =
@@ -87,7 +133,18 @@ export const Calendar = () => {
                 className={`relative ${hasBooking ? 'btn-active' : ''}`}
               >
                 {hasBooking && (
-                  <div className='absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-neutral-content rounded-full'></div>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      bottom: '4px',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: '4px',
+                      height: '4px',
+                      backgroundColor: '#000000',
+                      borderRadius: '50%',
+                    }}
+                  ></div>
                 )}
               </Button>
             );
@@ -96,26 +153,26 @@ export const Calendar = () => {
       </div>
       {/* Предстоящие бронирования на выбранную дату */}
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={selectedDate}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.2 }}
-        >
-          <BookingCardCalendar
-            bookings={bookings}
-            selectedDate={selectedDate}
-          />
-        </motion.div>
-      </AnimatePresence>
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={selectedDate}
+                    initial={{ opacity: 0, y: 0 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                >
+                    <BookingCardCalendar
+                        bookings={bookings}
+                        selectedDate={selectedDate}
+                    />
+                </motion.div>
+            </AnimatePresence>
 
-      {/* <BookingCardCalendar
+            {/* <BookingCardCalendar
         key={selectedDate}
         bookings={bookings}
         selectedDate={selectedDate}
       ></BookingCardCalendar> */}
-    </div>
-  );
+        </div>
+    );
 };
