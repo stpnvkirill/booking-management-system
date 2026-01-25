@@ -53,31 +53,19 @@ export function MainPage() {
   const { isAuthenticated } = useBookingContext();
   console.log('Status Auth:', isAuthenticated);
 
-  //Основной стиль приложени
-  const appStyle: React.CSSProperties = {
-    backgroundColor: '#0a0a0a',
-    color: '#ffffff',
-    minHeight: '100vh',
-    fontFamily:
-      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-  };
   const { activeTab, selectedResource } = useBookingContext();
 
   if (!isAuthenticated) {
     return (
-      <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black">
-        {/*  временный бордер*/}
-        <div className="border-2 border-red-500 p-4">
-          <AuthContainer />
-        </div>
+      <div className="fixed inset-0 z-9999 flex items-center justify-center bg-neutral-content">
+        <AuthContainer />
       </div>
     );
   }
-
   return (
-    <div style={appStyle}>
+    <div className="bg-neutral-content text-neutral min-h-screen font-sans">
       {/* Контент в зависимости от выбранного таба */}
-      <div style={{ paddingBottom: '80px' }}>
+      <div className="pb-20">
         <AnimatePresence mode="wait">
           <motion.div
             key={selectedResource ? 'details' : activeTab} // Ключ для анимки, без него не ворк
@@ -97,14 +85,6 @@ export function MainPage() {
               <RenderProfileScreen />
             )}
           </motion.div>
-
-          {/* {selectedResource
-            ? ResourceDetails()
-            : activeTab === 'Ресурсы'
-              ? ResourcesScreen()
-              : activeTab === 'Календарь'
-                ? Calendar()
-                : renderProfileScreen()} */}
         </AnimatePresence>
       </div>
       {/* Нижняя навигация */}

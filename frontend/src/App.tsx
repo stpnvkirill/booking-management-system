@@ -20,14 +20,7 @@ function App() {
 
   // if (!user) {
   //   return (
-  //     <div
-  //       style={{
-  //         backgroundColor: bgColor,
-  //         color: textColor,
-  //         minHeight: "100vh",
-  //       }}
-  //       className="p-4 flex items-center justify-center"
-  //     >
+  //     <div className={`bg-neutral-content text-neutral p-4 flex items-center justify-center h-dvh`}>
   //       Загрузка или приложение открыто не в Telegram...
   //     </div>
   //   );

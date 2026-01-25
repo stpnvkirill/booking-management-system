@@ -23,9 +23,7 @@ export const RenderProfileScreen = () => {
       <div className="flex justify-between mb-8">
         <div className="mb-2 mt-2">
           <h1 className="text-3xl font-bold mb-2">Профиль</h1>
-          <p className="text-sm" style={{ color: '#6b7280', fontSize: '14px' }}>
-            Личный кабинет
-          </p>
+          <p className="text-sm text-base-300">Личный кабинет</p>
         </div>
         <div className="mb-2 mt-2">
           <Button

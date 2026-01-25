@@ -23,9 +23,7 @@ export const BookingCardCalendar = ({
   if (bookings !== undefined) {
     return (
       <div>
-        <h2
-          style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}
-        >
+        <h2 className="text-[16px] font-semibold mb-4">
           Бронирования на {selectedDate}
         </h2>
         {/* {bookings
@@ -94,9 +92,7 @@ export const BookingCardCalendar = ({
 
       //////////переделаю потом
       // <div>
-      //   <h2
-      //     style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}
-      //   >
+      //   <h2 className='text-[16px] font-semibold mb-4'>
       //     Бронирования на {selectedDate}
       //   </h2>
 

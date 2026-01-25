@@ -100,6 +100,7 @@ export const AuthContainer = () => {
             >
               <Input
                 label="Логин"
+                placeholder="Логин"
                 variant={error ? 'error' : 'default'}
                 className="bg-base-100"
                 value={login}
@@ -111,6 +112,7 @@ export const AuthContainer = () => {
               <Input
                 label="Пароль"
                 type="password"
+                placeholder="Пароль"
                 variant={error ? 'error' : 'default'}
                 className="bg-base-100"
                 value={pass}
@@ -122,6 +124,7 @@ export const AuthContainer = () => {
               {!isLogin && (
                 <Input
                   label="Повторите пароль"
+                  placeholder="Повторите пароль"
                   type="password"
                   variant={error ? 'error' : 'default'}
                   className="bg-base-100"

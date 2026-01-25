@@ -5,24 +5,38 @@ import { useBookingContext } from '../../../types/bookingContext.tsx';
 // import { useState } from 'react';
 
 export const BlockMiniCalendar = () => {
-  const { setSelectedDate, selectedDate, bookings,
-    viewDate, setViewDate, getDaysInMonth } =
-    useBookingContext();
+  const {
+    setSelectedDate,
+    selectedDate,
+    bookings,
+    viewDate,
+    setViewDate,
+    getDaysInMonth,
+  } = useBookingContext();
 
   const monthNames = [
-    'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+    'Январь',
+    'Февраль',
+    'Март',
+    'Апрель',
+    'Май',
+    'Июнь',
+    'Июль',
+    'Август',
+    'Сентябрь',
+    'Октябрь',
+    'Ноябрь',
+    'Декабрь',
   ];
   const currentMonth = viewDate.getMonth();
-  const currentYear = viewDate.getFullYear()
+  const currentYear = viewDate.getFullYear();
   const handlePrevMonth = () => {
     setViewDate(new Date(currentYear, currentMonth - 1, 1));
-  }
+  };
   const handleNextMonth = () => {
     setViewDate(new Date(currentYear, currentMonth + 1, 1));
   };
   const days = getDaysInMonth(currentYear, currentMonth);
-
 
   const selectedDayNumber = selectedDate.match(/\d+/)?.[0];
 
@@ -40,7 +54,9 @@ export const BlockMiniCalendar = () => {
           onClick={handlePrevMonth}
           label="←"
         />
-        <h2 className="text-lg font-semibold">{monthNames[currentMonth]} {currentYear}</h2>
+        <h2 className="text-lg font-semibold">
+          {monthNames[currentMonth]} {currentYear}
+        </h2>
         <Button
           variant="primary"
           size="lg"
@@ -64,19 +80,20 @@ export const BlockMiniCalendar = () => {
       </div>
       {/* Сетка чисел */}
       <div className="grid grid-cols-7 gap-2">
-
         {days.map((day, index) => {
           if (!day) return <div key={`empty-${index}`} />; // Пустая ячейка для отступа
 
           const dayString = `${day} ${monthNames[currentMonth].slice(0, 3).toLowerCase()}`;
           const isSelected = day.toString() === selectedDayNumber;
-          const hasBooking = bookings.some(b => b.date === dayString);
-          {/* {calendarDays.map((day) => {
+          const hasBooking = bookings.some((b) => b.date === dayString);
+          {
+            /* {calendarDays.map((day) => {
           const dayString = day ? `${day} янв` : '';
           const hasBooking =
             dayString && bookings.some((booking) => booking.date === dayString);
           if (!day) return null;
-          const isSelected = day === selectedDayNumber; */}
+          const isSelected = day === selectedDayNumber; */
+          }
           return (
             <Button
               label={day?.toString() || ''}
@@ -86,12 +103,9 @@ export const BlockMiniCalendar = () => {
                 }
               }}
               size="md"
-              width='auto'
+              width="auto"
               shape="default"
-              className={`relative ${isSelected
-                ? ''
-                : 'bg-base-100! border-none! shadow-none! hover:bg-[#374151]!'
-                } ${hasBooking ? 'btn-active' : ''}`}
+              className={`relative ${isSelected ? '' : 'bg-base-100! border-none! shadow-none! hover:bg-[#374151]!'} ${hasBooking ? 'btn-active' : ''}`}
             >
               {hasBooking && (
                 <div className="absolute bottom-1 left-[50%] transform -translate-x-1/2 w-1 h-1 bg-accent-content rounded-full"></div>

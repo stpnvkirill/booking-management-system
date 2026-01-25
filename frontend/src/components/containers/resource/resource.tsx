@@ -23,27 +23,15 @@ export const ResourcesScreen = () => {
   );
 
   return (
-    <div style={{ padding: '16px' }}>
+    <div className="p-4">
       {/* Заголовок */}
-      <div style={{ marginBottom: '24px' }}>
-        <h1
-          style={{ fontSize: '28px', fontWeight: '700', marginBottom: '8px' }}
-        >
-          NightBook
-        </h1>
-        <p style={{ color: '#6b7280', fontSize: '14px' }}>Ресурсы</p>
+      <div className="mb-6">
+        <h1 className="text-3xl text-neutral font-bold mb-2">NightBook</h1>
+        <p className="text-base-300 text-sm">Ресурсы</p>
       </div>
-
       {/* Фильтры */}
-      <div style={{ marginBottom: '24px' }}>
-        <h2
-          style={{
-            fontSize: '14px',
-            fontWeight: '600',
-            marginBottom: '12px',
-            color: '#9ca3af',
-          }}
-        >
+      <div className="mb-6">
+        <h2 className="text-sm text-accent-content font-semibold mb-3">
           Фильтры
         </h2>
         <div className="flex gap-3 overflow-x-auto pb-2">
@@ -105,16 +93,9 @@ export const ResourceDetails = () => {
   if (!selectedResource) return null;
 
   return (
-    <div style={{ padding: '16px', maxWidth: '500px', margin: '0 auto' }}>
+    <div className="p-4 max-w-125 mt-0 mb-0  ml-auto mr-auto">
       {/* Заголовок с кнопкой назад */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          marginBottom: '24px',
-        }}
-      >
+      <div className="flex items-center gap-3 mb-6">
         <Button
           variant="primary"
           size="lg"
@@ -123,37 +104,9 @@ export const ResourceDetails = () => {
           onClick={handleBackClick}
           label="←"
         />
-
-        {/* <button
-          onClick={handleBackClick}
-          style={{
-            backgroundColor: "transparent",
-            border: "none",
-            color: "#ffffff",
-            fontSize: "24px",
-            cursor: "pointer",
-          }}
-        >
-          ←
-        </button> */}
         <div>
-          <h1
-            style={{
-              fontSize: '24px',
-              fontWeight: '700',
-              marginBottom: '4px',
-            }}
-          >
-            {selectedResource.title}
-          </h1>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              color: '#9ca3af',
-            }}
-          >
+          <h1 className="text-2xl font-bold mb-1">{selectedResource.title}</h1>
+          <div className="flex items-center gap-2 text-base-300">
             <span>{selectedResource.type}</span>
             <span>•</span>
             <span>{selectedResource.capacity}</span>
@@ -165,39 +118,19 @@ export const ResourceDetails = () => {
           size="lg"
           width="responsive"
           shape="text"
-          onClick={() => { }}
+          onClick={() => {}}
           label="↗"
           className="ml-auto"
         />
-
-        {/* 
-        <button
-          style={{
-            marginLeft: "auto",
-            backgroundColor: "transparent",
-            border: "none",
-            color: "#3b82f6",
-            fontSize: "20px",
-            cursor: "pointer",
-          }}
-        >
-          ↗
-        </button> */}
       </div>
       {BlockMiniCalendar()}
       {/* Календарь */}
 
       {/* Слоты времени */}
-      <div style={{ marginBottom: '32px' }}>
-        <h2
-          style={{
-            fontSize: '16px',
-            fontWeight: '600',
-            marginBottom: '30px',
-          }}
-        >
-          {/* Слоты на {selectedDate} */}
-        </h2>
+      <div className="mb-8">
+        {/* <h2 className='text-lg font-semibold mb-8'>
+           Слоты на {selectedDate} 
+        </h2>*/}
         {/* <div className='flex flex-row gap-3 flex-wrap justify-around'> */}
         <div className="grid grid-cols-4 gap-2 mb-2">
           {timeSlots.map((slot) => (
@@ -206,35 +139,25 @@ export const ResourceDetails = () => {
                 label={slot.time}
                 onClick={() => setSelectedTimeSlot(slot.time)}
                 size="md"
-                variant={selectedTimeSlot === slot.time ? 'primary' : 'secondary'}
+                variant={
+                  selectedTimeSlot === slot.time ? 'primary' : 'secondary'
+                }
                 shape="default"
-              /></div>
+              />
+            </div>
           ))}
         </div>
       </div>
 
       {/* Итого */}
-      <div
-        style={{
-          backgroundColor: '#1f2937',
-          borderRadius: '16px',
-          padding: '20px',
-          marginBottom: '24px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            marginBottom: '8px',
-          }}
-        >
-          <span style={{ color: '#9ca3af' }}>Итого</span>
-          <span style={{ fontSize: '24px', fontWeight: '700' }}>
+      <div className="rounded-2xl p-5 mb-6 text-accent">
+        <div className="flex justify-between mb-2">
+          <span className="text-base-300">Итого</span>
+          <span className="font-bold text-2xl ">
             {(selectedResource.price ?? 0).toLocaleString('ru-RU')} ₽
           </span>
         </div>
-        <div style={{ color: '#6b7280', fontSize: '14px' }}>
+        <div className="text-accent text-sm">
           Слот: {selectedTimeSlot || '—'}
         </div>
       </div>
