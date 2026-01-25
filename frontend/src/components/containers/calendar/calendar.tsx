@@ -47,7 +47,7 @@ export const Calendar = () => {
         </p>
       </div>
       {/* Текущий месяц */}
-      <div className="bg-accent rounded-2xl p-5 mb-6">
+      <div className="bg-base-100 rounded-2xl p-5 mb-6">
         <div className="flex justify-between items-center mb-5">
           <Button
             variant="primary"
