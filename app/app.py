@@ -6,6 +6,10 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from .api import routes
 from .bot import bot_manager
 from .domain.services import user_service
+from .domain.services.bookings.completion_watcher import (
+    start_booking_completion_watcher,
+    stop_booking_completion_watcher,
+)
 from .middlewares import LoggingMiddleware
 
 logging.basicConfig(
@@ -41,8 +45,15 @@ def get_application() -> FastAPI:
         redoc_url=redoc_url,
         responses=config.server.server_responces,
         swagger_ui_parameters=config.server.swagger_ui_parameters,
-        on_startup=[bot_manager.run_all, user_service.create_test_user],
-        on_shutdown=[bot_manager.stop_all],
+        on_startup=[
+            bot_manager.run_all,
+            user_service.create_test_user,
+            start_booking_completion_watcher,
+        ],
+        on_shutdown=[
+            stop_booking_completion_watcher,
+            bot_manager.stop_all,
+        ],
     )
 
     Instrumentator().instrument(application).expose(application)
