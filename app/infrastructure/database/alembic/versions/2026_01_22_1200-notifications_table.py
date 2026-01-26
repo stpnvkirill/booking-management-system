@@ -28,17 +28,17 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column(
             "type",
-            sa.String(20),  
+            sa.String(20),
             nullable=False,
         ),
         sa.Column(
             "status",
-            sa.String(20), 
+            sa.String(20),
             nullable=False,
-            server_default="pending",  
+            server_default="pending",
         ),
         sa.Column("booking_id", sa.Integer(), nullable=False),
-        sa.Column("user_id", postgresql.UUID(as_uuid=True), nullable=False), 
+        sa.Column("user_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column(
             "scheduled_at",
             sa.DateTime(timezone=True),
@@ -62,7 +62,7 @@ def upgrade() -> None:
             onupdate=sa.text("now()"),
             nullable=False,
         ),
-        sa.Column("message", sa.Text(), nullable=True),  
+        sa.Column("message", sa.Text(), nullable=True),
         sa.Column("error", sa.Text(), nullable=True),
         sa.ForeignKeyConstraint(
             ["booking_id"],
@@ -78,7 +78,7 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk__notifications")),
     )
-    
+
     # Создаем индексы
     op.create_index(
         op.f("ix__notifications__id"),
@@ -116,7 +116,7 @@ def upgrade() -> None:
         ["scheduled_at"],
         unique=False,
     )
-    
+
     # Комбинированные индексы для производительности
     op.create_index(
         "ix__notifications__status_scheduled",
@@ -145,7 +145,7 @@ def downgrade() -> None:
     op.drop_index("ix__notifications__type_scheduled", table_name="notifications")
     op.drop_index("ix__notifications__user_status", table_name="notifications")
     op.drop_index("ix__notifications__status_scheduled", table_name="notifications")
-    
+
     op.drop_index(
         op.f("ix__notifications__scheduled_at"),
         table_name="notifications",
@@ -170,6 +170,6 @@ def downgrade() -> None:
         op.f("ix__notifications__id"),
         table_name="notifications",
     )
-    
+
     op.drop_table("notifications")
     # ### end Alembic commands ###

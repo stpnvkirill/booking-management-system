@@ -49,13 +49,13 @@ class Booking(BaseWithDt):
     )
 
     notifications: so.Mapped[list["Notification"]] = so.relationship(
-    "Notification",
-    back_populates="booking",
-    lazy="select",  # Используем select вместо dynamic
-    cascade="all, delete-orphan",
+        "Notification",
+        back_populates="booking",
+        lazy="select",  # Используем select вместо dynamic
+        cascade="all, delete-orphan",
     )
     resource_obj: so.Mapped["Resource"] = so.relationship(
-    "Resource",
-    backref="bookings",
-    lazy="select",
+        "Resource",
+        backref="bookings",
+        lazy="select",
     )
