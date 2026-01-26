@@ -23,26 +23,23 @@ export const BookingCardCalendar = ({
   if (bookings !== undefined) {
     return (
       <AnimatePresence mode="popLayout">
-        <div>
-          <h2 className="text-[16px] font-semibold mb-4">
-            Бронирования на {selectedDate}
-          </h2>
-          {filteredBookings.map((booking) => (
-            <motion.div
-              key={booking.id}
-              layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 1 }}
-              transition={{ duration: 0.2 }}
-              className="bg-base-200 rounded-2xl p-5 mb-4 hover:bg-base-100 duration-200"
-            >
-              <div
-                key={booking?.id}
+        <h2 className="text-[16px] font-semibold mb-4">
+          Бронирования на {selectedDate}
+        </h2>
+        <div className="mb-8">
+          <div className="flex flex-col justify-start overflow-y-scroll max-h-[calc(100vh-450px)] pb-6">
+            {filteredBookings.map((booking) => (
+              <motion.div
+                key={booking.id}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 1 }}
+                transition={{ duration: 0.2 }}
                 className="bg-base-200 rounded-2xl p-5 mb-4 hover:bg-base-100 duration-200"
               >
                 <div className="flex justify-between items-start mb-3">
-                  <div>
+                  <div className="text-left">
                     <h3 className="text-lg font-semibold mb-1 text-accent-content">
                       {booking?.title}
                     </h3>
@@ -80,18 +77,18 @@ export const BookingCardCalendar = ({
                 ></Button> */}
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-          {filteredBookings.length === 0 && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-gray-500 italic"
-            >
-              На этот день бронирований нет.
-            </motion.p>
-          )}
+              </motion.div>
+            ))}
+            {filteredBookings.length === 0 && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-gray-500 italic"
+              >
+                На этот день бронирований нет.
+              </motion.p>
+            )}
+          </div>
         </div>
       </AnimatePresence>
     );

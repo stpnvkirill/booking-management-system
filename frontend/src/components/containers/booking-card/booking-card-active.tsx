@@ -17,7 +17,7 @@ export const ActiveBookingCard = ({
 }: PropsWithChildren<ActiveBookingProps>): React.ReactElement => {
   // console.log(bookings);
   return (
-    <div className="mb-4 rounded-2xl p-5 bg-base-200 hover:bg-base-100 duration-200">
+    <div className="rounded-2xl p-5 bg-base-200 hover:bg-base-100 duration-200">
       <div className="mb-3">
         <div className="text-lg font-semibold mb-1 text-base-content">
           {data.title}

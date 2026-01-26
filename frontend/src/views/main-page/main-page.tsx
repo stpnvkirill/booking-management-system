@@ -56,32 +56,36 @@ export function MainPage() {
     );
   }
   return (
-    <div className="bg-neutral-content text-neutral min-h-screen font-sans">
+    <>
+      {/* <div className="bg-neutral-content text-neutral font-sans h-screen overflow-hidden"> */}
+
       {/* Контент в зависимости от выбранного таба */}
-      <div className="pb-20">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedResource ? 'details' : activeTab} // Ключ для анимки, без него не ворк
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            variants={pageVariants}
-            transition={{ duration: 0.2 }}
-          >
-            {selectedResource ? (
-              <ResourceDetails />
-            ) : activeTab === 'Ресурсы' ? (
-              <ResourcesScreen />
-            ) : activeTab === 'Календарь' ? (
-              <Calendar />
-            ) : (
-              <RenderProfileScreen />
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+
+      {/* <div className="pb-20 h-screen bg-neutral-content text-neutral font-sans">  */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={selectedResource ? 'details' : activeTab} // Ключ для анимки, без него не ворк
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          variants={pageVariants}
+          transition={{ duration: 0.2 }}
+        >
+          {selectedResource ? (
+            <ResourceDetails />
+          ) : activeTab === 'Ресурсы' ? (
+            <ResourcesScreen />
+          ) : activeTab === 'Календарь' ? (
+            <Calendar />
+          ) : (
+            <RenderProfileScreen />
+          )}
+        </motion.div>
+      </AnimatePresence>
+      {/* </div> */}
       {/* Нижняя навигация */}
       {!selectedResource && <BottomNav />}
-    </div>
+      {/* </div> */}
+    </>
   );
 }

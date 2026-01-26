@@ -31,12 +31,16 @@ export const BlockMiniCalendar = () => {
   const handlePrevMonth = () => {
     const newDate = new Date(currentYear, currentMonth - 1, 1);
     setViewDate(newDate);
-    setSelectedDate(`1 ${monthNames[newDate.getMonth()].slice(0, 3).toLowerCase()}`);
+    setSelectedDate(
+      `1 ${monthNames[newDate.getMonth()].slice(0, 3).toLowerCase()}`
+    );
   };
   const handleNextMonth = () => {
     const newDate = new Date(currentYear, currentMonth + 1, 1);
     setViewDate(newDate);
-    setSelectedDate(`1 ${monthNames[newDate.getMonth()].slice(0, 3).toLowerCase()}`);
+    setSelectedDate(
+      `1 ${monthNames[newDate.getMonth()].slice(0, 3).toLowerCase()}`
+    );
   };
   const days = getDaysInMonth(currentYear, currentMonth);
 
@@ -45,7 +49,6 @@ export const BlockMiniCalendar = () => {
   // const [activeButtonId, setActiveButtonId] = useState<number | null>(null);
 
   return (
-    // <Card title="Календарь" extra={selectedDate}>
     <Card>
       <div className="flex justify-between items-center mb-5">
         <Button
