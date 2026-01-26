@@ -1,6 +1,6 @@
 """
-GET /api/rooms     - List rooms for the customer (admin/owner only)
-GET /api/rooms/{id} - Get room details
+GET /api/resources     - List resources for the customer (admin/owner only)
+GET /api/resources/{id} - Get resource details
 """
 
 from typing import Annotated
@@ -13,24 +13,24 @@ from app.depends import AsyncSession, provider
 from app.domain.services.resource import resource_service
 from app.infrastructure.database.models.users import User
 
-from .schema import RoomResponse
+from .schema import ResourceResponse
 
 router = APIRouter()
 
 
 @router.get(
     "/",
-    response_model=list[RoomResponse],
-    summary="List rooms for customer",
+    response_model=list[ResourceResponse],
+    summary="List resources for customer",
 )
-async def list_rooms(
+async def list_resources(
     current_user: Annotated[User, Depends(security.get_current_user)],
     session: Annotated[AsyncSession, Depends(provider.get_session)],
     customer_id: UUID | None = None,
     skip: int = 0,
     limit: int = 100,
 ):
-    """Get list of rooms for the customer.
+    """Get list of resources for the customer.
 
     Only returns resources for customers where user is admin or owner.
     If customer_id is not provided, uses the customer where user is owner/admin.
@@ -45,21 +45,21 @@ async def list_rooms(
 
 
 @router.get(
-    "/{room_id}",
-    response_model=RoomResponse,
-    summary="Get room details",
+    "/{resource_id}",
+    response_model=ResourceResponse,
+    summary="Get resource details",
 )
-async def read_room(
-    room_id: int,
+async def read_resource(
+    resource_id: int,
     current_user: Annotated[User, Depends(security.get_current_user)],
     session: Annotated[AsyncSession, Depends(provider.get_session)],
 ):
-    """Get information about a specific room by ID.
+    """Get information about a specific resource by ID.
 
     User must be owner or admin of the customer that owns this resource.
     """
     resource = await resource_service.get_resource(
-        resource_id=room_id,
+        resource_id=resource_id,
         current_user=current_user,
         session=session,
     )
@@ -67,7 +67,7 @@ async def read_room(
     if resource is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Room not found or access denied",
+            detail="Resource not found or access denied",
         )
 
     return resource

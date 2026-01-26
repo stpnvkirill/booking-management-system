@@ -1,4 +1,4 @@
-"""PATCH /api/rooms/{id} - Partial update of room data."""
+"""DELETE /api/resources/{id} - Delete a resource."""
 
 from typing import Annotated
 
@@ -9,40 +9,35 @@ from app.depends import AsyncSession, provider
 from app.domain.services.resource import resource_service
 from app.infrastructure.database.models.users import User
 
-from .schema import RoomResponse, RoomUpdate
-
 router = APIRouter()
 
 
-@router.patch(
-    "/{room_id}",
-    response_model=RoomResponse,
-    summary="Partial update of room data",
+@router.delete(
+    "/{resource_id}",
+    summary="Delete a resource",
 )
-async def update_room(
-    room_id: int,
-    room_in: RoomUpdate,
+async def delete_resource(
+    resource_id: int,
     current_user: Annotated[User, Depends(security.get_current_user)],
     session: Annotated[AsyncSession, Depends(provider.get_session)],
 ):
-    """Update room data (partial update).
+    """Delete a resource from the database.
 
     User must be owner or admin of the customer that owns this resource.
-    Only provided fields will be updated.
-    """
-    update_data = room_in.model_dump(exclude_unset=True)
 
-    resource = await resource_service.update_resource(
-        resource_id=room_id,
+    Note: Currently performs hard delete as model lacks is_active field.
+    To implement soft delete, add is_active column via migration.
+    """
+    success = await resource_service.delete_resource(
+        resource_id=resource_id,
         current_user=current_user,
         session=session,
-        **update_data,
     )
 
-    if resource is None:
+    if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Room not found or access denied",
+            detail="Resource not found or access denied",
         )
 
-    return resource
+    return {"ok": True}

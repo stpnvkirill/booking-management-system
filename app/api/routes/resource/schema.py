@@ -1,4 +1,4 @@
-"""Pydantic schemas for room (resource) operations."""
+"""Pydantic schemas for resource operations."""
 
 from datetime import datetime
 import uuid
@@ -6,8 +6,8 @@ import uuid
 from pydantic import BaseModel, Field
 
 
-class RoomCreate(BaseModel):
-    """Schema for creating a room (POST /api/rooms)."""
+class ResourceCreate(BaseModel):
+    """Schema for creating a resource (POST /api/resources)."""
 
     customer_id: uuid.UUID | None = Field(
         None,
@@ -17,18 +17,18 @@ class RoomCreate(BaseModel):
         ...,
         min_length=1,
         max_length=255,
-        description="Room name",
+        description="Resource name",
     )
 
 
-class RoomUpdate(BaseModel):
-    """Schema for partial room update (PATCH /api/rooms/{id})."""
+class ResourceUpdate(BaseModel):
+    """Schema for partial resource update (PATCH /api/resources/{id})."""
 
     name: str | None = Field(None, min_length=1, max_length=255)
 
 
-class RoomResponse(BaseModel):
-    """Response schema with room data."""
+class ResourceResponse(BaseModel):
+    """Response schema with resource data."""
 
     id: int
     customer_id: uuid.UUID

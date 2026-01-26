@@ -1,4 +1,4 @@
-"""POST /api/rooms - Create a new room (resource)."""
+"""POST /api/resources - Create a new resource."""
 
 from typing import Annotated
 
@@ -9,23 +9,23 @@ from app.depends import AsyncSession, provider
 from app.domain.services.resource import resource_service
 from app.infrastructure.database.models.users import User
 
-from .schema import RoomCreate, RoomResponse
+from .schema import ResourceCreate, ResourceResponse
 
 router = APIRouter()
 
 
 @router.post(
     "/",
-    response_model=RoomResponse,
+    response_model=ResourceResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Create a new room",
+    summary="Create a new resource",
 )
-async def create_room(
-    data: RoomCreate,
+async def create_resource(
+    data: ResourceCreate,
     current_user: Annotated[User, Depends(security.get_current_user)],
     session: Annotated[AsyncSession, Depends(provider.get_session)],
 ):
-    """Create a new room (resource).
+    """Create a new resource.
 
     User must be owner or admin of the customer to create resources.
     If customer_id is not provided, uses the customer where user is owner/admin.
