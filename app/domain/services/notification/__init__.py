@@ -1,7 +1,7 @@
 from .factory import NotificationFactory
-from .scheduler import NotificationScheduler
+from .service import NotificationService
 
 __all__ = [
     "NotificationFactory",
-    "NotificationScheduler",
+    "NotificationService",
 ]
