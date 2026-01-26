@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class BookingCompletionWatcher:
+class CompletionWatcher:
     """Background watcher that logs completed booking IDs."""
 
     def __init__(self, poll_interval_seconds: int = 30):
@@ -110,15 +110,19 @@ class BookingCompletionWatcher:
         self._watcher_task = None
 
 
-# Module-level instance for backward compatibility
-_watcher = BookingCompletionWatcher()
+class BookingCompletionWatcherManager:
+    """Manager class for booking completion watcher lifecycle."""
+
+    def __init__(self, poll_interval_seconds: int = 30):
+        self._watcher = CompletionWatcher(poll_interval_seconds=poll_interval_seconds)
+
+    async def start_watcher(self) -> None:
+        """Start background watcher that logs completed booking IDs."""
+        await self._watcher.start()
+
+    async def stop_watcher(self) -> None:
+        """Stop the background watcher (called on app shutdown)."""
+        await self._watcher.stop()
 
 
-async def start_booking_completion_watcher() -> None:
-    """Start background watcher that logs completed booking IDs after 15 minutes."""
-    await _watcher.start()
-
-
-async def stop_booking_completion_watcher() -> None:
-    """Stop the background watcher (called on app shutdown)."""
-    await _watcher.stop()
+booking_completion_wacher = BookingCompletionWatcherManager()
