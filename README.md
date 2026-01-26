@@ -181,33 +181,44 @@ pre-commit run --all-files
 ## 📊 Мониторинг
 
 ### Как запустить?
-1. Устанавливаем loki-docker-driver
+1. Добавляем в файл .env
+   
+   ``` bash
+   TG_BOT_ALERT_TOKEN= "<Ваш токен для алёрт бота (взять в botfather)>"
+   TG_ALERT_CHAT_ID= "<Ваш айди канала для уведомлений>"
+   ```
+2. Устанавливаем loki-docker-driver
+   
    ``` bash
    docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
    ```
-2. Устанавливаем и запускаем bms-db, bms-redis, bms-backend
+3. Устанавливаем и запускаем bms-db, bms-redis, bms-backend
+   
    ``` bash 
    docker compose --profile prod up -d
    ```
-3. Устанавливаем и запускаем bms-loki, bms-prometheus, bms-grafana
+4. Устанавливаем и запускаем bms-loki, bms-prometheus, bms-grafana, alertmanager, alertserver
+   
    ``` bash
    docker compose --profile monitoring up -d
    ```
+5. Добавьте бота в канал и выдайте ему права администратора с возможностью отправки сообщений.
    
 ### Доступ к интерфейсам 
 
 После запуска будут доступны:
 Grafana - http://localhost:3000
 Prometheus - http://localhost:9090
+alertmanager - http://localhost:9093
 
 Логин и пароль: admin, admin
 
 ### Проверка работоспобности
 
 1. Заходим в Prometheus
-2. Переходим в Status -> Target health
-3. Вы должны увидеть bms-backend и prometheus в state = UP
-4. Если у вас bms-backend в state = DOWN, то необходимо оставноить все профили, запустить профиль prod и ~10 секунд запусить проофиль monitoring
+2. Переходим в Alerts
+3. Вы должны увидеть: ServiceDown, High5xxErrorRate, High4xxErrorRate, SlowAPIResponse, TrafficDrop
+4. Чтобы проверить нужно выключить bms-backend в Docker, зайти обратно в Prometheus
 
 ### Просмотр dashboard
 
@@ -217,15 +228,17 @@ Prometheus - http://localhost:9090
 4. Вы увидите папку BMS в которую нужно провалиться
 5. После чего вы увидите dashboard под названием Backend, тыкаем по нему и дашборд покажется
 
-### Как остановть?
-1. Останавливаем bms-db, bms-redis, bms-backend
-   ``` bash
-   docker compose --profile prod stop
-   ```
-2. Останавливаем bms-loki, bms-prometheus, bms-grafana
-   ``` bash 
-   docker compose --profile monitoring stop
-   ```
+### Проверка работоспособности Alerts
+
+1. Заходим в Prometheus -> Alerts.  
+2. У вас должно появиться 5 алёртов
+
+Для того чтобы проверить отрабатываются алёрты или нет, то достаточно остановить профиль prod:
+``` bash
+docker compose --profile prod stop
+```
+
+В течении минуты отработает алёрт ServiceDown и сообщит об этом в ваш канал.
 
 ### Конфигурация компонентов 
 ```
@@ -234,15 +247,24 @@ BMS/
 ├── docker-compose-prod.yaml      # Основная конфигурация docker-compose, которая будет использоваться на хосте
 monitoring/
 ├── docker-compose.monitoring.yaml   # Основная конфигурация docker-compose, которая будет использоваться на хосте
+├── alertmanager/
+│   └── alertmanager.yaml        # Конфигурация Alertmanager
+├── alertserver/
+│   ├── __init__.py
+│   ├── Dockerfile
+│   └── telegram_alert.py        # Скрипт для Telegram-оповещений
 ├── grafana/
 │   └── provisioning/
+│       ├── dashboards/
+│       │   ├── dashboard.json       # Конфигурация дашборда
+│       │   └── dashboard.yaml       # Настройка дашбордов
 │       └── datasources/
 │           ├── backend.yaml
 │           ├── loki.yaml
 │           └── prometheus.yaml
 ├── loki/
-│   └── loki-config.yaml          # конфигурация Loki
+│   └── loki-config.yaml          # Конфигурация Loki
 └── prometheus/
-    ├── prometheus.yaml           # конфигурация Prometheus
-    └── alerts.yaml               # правила алертов
+    ├── prometheus.yaml           # Конфигурация Prometheus
+    └── alerts.yaml               # Правила алертов Prometheus
 ```

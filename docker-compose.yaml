@@ -13,7 +13,7 @@ x-env: &env
 services:
   # --------------------- PROD ---------------------
   backend:
-    <<: [ *env ]
+    <<: [*env]
     container_name: bms-backend
     entrypoint: sh -c "alembic upgrade head || true && uvicorn main:app --host 0.0.0.0 --port=80 --log-level=critical"
     build:
@@ -34,7 +34,7 @@ services:
     logging: *default-logging
 
   db:
-    <<: [ *env ]
+    <<: [*env]
     image: postgres:18.1-alpine
     container_name: bms-db
     restart: always
@@ -46,7 +46,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - bms
-    
+
     environment:
       - LOKI_SERVICE=db
     logging: *default-logging
@@ -64,10 +64,20 @@ services:
       - target: 6379
         published: 6379
         protocol: tcp
-    
+
     environment:
       - LOKI_SERVICE=redis
     logging: *default-logging
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.18.1
+    container_name: bms-postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@bms-db:5432/${POSTGRES_DB}?sslmode=disable"
+    ports:
+      - "9187:9187"
+    networks:
+      - bms
 
   # ----------------- MONITORING -------------------
   loki:
@@ -125,15 +135,15 @@ services:
       - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000}
       - GF_INSTALL_PLUGINS=
     volumes:
-      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - grafana-data:/var/lib/grafana
     depends_on:
       - prometheus
       - loki
 
   frontend:
-    <<: [ *env ]
+    <<: [*env]
     container_name: bms-frontend
     build:
       context: .
@@ -151,7 +161,7 @@ services:
         protocol: tcp
     networks:
       - bms
-    profiles: [ "prod" ]
+    profiles: ["prod"]
     environment:
       - NODE_ENV=production
     logging: *default-logging
@@ -167,6 +177,8 @@ volumes:
     name: bms-prometheus-data
   grafana-data:
     name: bms-grafana-data
+  alertmanager-data:
+    name: bms-alertmanager-data
 
 networks:
   bms:
