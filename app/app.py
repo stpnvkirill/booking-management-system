@@ -36,11 +36,7 @@ def get_application() -> FastAPI:
         swagger_url = "/docs"
         openapi_url = "/openapi.json"
 
-    async def startup_tasks():
-        await scheduler.start()
-
-    async def shutdown_tasks():
-        await scheduler.stop()
+   
 
     application = FastAPI(
         title=config.server.SERVER_NAME,
