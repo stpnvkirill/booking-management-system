@@ -125,7 +125,7 @@ class NotificationScheduler:
                             level="error",
                             method="_process_notifications_job",
                             path="NotificationScheduler",
-                            text_detail=f"Error processing notification {notification.id}: {e}",
+                            text_detail=f"Error processing notification {notification.id}: {e}",  # noqa: E501
                             exception=e,
                         )
 

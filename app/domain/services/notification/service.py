@@ -42,7 +42,7 @@ class NotificationService:
         """Send booking end notification."""
         return await self._send_notification(notification)
 
-    async def _send_notification(
+    async def _send_notification(  # noqa: PLR0912
         self,
         notification: Notification,
         session: AsyncSession = None,
@@ -110,7 +110,7 @@ class NotificationService:
                     level="info",
                     method="_send_notification",
                     path="NotificationService",
-                    text_detail=f"Notification {notification.id} sent to user {notification.user_id}",
+                    text_detail=f"Notification {notification.id} sent to user {notification.user_id}",  # noqa: E501
                 )
 
                 if not external_session:
@@ -191,7 +191,7 @@ class NotificationService:
                     level="error",
                     method="_get_bot_for_customer",
                     path="NotificationService",
-                    text_detail=f"Invalid UUID format for customer_id: {customer_id_str}",
+                    text_detail=f"Invalid UUID format for: {customer_id_str}",
                 )
                 return None
 
