@@ -7,6 +7,11 @@ from app.api.security import security
 from app.depends import AsyncSession, provider
 from app.domain.services.bookings import BookingParams, booking_service
 from app.infrastructure.database import Booking, Customer, Resource, User
+from app.metrics.business import (
+    booking_cancelled_total,
+    booking_created_total,
+    booking_duration_seconds,
+)
 
 from .schema import BookingCreate, BookingResponse
 
@@ -78,6 +83,20 @@ async def create_booking(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Resource is not available for the selected time",
         )
+
+    customer_id_str = str(data.customer_id)
+    resource_id_str = str(data.resource_id)
+    booking_created_total.labels(
+        source="api",
+        customer_id=customer_id_str,
+        resource_id=resource_id_str,
+    ).inc()
+
+    duration = (data.end_time - data.start_time).total_seconds()
+    booking_duration_seconds.labels(
+        customer_id=customer_id_str,
+        resource_id=resource_id_str,
+    ).observe(duration)
 
     return BookingResponse(
         **booking.to_dict(),
@@ -167,5 +186,15 @@ async def cancel_booking(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Booking does not belong to you",
         )
+
+    resource = await Resource.get(id=booking.resource_id, session=session)
+    if resource:
+        customer_id_str = str(resource.customer_id)
+        resource_id_str = str(booking.resource_id)
+        booking_cancelled_total.labels(
+            source="api",
+            customer_id=customer_id_str,
+            resource_id=resource_id_str,
+        ).inc()
 
     return {"message": "Booking cancelled successfully"}
