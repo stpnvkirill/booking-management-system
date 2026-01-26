@@ -5,7 +5,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.depends import provider
 from app.domain.services.notification.service import NotificationService
-from app.scheduler.scheduler import NotificationScheduler
+from app.schedulers.scheduler import NotificationScheduler
 
 from .api import routes
 from .bot import bot_manager
