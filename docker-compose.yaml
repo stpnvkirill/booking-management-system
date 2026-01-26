@@ -13,7 +13,7 @@ x-env: &env
 services:
   # --------------------- PROD ---------------------
   backend:
-    <<: [ *env ]
+    <<: [*env]
     container_name: bms-backend
     entrypoint: sh -c "alembic upgrade head || true && uvicorn main:app --host 0.0.0.0 --port=80 --log-level=critical"
     build:
@@ -34,7 +34,7 @@ services:
     logging: *default-logging
 
   db:
-    <<: [ *env ]
+    <<: [*env]
     image: postgres:18.1-alpine
     container_name: bms-db
     restart: always
@@ -46,7 +46,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - bms
-    
+
     environment:
       - LOKI_SERVICE=db
     logging: *default-logging
@@ -64,7 +64,7 @@ services:
       - target: 6379
         published: 6379
         protocol: tcp
-    
+
     environment:
       - LOKI_SERVICE=redis
     logging: *default-logging
@@ -142,39 +142,30 @@ services:
       - prometheus
       - loki
 
-  alertmanager:
-    image: prom/alertmanager:v0.30.1
-    container_name: bms-alertmanager
-    restart: unless-stopped
-    ports:
-      - "9093:9093"
-    volumes:
-      - ./monitoring/alertmanager/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml
-      - alertmanager-data:/alertmanager
-    networks:
-      - bms-monitoring
-      - bms
-    depends_on:
-      - alertserver
-      - prometheus
-    profiles: ["monitoring"]
-    command:
-      - "--config.file=/etc/alertmanager/alertmanager.yaml"
-      - "--storage.path=/alertmanager"
-
-  alertserver:
-    container_name: alertserver
+  frontend:
+    <<: [*env]
+    container_name: bms-frontend
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM node:20-alpine
+        WORKDIR /app/frontend
+        COPY frontend/ .
+        RUN npm install && npm run build
+        EXPOSE 4173
+        CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "4173"]
     restart: always
-    build: ./monitoring/alertserver
     ports:
-      - "8080:8080"
-    environment:
-      TG_BOT_ALERT_TOKEN: ${TG_BOT_ALERT_TOKEN}
-      TG_ALERT_CHAT_ID: ${TG_ALERT_CHAT_ID}
-    profiles: ["monitoring"]
+      - target: 4173
+        published: 4173
+        protocol: tcp
     networks:
-      - bms-monitoring
-  
+      - bms
+    profiles: ["prod"]
+    environment:
+      - NODE_ENV=production
+    logging: *default-logging
+
 volumes:
   postgres-data:
     name: bms-db-data
