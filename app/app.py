@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.depends import provider
-from app.notification.scheduler import NotificationScheduler
+from app.domain.services.notification.scheduler import NotificationScheduler
 
 from .api import routes
 from .bot import bot_manager
@@ -35,12 +35,6 @@ def get_application() -> FastAPI:
     if config.server.SWAGGER_ENABLE:
         swagger_url = "/docs"
         openapi_url = "/openapi.json"
-
-    async def startup_tasks():
-        await scheduler.start()
-
-    async def shutdown_tasks():
-        await scheduler.stop()
 
     application = FastAPI(
         title=config.server.SERVER_NAME,
