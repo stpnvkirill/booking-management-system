@@ -27,7 +27,7 @@ export const BookingCardCalendar = ({
           Бронирования на {selectedDate}
         </h2>
         <div className="mb-8">
-          <div className="flex flex-col justify-start overflow-y-scroll min-h-[calc(100vh-450px)] max-h-[calc(100vh-450px)] pb-6">
+          <div className="flex flex-col justify-start overflow-y-scroll max-h-[calc(100vh-450px)] pb-6">
             {filteredBookings.map((booking) => (
               <motion.div
                 key={booking.id}
