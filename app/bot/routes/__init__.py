@@ -8,7 +8,7 @@ from .start import get_start_router
 
 def create_router() -> Router:
     router: Router = Router()
-    
+
     router.include_router(get_start_router())
     router.include_router(get_ping_router())
     router.include_router(get_echo_router())

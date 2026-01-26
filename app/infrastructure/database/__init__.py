@@ -1,6 +1,7 @@
 from .models import (
     Base,
     Booking,
+    BookingType,
     BotConfig,
     Customer,
     CustomerAdmin,
