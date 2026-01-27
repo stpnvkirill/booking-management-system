@@ -310,8 +310,12 @@ def get_bookings_router() -> Router: # noqa: PLR0915
 
         rows: list[list[InlineKeyboardButton]] = []
         for b in bookings:
+            resource_name = resource_name_by_id.get(
+                b.resource_id,
+                f"ресурс {b.resource_id}",
+            )
             title = (
-                f"#{b.id} · {resource_name_by_id.get(b.resource_id, f'ресурс {b.resource_id}')}"
+                f"#{b.id} · {resource_name}"
                 f" · {_format_dt(b.start_time)}"
             )
             rows.append([InlineKeyboardButton(text=title, callback_data=f"mybook:show:{b.id}")])
