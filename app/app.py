@@ -9,9 +9,7 @@ from app.notification.scheduler import NotificationScheduler
 from .api import routes
 from .bot import bot_manager
 from .domain.services import user_service
-from .domain.services.feedback.evaluation_notification_service import (
-    evaluation_notification_service,
-)
+from .domain.services.feedback.evaluation_notification import feedback_service
 from .middlewares import LoggingMiddleware
 
 logging.basicConfig(
@@ -59,12 +57,12 @@ def get_application() -> FastAPI:
             bot_manager.run_all,
             user_service.create_test_user,
             scheduler.start,
-            evaluation_notification_service.start,
+            feedback_service.start,
         ],
         on_shutdown=[
             bot_manager.stop_all,
             scheduler.stop,
-            evaluation_notification_service.stop,
+            feedback_service.stop,
         ],
     )
 

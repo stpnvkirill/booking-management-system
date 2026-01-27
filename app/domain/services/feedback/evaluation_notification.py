@@ -4,7 +4,6 @@ import asyncio
 import contextlib
 from datetime import datetime, timedelta, timezone
 import logging
-from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 from sqlalchemy import and_
@@ -18,9 +17,6 @@ from app.infrastructure.database.models.notification import (
     NotificationType,
 )
 
-if TYPE_CHECKING:
-    import uuid as uuid_lib
-
 logger = logging.getLogger(__name__)
 
 
@@ -32,7 +28,7 @@ class EvaluationNotificationService:
         self._service_task: asyncio.Task | None = None
 
     @provider.inject_session
-    async def _create_evaluation_notifications(
+    async def create_evaluation_notifications(
         self,
         *,
         session: AsyncSession | None = None,
@@ -60,7 +56,9 @@ class EvaluationNotificationService:
             completed_bookings = result.all()
 
             if not completed_bookings:
-                logger.debug("Нет завершенных бронирований для создания запросов на оценку")
+                logger.debug(
+                    "Нет завершенных бронирований для создания запросов на оценку"
+                )
                 return
 
             logger.info(
@@ -70,7 +68,7 @@ class EvaluationNotificationService:
             created_count = 0
             for booking in completed_bookings:
                 try:
-                    if await self._create_notification_if_needed(booking, session):
+                    if await self.create_notification_if_needed(booking, session):
                         created_count += 1
                 except Exception as e:  # noqa: BLE001
                     logger.error(
@@ -96,7 +94,7 @@ class EvaluationNotificationService:
             with contextlib.suppress(Exception):
                 await session.rollback()
 
-    async def _create_notification_if_needed(
+    async def create_notification_if_needed(
         self,
         booking: Booking,
         session: AsyncSession,
@@ -155,22 +153,25 @@ class EvaluationNotificationService:
         )
         return True
 
-    async def _service_loop(self) -> None:
+    async def service_loop(self) -> None:
         """Background loop that periodically creates evaluation notifications."""
         try:
             while True:
-                await self._create_evaluation_notifications()
+                await self.create_evaluation_notifications()
                 await asyncio.sleep(self.poll_interval_seconds)
         except asyncio.CancelledError:
             raise
         except Exception as e:
-            logger.error(f"Критическая ошибка в сервисе создания запросов на оценку: {e}", exc_info=True)  # noqa: E501, G004
+            logger.error(
+                f"Критическая ошибка в сервисе создания запросов на оценку: {e}",
+                exc_info=True,
+            )  # noqa: E501, G004
 
     async def start(self) -> None:
         """Start the evaluation notification service."""
         if self._service_task is not None and not self._service_task.done():
             return
-        self._service_task = asyncio.create_task(self._service_loop())
+        self._service_task = asyncio.create_task(self.service_loop())
         logger.info("Сервис создания запросов на оценку запущен")
 
     async def stop(self) -> None:
@@ -186,4 +187,4 @@ class EvaluationNotificationService:
 
 
 # Global instance
-evaluation_notification_service = EvaluationNotificationService()
+feedback_service = EvaluationNotificationService()
