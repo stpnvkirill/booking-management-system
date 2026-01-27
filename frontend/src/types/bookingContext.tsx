@@ -3,6 +3,16 @@ import {
   type FilterType,
   type TimeSlot,
 } from '../views/main-page/main-page.tsx';
+export type Booking = {
+  id: string;
+  resourceId?: string;
+  customerId?: string;
+  startAt?: string;
+  endAt?: string;
+  [key: string]: unknown;
+};
+
+export type GetAllBookingsResponse = Booking[];
 
 interface BookingContextType {
   activeTab: 'Ресурсы' | 'Календарь' | 'Профиль';
@@ -213,11 +223,11 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
         prevBookings.map((item) =>
           item.id === selectedResource.id
             ? {
-                ...item,
-                active: true,
-                date: selectedDate,
-                time: selectedTimeSlot,
-              }
+              ...item,
+              active: true,
+              date: selectedDate,
+              time: selectedTimeSlot,
+            }
             : item
         )
       );

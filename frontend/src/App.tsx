@@ -1,5 +1,6 @@
-import { MainPage } from './views/main-page/main-page.tsx';
-import { BookingProvider } from './types/bookingContext.tsx';
+// import { MainPage } from './views/main-page/main-page.tsx';
+// import { BookingProvider } from './types/bookingContext.tsx';
+import BookingsList from './components/BookingsList.tsx';
 function App() {
   window.Telegram?.WebApp?.ready();
   // const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
@@ -15,6 +16,7 @@ function App() {
   // }
   // Коментировать до этой строчки!
   // Далее идет код страницы
-  return <BookingProvider>{<MainPage />}</BookingProvider>;
+  // return <BookingProvider>{<MainPage />}</BookingProvider>;
+  return <BookingsList />;
 }
 export default App;
