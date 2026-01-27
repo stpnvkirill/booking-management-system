@@ -19,12 +19,11 @@ services:
     build:
       dockerfile: Dockerfile
     restart: always
-    ports:
-      - target: 80
-        published: 80
-        protocol: tcp
+    expose:
+      - "80"
     networks:
       - bms
+      - proxy
     profiles: ["prod"]
     environment:
       - POSTGRES_HOST=db
@@ -38,15 +37,10 @@ services:
     image: postgres:18.1-alpine
     container_name: bms-db
     restart: always
-    ports:
-      - target: 5432
-        published: 6432
-        protocol: tcp
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - bms
-
     environment:
       - LOKI_SERVICE=db
     logging: *default-logging
@@ -60,11 +54,6 @@ services:
     command: redis-server --appendonly yes
     networks:
       - bms
-    ports:
-      - target: 6379
-        published: 6379
-        protocol: tcp
-
     environment:
       - LOKI_SERVICE=redis
     logging: *default-logging
@@ -74,34 +63,38 @@ services:
     container_name: bms-postgres-exporter
     environment:
       DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@bms-db:5432/${POSTGRES_DB}?sslmode=disable"
-    ports:
-      - "9187:9187"
+    expose:
+      - "9187"
     networks:
       - bms
 
-  frontend:
-    <<: [*env]
-    container_name: bms-frontend
-    build:
-      context: .
-      dockerfile_inline: |
-        FROM node:20-alpine
-        WORKDIR /app/frontend
-        COPY frontend/ .
-        RUN npm install && npm run build
-        EXPOSE 4173
-        CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "4173"]
-    restart: always
-    ports:
-      - target: 4173
-        published: 4173
-        protocol: tcp
-    networks:
-      - bms
-    profiles: ["prod"]
-    environment:
-      - NODE_ENV=production
-    logging: *default-logging
+  # frontend:
+  #   <<: [*env]
+  #   container_name: bms-frontend
+  #   build:
+  #     context: .
+  #     dockerfile_inline: |
+  #       FROM node:20-alpine AS build
+  #       RUN apk add --no-cache python3 make g++ bash
+  #       WORKDIR /app/frontend
+  #       COPY frontend/ .
+  #       RUN npm install
+  #       RUN npm run build
+
+  #       FROM nginx:alpine
+  #       COPY --from=build /app/dist /usr/share/nginx/html
+  #       EXPOSE 80
+
+  #   restart: always
+  #   expose:
+  #     - "80"
+  #   networks:
+  #     - bms
+  #     - proxy
+  #   profiles: ["prod"]
+  #   environment:
+  #     - NODE_ENV=production
+  #   logging: *default-logging
 
   # ----------------- MONITORING -------------------
   loki:
@@ -109,14 +102,15 @@ services:
     container_name: bms-loki
     restart: unless-stopped
     user: "0:0"
-    ports:
-      - "3100:3100"
+    expose:
+      - "3100"
     volumes:
       - ./monitoring/loki/loki-config.yaml:/etc/loki/local-config.yaml
       - loki-data:/loki
     networks:
       - bms-monitoring
       - bms
+      - proxy
     profiles: ["monitoring"]
     command: -config.file=/etc/loki/local-config.yaml
 
@@ -124,8 +118,8 @@ services:
     image: prom/prometheus:v3.9.1
     container_name: bms-prometheus
     restart: unless-stopped
-    ports:
-      - "9090:9090"
+    expose:
+      - "9090"
     volumes:
       - ./monitoring/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
       - ./monitoring/prometheus/alerts.yaml:/etc/prometheus/alerts.yaml
@@ -146,11 +140,12 @@ services:
     image: grafana/grafana:12.3.1
     container_name: bms-grafana
     restart: unless-stopped
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     networks:
       - bms-monitoring
       - bms
+      - proxy
     profiles: ["monitoring"]
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
@@ -170,8 +165,8 @@ services:
     image: prom/alertmanager:v0.30.1
     container_name: bms-alertmanager
     restart: unless-stopped
-    ports:
-      - "9093:9093"
+    expose:
+      - "9093"
     volumes:
       - ./monitoring/alertmanager/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml
       - alertmanager-data:/alertmanager
@@ -190,14 +185,31 @@ services:
     container_name: alertserver
     restart: always
     build: ./monitoring/alertserver
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     environment:
       TG_BOT_ALERT_TOKEN: ${TG_BOT_ALERT_TOKEN}
       TG_ALERT_CHAT_ID: ${TG_ALERT_CHAT_ID}
     profiles: ["monitoring"]
     networks:
       - bms-monitoring
+
+
+# ----------------- Nginx Proxy Manager -------------------
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:2.13.6
+    container_name: nginx-proxy-manager
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"
+    volumes:
+      - npm-data:/data
+      - npm-letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy
+    # profiles: ["proxy"]
 
 volumes:
   postgres-data:
@@ -212,7 +224,11 @@ volumes:
     name: bms-grafana-data
   alertmanager-data:
     name: bms-alertmanager-data
-
+  npm-data:
+    name: npm-data
+  npm-letsencrypt:
+    name: npm-letsencrypt
+    
 networks:
   bms:
     name: bms
@@ -220,3 +236,5 @@ networks:
   bms-monitoring:
     name: bms-monitoring
     driver: bridge
+  proxy:
+    external: true
