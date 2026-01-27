@@ -1,4 +1,3 @@
-import enum
 import uuid as uuid_lib
 
 import sqlalchemy as sa
@@ -10,15 +9,6 @@ from app.infrastructure.database.models.shared import (
     BaseWithDt,
     CreatedMixin,
 )
-
-
-class BookingType(str, enum.Enum):
-    """Тип бронирования."""
-
-    APARTMENT = "квартира"
-    HOUSE = "дом"
-    STUDIO = "студия"
-    OFFICE = "офис"
 
 
 class Resource(Base, CreatedMixin):
@@ -57,8 +47,8 @@ class Booking(BaseWithDt):
         sa.Text,
         nullable=True,
     )
-    booking_type: so.Mapped[BookingType | None] = so.mapped_column(
-        sa.Enum(BookingType, name="booking_type"),
+    booking_type: so.Mapped[str | None] = so.mapped_column(
+        sa.VARCHAR(255),
         nullable=True,
     )
     location: so.Mapped[str | None] = so.mapped_column(
