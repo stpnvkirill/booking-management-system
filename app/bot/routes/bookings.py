@@ -80,8 +80,10 @@ def get_bookings_router() -> Router:
             return None
 
         # Split by space into date + time part(s)
+        MIN_PARTS_COUNT = 2
+
         parts = raw.split(" ")
-        if len(parts) < 2:
+        if len(parts) < MIN_PARTS_COUNT:
             return None
         date_part = parts[0]
         time_part = " ".join(parts[1:])
@@ -340,6 +342,7 @@ def get_bookings_router() -> Router:
         await callback.answer()
 
     return router
+
 
 
 
