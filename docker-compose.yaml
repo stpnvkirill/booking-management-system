@@ -79,6 +79,30 @@ services:
     networks:
       - bms
 
+  frontend:
+    <<: [*env]
+    container_name: bms-frontend
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM node:20-alpine
+        WORKDIR /app/frontend
+        COPY frontend/ .
+        RUN npm install && npm run build
+        EXPOSE 4173
+        CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "4173"]
+    restart: always
+    ports:
+      - target: 4173
+        published: 4173
+        protocol: tcp
+    networks:
+      - bms
+    profiles: ["prod"]
+    environment:
+      - NODE_ENV=production
+    logging: *default-logging
+
   # ----------------- MONITORING -------------------
   loki:
     image: grafana/loki:3.6.3
@@ -142,29 +166,38 @@ services:
       - prometheus
       - loki
 
-  frontend:
-    <<: [*env]
-    container_name: bms-frontend
-    build:
-      context: .
-      dockerfile_inline: |
-        FROM node:20-alpine
-        WORKDIR /app/frontend
-        COPY frontend/ .
-        RUN npm install && npm run build
-        EXPOSE 4173
-        CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "4173"]
-    restart: always
+  alertmanager:
+    image: prom/alertmanager:v0.30.1
+    container_name: bms-alertmanager
+    restart: unless-stopped
     ports:
-      - target: 4173
-        published: 4173
-        protocol: tcp
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml
+      - alertmanager-data:/alertmanager
     networks:
+      - bms-monitoring
       - bms
-    profiles: ["prod"]
+    depends_on:
+      - alertserver
+      - prometheus
+    profiles: ["monitoring"]
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yaml"
+      - "--storage.path=/alertmanager"
+
+  alertserver:
+    container_name: alertserver
+    restart: always
+    build: ./monitoring/alertserver
+    ports:
+      - "8080:8080"
     environment:
-      - NODE_ENV=production
-    logging: *default-logging
+      TG_BOT_ALERT_TOKEN: ${TG_BOT_ALERT_TOKEN}
+      TG_ALERT_CHAT_ID: ${TG_ALERT_CHAT_ID}
+    profiles: ["monitoring"]
+    networks:
+      - bms-monitoring
 
 volumes:
   postgres-data:
