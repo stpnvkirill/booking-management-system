@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from "react";
-import { getAllBookings } from "../API/bookings";
-import type { Booking } from "../types/api/get-all-bookings";
+import { useEffect, useState, useCallback } from 'react';
+import { getAllBookings } from '../API/bookings';
+import type { Booking } from '../types/api/get-all-bookings';
 
 export function useBookings() {
   const [data, setData] = useState<Booking[] | null>(null);

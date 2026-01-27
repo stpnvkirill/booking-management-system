@@ -1,5 +1,5 @@
-import React from "react";
-import useBookings from "../hooks/useBookings";
+import React from 'react';
+import useBookings from '../hooks/useBookings';
 
 export const BookingsList: React.FC = () => {
   const { data, loading, error, refetch } = useBookings();
@@ -13,17 +13,17 @@ export const BookingsList: React.FC = () => {
         <button onClick={refetch}> Retry </button>
       </div>
     );
-  console.log(data)
-  console.log(data?.length)
+  console.log(data);
+  console.log(data?.length);
   if (!data || data.length === 0) return <div>No bookings found.</div>;
-  console.log(data)
+  console.log(data);
   return (
     <div>
       <h3>Bookings</h3>
       <ul>
         {data.map((b) => (
           <li key={b.id}>
-            {b.id} — {b.resourceId ?? "-"} — {b.startAt ?? "-"}
+            {b.id} — {b.resourceId ?? '-'} — {b.startAt ?? '-'}
           </li>
         ))}
       </ul>

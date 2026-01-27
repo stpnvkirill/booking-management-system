@@ -223,11 +223,11 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
         prevBookings.map((item) =>
           item.id === selectedResource.id
             ? {
-              ...item,
-              active: true,
-              date: selectedDate,
-              time: selectedTimeSlot,
-            }
+                ...item,
+                active: true,
+                date: selectedDate,
+                time: selectedTimeSlot,
+              }
             : item
         )
       );
