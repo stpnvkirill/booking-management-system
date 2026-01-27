@@ -3,8 +3,6 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from app.infrastructure.database.models import BookingType
-
 
 class BookingCreate(BaseModel):
     """Schema for creating a new booking."""
@@ -20,9 +18,9 @@ class BookingCreate(BaseModel):
         None,
         description="Описание брони",
     )
-    booking_type: BookingType | None = Field(
+    booking_type: str | None = Field(
         None,
-        description="Тип брони (квартира | дом | студия | офис)",
+        description="тип брони (Квартира | Офис | и т.п.)",
     )
     location: str | None = Field(
         None,
@@ -40,7 +38,7 @@ class BookingResponse(BaseModel):
     start_time: datetime
     end_time: datetime
     description: str | None = None
-    booking_type: BookingType | None = None
+    booking_type: str | None = None
     location: str | None = None
     created_at: datetime
 

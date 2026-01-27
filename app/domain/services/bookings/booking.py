@@ -5,7 +5,7 @@ from uuid import UUID
 import sqlalchemy as sa
 
 from app.depends import AsyncSession, provider
-from app.infrastructure.database import Booking, BookingType, Resource
+from app.infrastructure.database import Booking, Resource
 
 # Maximum booking duration: 3 years in the future
 MAX_BOOKING_DURATION_DAYS = 365 * 3
@@ -21,7 +21,7 @@ class BookingParams:
     start_time: datetime
     end_time: datetime
     description: str | None = None
-    booking_type: BookingType | None = None
+    booking_type: str | None = None
     location: str | None = None
 
 
