@@ -58,7 +58,9 @@ def get_bookings_router() -> Router:
                     ),
                 ],
             )
-        rows.append([InlineKeyboardButton(text="⬅️ В главное меню", callback_data="nav:main")])
+        rows.append([InlineKeyboardButton(
+            text="⬅️ В главное меню",
+            callback_data="nav:main")])
         return InlineKeyboardMarkup(inline_keyboard=rows)
 
     def _format_dt(dt: datetime) -> str:
@@ -229,7 +231,9 @@ def get_bookings_router() -> Router:
                 title = f"#{b.id} · {resource_name} · {_format_dt(b.start_time)}"
             )
             rows.append([InlineKeyboardButton(text=title, callback_data=f"mybook:show:{b.id}")])
-        rows.append([InlineKeyboardButton(text="⬅️ В главное меню", callback_data="nav:main")])
+        rows.append([InlineKeyboardButton(
+            text="⬅️ В главное меню",
+            callback_data="nav:main")])
 
         await message.answer(
             "Ваши бронирования:",
@@ -308,8 +312,12 @@ def get_bookings_router() -> Router:
                 title = f"#{b.id} · {resource_name} · {_format_dt(b.start_time)}"
             )
             rows.append([InlineKeyboardButton(text=title, callback_data=f"mybook:show:{b.id}")])
-        rows.append([InlineKeyboardButton(text="⬅️ В главное меню", callback_data="nav:main")])
-        await callback.message.edit_text("Ваши бронирования:", reply_markup=InlineKeyboardMarkup(inline_keyboard=rows))
+        rows.append([InlineKeyboardButton(
+            text="⬅️ В главное меню",
+            callback_data="nav:main")])
+        await callback.message.edit_text(
+            "Ваши бронирования:",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=rows))
         await callback.answer()
 
     @router.callback_query(lambda c: c.data and c.data.startswith("mybook:cancel:"))
@@ -321,12 +329,16 @@ def get_bookings_router() -> Router:
         except ValueError:
             await callback.answer("Некорректный ID")
             return
-
-        ok = await booking_service.cancel_booking(booking_id=booking_id, user_id=user.id)
+    
+        ok = await booking_service.cancel_booking(
+            booking_id=booking_id,
+            user_id=user.id)
         if not ok:
             await callback.answer("Не удалось отменить")
             return
-        await callback.message.edit_text("Бронирование отменено.", reply_markup=_main_back_inline())
+        await callback.message.edit_text(
+            "Бронирование отменено.",
+            reply_markup=_main_back_inline())
         await callback.answer()
 
     @router.callback_query(lambda c: c.data == "nav:main")
@@ -341,6 +353,7 @@ def get_bookings_router() -> Router:
         await callback.answer()
 
     return router
+
 
 
 
