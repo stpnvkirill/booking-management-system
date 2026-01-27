@@ -7,6 +7,7 @@ requires-python = ">=3.14"
 dependencies = [
     "aiogram>=3.24.0",
     "alembic>=1.18.0",
+    "apscheduler>=3.11.2",
     "asyncpg>=0.31.0",
     "fastapi>=0.128.0",
     "prometheus-client>=0.24.1",
@@ -16,7 +17,6 @@ dependencies = [
     "sqlalchemy>=2.0.45",
     "tzdata>=2025.3",
     "uvicorn>=0.40.0",
-    "apscheduler>=3.11.2",
 ]
 
 [dependency-groups]
