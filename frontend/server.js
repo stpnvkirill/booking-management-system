@@ -20,7 +20,7 @@ const pool = new Pool({
 });
 // Or using async/await:
 app.get('/', (req, res) => {
-  res.send('fuck u');
+  res.send('fine!');
 });
 app.get('/api/bookings/all', (req, response) => {
   (async () => {
