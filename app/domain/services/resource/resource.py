@@ -1,10 +1,9 @@
 """Resource service for handling resource business logic with multitenancy support."""
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
-from pydantic import BaseModel
 import sqlalchemy as sa
 
 from app.depends import AsyncSession, provider
@@ -14,10 +13,12 @@ from app.infrastructure.database.models.users import Customer, CustomerAdmin, Us
 
 
 @dataclass(frozen=True)
-class FreeSlotsParams(BaseModel):
+class FreeSlotsParams:
+    """Params for get_free_slots. slot is size in seconds."""
+
     start: datetime
     end: datetime
-    slot_seconds: int
+    slot: int
 
 
 def _merge_intervals(
@@ -240,7 +241,7 @@ class ResourceService:
         """
         start = params.start
         end = params.end
-        slot_seconds = params.slot_seconds
+        slot = params.slot
 
         if start.tzinfo is None or end.tzinfo is None:
             msg = "start and end must be timezone-aware datetimes"
@@ -248,9 +249,17 @@ class ResourceService:
         if end <= start:
             msg = "end must be after start"
             raise ValueError(msg)
-        if slot_seconds <= 0:
+        if (end - start) > timedelta(days=1):
+            msg = "interval duration must not exceed 1 days"
+            raise ValueError(msg)
+        if slot <= 0:
             msg = "slot must be a positive integer (seconds)"
             raise ValueError(msg)
+
+        now = datetime.now(timezone.utc)
+        effective_start = max(start, now)
+        if effective_start >= end:
+            return []
 
         # Permission/resource existence check
         resource = await self.get_resource(
@@ -261,7 +270,7 @@ class ResourceService:
         if resource is None:
             return None
 
-        # Load bookings that overlap requested interval
+        # Load bookings that overlap requested interval (SQL does the filtering)
         stmt = sa.select(Booking).where(
             sa.and_(
                 Booking.resource_id == resource_id,
@@ -274,15 +283,14 @@ class ResourceService:
 
         busy = _merge_intervals(
             [
-                (max(b.start_time, start), min(b.end_time, end))
+                (max(b.start_time, effective_start), min(b.end_time, end))
                 for b in bookings
-                if b.start_time < end and b.end_time > start
             ],
         )
 
         # Build free intervals (gaps between busy intervals)
         free_intervals: list[tuple[datetime, datetime]] = []
-        cursor = start
+        cursor = effective_start
         for b_start, b_end in busy:
             if cursor < b_start:
                 free_intervals.append((cursor, b_start))
@@ -291,7 +299,7 @@ class ResourceService:
             free_intervals.append((cursor, end))
 
         # Split free intervals into fixed-size slots
-        slot_delta = timedelta(seconds=slot_seconds)
+        slot_delta = timedelta(seconds=slot)
         free_slots: list[tuple[datetime, datetime]] = []
         for free_start, free_end in free_intervals:
             t = free_start
