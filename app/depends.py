@@ -42,7 +42,8 @@ class Provider:
 
     def inject_session(self, func):
         async def wrapper(*args, **kwargs):
-            if "session" not in kwargs:
+            # Создаем новую сессию только если она не передана или равна None
+            if "session" not in kwargs or kwargs.get("session") is None:
                 async with self.session_factory() as session:
                     kwargs["session"] = session
                     try:

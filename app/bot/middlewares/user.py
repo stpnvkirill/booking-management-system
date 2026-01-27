@@ -2,6 +2,7 @@ from collections.abc import Callable
 
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, InlineQuery, Message, Update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.services import user_service
 
@@ -22,9 +23,12 @@ class UserMiddleware(BaseMiddleware):
             from_user = cc.from_user
 
         if from_user:
+            # Получаем сессию из контекста, предоставленную DatabaseMiddleware
+            session: AsyncSession = data.get("session")
             user = await user_service.update_user_from_tlg(
                 tlg_user=from_user,
                 bot_id=event.bot.id,
+                session=session,
             )
             data["user"] = user
         await handler(event, data)
