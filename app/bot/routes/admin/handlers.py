@@ -15,7 +15,7 @@ def get_create_owner_router() -> Router:
 
     @router.message(Command(commands=["create_owner"]))
     async def create_owner(message: Message):
-        from app.depends import provider
+        from app.depends import provider  # noqa: PLC0415
 
         async with provider.session_factory() as session:
             tg_user = message.from_user
@@ -38,7 +38,7 @@ def get_create_owner_router() -> Router:
             existing_user = result.scalar_one_or_none()
 
             if existing_user:
-                from app.infrastructure.database.models.users import Customer
+                from app.infrastructure.database.models.users import Customer  # noqa: I001, PLC0415
 
                 owner_result = await session.execute(
                     select(Customer.id).where(Customer.owner_id == user.id),
@@ -53,7 +53,7 @@ def get_create_owner_router() -> Router:
                     return
 
             command_parts = message.text.split(maxsplit=1)
-            if len(command_parts) < 2:
+            if len(command_parts) < 2:  # noqa: PLR2004
                 await message.answer(
                     "❌ Неверный формат команды.\n"
                     "Использование: /create_owner <название_компании>\n"
@@ -80,11 +80,11 @@ def get_create_owner_router() -> Router:
                         f"✅ Компания '{company_name}' успешно создана!\n"
                         f"Вы назначены владельцем компании.\n"
                         f"ID компании: {customer.id}\n\n"
-                        f"Теперь вы можете использовать /start для доступа к админ-панели.",
+                        f"Теперь вы можете использовать /start для доступа к админ-панели.",  # noqa: E501
                     )
                 else:
                     await message.answer("❌ Ошибка при создании компании")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 await session.rollback()
                 await message.answer(
                     f"❌ Произошла ошибка при создании компании: {e!s}",
@@ -98,10 +98,10 @@ def get_admin_handlers_router() -> Router:
 
     @router.message(Command(commands=["start", "menu"]))
     async def start_menu(
-        message: Message, user: User | None = None, role: str | None = None
+        message: Message, user: User | None = None, role: str | None = None  # noqa: COM812
     ):
         if not user or role not in ("owner", "admin"):
-            await message.answer("⛔ У вас нет доступа")
+            await message.answer("⛔ У вас нет доступа")  # noqa: RUF001
             return
 
         if role == "owner":
@@ -109,7 +109,7 @@ def get_admin_handlers_router() -> Router:
         else:
             header = "🛠 Вы вошли как администратор"
 
-        text = f"{header}\n\nДобро пожаловать в админ-панель!\nВыберите действие:"
+        text = f"{header}\n\nДобро пожаловать в админ-панель!\nВыберите действие:"  # noqa: RUF001
 
         await message.answer(
             text=text,
