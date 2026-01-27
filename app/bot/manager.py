@@ -95,7 +95,7 @@ class BotManager:
         else:
             if bot_id in self.tasks:
                 self.tasks[bot_id].cancel()
-                try:
+                try:  # noqa: SIM105
                     await self.tasks[bot_id]
                 except asyncio.CancelledError:
                     pass
@@ -140,9 +140,9 @@ class BotManager:
         bot = self.bots.get(bot_id)
         bot_username = None
         if bot:
-            try:
+            try:  # noqa: SIM105
                 bot_username = (await bot.get_me()).username
-            except Exception:  # noqa: BLE001
+            except Exception:  # noqa: BLE001, S110
                 pass
 
         if config.bot.USE_WEBHOOK:
@@ -150,7 +150,7 @@ class BotManager:
                 await bot.delete_webhook()
         elif bot_id in self.tasks:
             self.tasks[bot_id].cancel()
-            try:
+            try:  # noqa: SIM105
                 await self.tasks[bot_id]
             except asyncio.CancelledError:
                 pass
