@@ -37,3 +37,10 @@ class ResourceResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class FreeSlotResponse(BaseModel):
+    """Response schema for a free time slot."""
+
+    start_time: datetime = Field(..., description="Slot start time (ISO format)")
+    end_time: datetime = Field(..., description="Slot end time (ISO format)")
