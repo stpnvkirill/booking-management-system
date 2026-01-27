@@ -112,7 +112,7 @@ class NotificationScheduler:
                 for notification in notifications:
                     try:
                         # Call service method based on notification type
-                        success = await self._send_by_type(notification, session)
+                        success = await self._send_by_type(notification)
                         if not success:
                             log(
                                 level="error",
