@@ -21,4 +21,4 @@ jobs:
           script: |
             cd /home/kolupaev_e/booking-management-system/
             git pull
-            sudo docker compose --profile prod up -d --build
+            sudo docker compose -f docker-compose.prod.yaml --profile prod up -d --build
