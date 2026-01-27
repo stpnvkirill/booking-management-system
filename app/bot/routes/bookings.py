@@ -192,7 +192,8 @@ def get_bookings_router() -> Router:
         booking = await booking_service.create_booking(params=params)
         if not booking:
             await message.answer(
-                "Не удалось создать бронирование (время занято или введены некорректные даты). "
+                "Не удалось создать бронирование"
+                "(время занято или введены некорректные даты). "
                 "Попробуйте другой интервал.",
             )
             return
@@ -224,8 +225,8 @@ def get_bookings_router() -> Router:
         rows: list[list[InlineKeyboardButton]] = []
         for b in bookings:
             title = (
-                f"#{b.id} · {resource_name_by_id.get(b.resource_id, f'ресурс {b.resource_id}')}"
-                f" · {_format_dt(b.start_time)}"
+                resource_name = resource_name_by_id.get(b.resource_id, f"ресурс {b.resource_id}")
+                title = f"#{b.id} · {resource_name} · {_format_dt(b.start_time)}"
             )
             rows.append([InlineKeyboardButton(text=title, callback_data=f"mybook:show:{b.id}")])
         rows.append([InlineKeyboardButton(text="⬅️ В главное меню", callback_data="nav:main")])
@@ -303,8 +304,8 @@ def get_bookings_router() -> Router:
         rows: list[list[InlineKeyboardButton]] = []
         for b in bookings:
             title = (
-                f"#{b.id} · {resource_name_by_id.get(b.resource_id, f'ресурс {b.resource_id}')}"
-                f" · {_format_dt(b.start_time)}"
+                resource_name = resource_name_by_id.get(b.resource_id, f"ресурс {b.resource_id}")
+                title = f"#{b.id} · {resource_name} · {_format_dt(b.start_time)}"
             )
             rows.append([InlineKeyboardButton(text=title, callback_data=f"mybook:show:{b.id}")])
         rows.append([InlineKeyboardButton(text="⬅️ В главное меню", callback_data="nav:main")])
@@ -340,6 +341,7 @@ def get_bookings_router() -> Router:
         await callback.answer()
 
     return router
+
 
 
 
