@@ -18,6 +18,13 @@ class RoleCheckMiddleware(BaseMiddleware):
         event: Message | CallbackQuery,
         data: dict,
     ):
+        if (
+            isinstance(event, Message)
+            and event.text
+            and event.text.startswith("/start")
+        ):
+            return await handler(event, data)
+
         session: AsyncSession = data.get("session")
         if not session:
             await self._deny_access(event, "⛔ Ошибка доступа к базе данных")
