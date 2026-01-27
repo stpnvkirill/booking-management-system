@@ -68,33 +68,33 @@ services:
     networks:
       - bms
 
-  # frontend:
-  #   <<: [*env]
-  #   container_name: bms-frontend
-  #   build:
-  #     context: .
-  #     dockerfile_inline: |
-  #       FROM node:20-alpine AS build
-  #       RUN apk add --no-cache python3 make g++ bash
-  #       WORKDIR /app/frontend
-  #       COPY frontend/ .
-  #       RUN npm install
-  #       RUN npm run build
+  frontend:
+    <<: [*env]
+    container_name: bms-frontend
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM node:20-alpine AS build
+        RUN apk add --no-cache python3 make g++ bash
+        WORKDIR /app/frontend
+        COPY frontend/ .
+        RUN npm install
+        RUN npm run build
 
-  #       FROM nginx:alpine
-  #       COPY --from=build /app/dist /usr/share/nginx/html
-  #       EXPOSE 80
+        FROM nginx:alpine
+        COPY --from=build /app/frontend/dist /usr/share/nginx/html
+        EXPOSE 80
 
-  #   restart: always
-  #   expose:
-  #     - "80"
-  #   networks:
-  #     - bms
-  #     - proxy
-  #   profiles: ["prod"]
-  #   environment:
-  #     - NODE_ENV=production
-  #   logging: *default-logging
+    restart: always
+    expose:
+      - "80"
+    networks:
+      - bms
+      - proxy
+    profiles: ["prod"]
+    environment:
+      - NODE_ENV=production
+    logging: *default-logging
 
   # ----------------- MONITORING -------------------
   loki:
