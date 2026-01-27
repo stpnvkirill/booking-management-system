@@ -1,7 +1,7 @@
 from aiogram import Router, types
+from app.bot.handler import handler
 
 from app.bot.filters import OnlyPrivateChatFilter
-from app.bot.handler import handler
 from app.infrastructure.database import User
 
 

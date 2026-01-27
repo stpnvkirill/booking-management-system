@@ -1,8 +1,8 @@
 from aiogram import Router, types
 from aiogram.filters import command
+from app.bot.handler import handler
 import sqlalchemy as sa
 
-from app.bot.handler import handler
 from app.depends import provider
 
 

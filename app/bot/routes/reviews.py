@@ -1,7 +1,7 @@
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
-
 from app.bot.handler import handler
+
 from app.bot.keyboards.main_menu import get_main_menu
 
 

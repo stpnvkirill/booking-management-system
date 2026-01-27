@@ -1,7 +1,7 @@
 from aiogram import Router
 
-from app.bot.routes.button_handler import get_button_handler_router
 from app.bot.routes.bookings import get_bookings_router
+from app.bot.routes.button_handler import get_button_handler_router
 from app.bot.routes.reviews import get_reviews_router
 from app.bot.routes.settings import get_settings_router
 
