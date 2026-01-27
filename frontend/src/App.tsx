@@ -11,7 +11,7 @@ export const App = () => {
   type Tabs = 'resources' | 'calendar' | 'profile';
   const user: boolean = true;
   const isAuthenticated: boolean = true;
-  const [activeTab, setActiveTab] = useState<Tabs>('calendar');
+  const [activeTab, setActiveTab] = useState<Tabs>('resources');
   // const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
   // Закоментить строки ниже для тестов визуальной части в браузере
   // Параметры из тг там не появятся!
