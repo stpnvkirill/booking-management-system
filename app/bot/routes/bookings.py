@@ -229,11 +229,13 @@ def get_bookings_router() -> Router:  # noqa: PLR0915
         await state.clear()
         customer_id = await _get_customer_id(message.bot.id)
         bookings = await booking_service.get_user_bookings(
-            user_id=user.id, customer_id=customer_id,
+            user_id=user.id,
+            customer_id=customer_id,
         )
         if not bookings:
             await message.answer(
-                "У вас пока нет бронирований.", reply_markup=get_main_menu(),
+                "У вас пока нет бронирований.",
+                reply_markup=get_main_menu(),
             )
             return
 
@@ -272,7 +274,8 @@ def get_bookings_router() -> Router:  # noqa: PLR0915
 
         customer_id = await _get_customer_id(callback.bot.id)
         bookings = await booking_service.get_user_bookings(
-            user_id=user.id, customer_id=customer_id,
+            user_id=user.id,
+            customer_id=customer_id,
         )
         booking = next((b for b in bookings if b.id == booking_id), None)
         if not booking:
@@ -318,11 +321,13 @@ def get_bookings_router() -> Router:  # noqa: PLR0915
     async def back_to_list(callback: types.CallbackQuery, user: User):
         customer_id = await _get_customer_id(callback.bot.id)
         bookings = await booking_service.get_user_bookings(
-            user_id=user.id, customer_id=customer_id,
+            user_id=user.id,
+            customer_id=customer_id,
         )
         if not bookings:
             await callback.message.edit_text(
-                "У вас пока нет бронирований.", reply_markup=_main_back_inline(),
+                "У вас пока нет бронирований.",
+                reply_markup=_main_back_inline(),
             )
             await callback.answer()
             return
@@ -361,13 +366,15 @@ def get_bookings_router() -> Router:  # noqa: PLR0915
             return
 
         ok = await booking_service.cancel_booking(
-            booking_id=booking_id, user_id=user.id,
+            booking_id=booking_id,
+            user_id=user.id,
         )
         if not ok:
             await callback.answer("Не удалось отменить")
             return
         await callback.message.edit_text(
-            "Бронирование отменено.", reply_markup=_main_back_inline(),
+            "Бронирование отменено.",
+            reply_markup=_main_back_inline(),
         )
         await callback.answer()
 
