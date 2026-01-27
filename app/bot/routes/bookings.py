@@ -1,3 +1,4 @@
+# ruff: noqa: RUF001
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -339,5 +340,6 @@ def get_bookings_router() -> Router:
         await callback.answer()
 
     return router
+
 
 
