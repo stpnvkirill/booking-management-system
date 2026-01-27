@@ -73,9 +73,6 @@ select = [
   "W",      # pycodestyle warnings
   "YTT",    # yesqa
 ]
-ignore = [
-  "COM812",  # Conflicts with formatter (trailing comma)
-
 
 [tool.ruff.lint.isort]
 known-first-party = []
