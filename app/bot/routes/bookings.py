@@ -1,3 +1,4 @@
+# ruff: noqa: RUF001
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -17,7 +18,7 @@ from app.infrastructure.database import BotConfig, Resource
 from app.infrastructure.database.models.users import User
 
 
-def get_bookings_router() -> Router:
+def get_bookings_router() -> Router: # noqa: PLR0915
     router: Router = Router()
 
     def _main_back_inline() -> InlineKeyboardMarkup:
@@ -80,7 +81,7 @@ def get_bookings_router() -> Router:
 
         # Split by space into date + time part(s)
         parts = raw.split(" ")
-        if len(parts) < 2:
+        if len(parts) < 2: # noqa: PLR2004
             return None
         date_part = parts[0]
         time_part = " ".join(parts[1:])
@@ -90,7 +91,7 @@ def get_bookings_router() -> Router:
         date_obj = None
         for fmt in date_formats:
             try:
-                date_obj = datetime.strptime(date_part, fmt).date()
+                date_obj = datetime.strptime(date_part, fmt).date() # noqa: DTZ007
                 break
             except ValueError:
                 continue
@@ -102,13 +103,13 @@ def get_bookings_router() -> Router:
             t1s, t2s = [s.strip() for s in time_part.split("-", 1)]
         else:
             t_parts = time_part.split(" ")
-            if len(t_parts) != 2:
+            if len(t_parts) != 2: # noqa: PLR2004
                 return None
             t1s, t2s = t_parts
 
         try:
-            t1 = datetime.strptime(t1s, "%H:%M").time()
-            t2 = datetime.strptime(t2s, "%H:%M").time()
+            t1 = datetime.strptime(t1s, "%H:%M").time() # noqa: DTZ007
+            t2 = datetime.strptime(t2s, "%H:%M").time() # noqa: DTZ007
         except ValueError:
             return None
 
@@ -135,7 +136,10 @@ def get_bookings_router() -> Router:
 
     @router.callback_query(lambda c: c.data and c.data.startswith("book:res:"))
     @handler
-    async def pick_resource(callback: types.CallbackQuery, state: FSMContext, user: User):
+    async def pick_resource(callback: types.CallbackQuery, 
+                            state: FSMContext, 
+                            user: User # noqa: ARG001
+                            ):
         _, _, resource_id_str = callback.data.split(":", 2)
         try:
             resource_id = int(resource_id_str)
@@ -191,7 +195,8 @@ def get_bookings_router() -> Router:
         booking = await booking_service.create_booking(params=params)
         if not booking:
             await message.answer(
-                "Не удалось создать бронирование (время занято или введены некорректные даты). "
+                "Не удалось создать бронирование "
+                "(время занято или введены некорректные даты). "
                 "Попробуйте другой интервал.",
             )
             return
@@ -222,8 +227,12 @@ def get_bookings_router() -> Router:
 
         rows: list[list[InlineKeyboardButton]] = []
         for b in bookings:
+            resource_name = resource_name_by_id.get(
+                b.resource_id,
+                f"ресурс {b.resource_id}",
+            )
             title = (
-                f"#{b.id} · {resource_name_by_id.get(b.resource_id, f'ресурс {b.resource_id}')}"
+                f"#{b.id} · {resource_name}"
                 f" · {_format_dt(b.start_time)}"
             )
             rows.append([InlineKeyboardButton(text=title, callback_data=f"mybook:show:{b.id}")])
