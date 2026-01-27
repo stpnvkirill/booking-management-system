@@ -81,7 +81,7 @@ def get_bookings_router() -> Router:
 
         # Split by space into date + time part(s)
         parts = raw.split(" ")
-        if len(parts) < 2:
+        if len(parts) < 2: # noqa: PLR2004
             return None
         date_part = parts[0]
         time_part = " ".join(parts[1:])
@@ -91,7 +91,7 @@ def get_bookings_router() -> Router:
         date_obj = None
         for fmt in date_formats:
             try:
-                date_obj = datetime.strptime(date_part, fmt).date()
+                date_obj = datetime.strptime(date_part, fmt).date() # noqa: DTZ007
                 break
             except ValueError:
                 continue
@@ -100,10 +100,10 @@ def get_bookings_router() -> Router:
 
         # Parse times (either "HH:MM-HH:MM" or "HH:MM HH:MM")
         if "-" in time_part:
-            t1s, t2s = [s.strip() for s in time_part.split("-", 1)]
+            t1s, t2s = [s.strip() for s in time_part.split("-", 1)] 
         else:
             t_parts = time_part.split(" ")
-            if len(t_parts) != 2:
+            if len(t_parts) != 2: # noqa: PLR2004
                 return None
             t1s, t2s = t_parts
 
@@ -340,6 +340,7 @@ def get_bookings_router() -> Router:
         await callback.answer()
 
     return router
+
 
 
 
