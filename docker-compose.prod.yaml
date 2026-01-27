@@ -22,7 +22,6 @@ services:
     expose:
       - "80"
     networks:
-      - bms
       - proxy
     profiles: ["prod"]
     environment:
@@ -40,7 +39,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
-      - bms
+      - proxy
     environment:
       - LOKI_SERVICE=db
     logging: *default-logging
@@ -53,7 +52,7 @@ services:
       - redis-data:/data
     command: redis-server --appendonly yes
     networks:
-      - bms
+      - proxy
     environment:
       - LOKI_SERVICE=redis
     logging: *default-logging
@@ -66,7 +65,7 @@ services:
     expose:
       - "9187"
     networks:
-      - bms
+      - proxy
 
   frontend:
     <<: [*env]
@@ -89,7 +88,6 @@ services:
     expose:
       - "80"
     networks:
-      - bms
       - proxy
     profiles: ["prod"]
     environment:
@@ -108,8 +106,6 @@ services:
       - ./monitoring/loki/loki-config.yaml:/etc/loki/local-config.yaml
       - loki-data:/loki
     networks:
-      - bms-monitoring
-      - bms
       - proxy
     profiles: ["monitoring"]
     command: -config.file=/etc/loki/local-config.yaml
@@ -125,8 +121,7 @@ services:
       - ./monitoring/prometheus/alerts.yaml:/etc/prometheus/alerts.yaml
       - prometheus-data:/prometheus
     networks:
-      - bms-monitoring
-      - bms
+      - proxy
     profiles: ["monitoring"]
     command:
       - "--config.file=/etc/prometheus/prometheus.yaml"
@@ -143,8 +138,6 @@ services:
     expose:
       - "3000"
     networks:
-      - bms-monitoring
-      - bms
       - proxy
     profiles: ["monitoring"]
     environment:
@@ -171,8 +164,7 @@ services:
       - ./monitoring/alertmanager/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml
       - alertmanager-data:/alertmanager
     networks:
-      - bms-monitoring
-      - bms
+      - proxy
     depends_on:
       - alertserver
       - prometheus
@@ -192,7 +184,7 @@ services:
       TG_ALERT_CHAT_ID: ${TG_ALERT_CHAT_ID}
     profiles: ["monitoring"]
     networks:
-      - bms-monitoring
+      - proxy
 
 
 # ----------------- Nginx Proxy Manager -------------------
@@ -209,7 +201,6 @@ services:
       - npm-letsencrypt:/etc/letsencrypt
     networks:
       - proxy
-    # profiles: ["proxy"]
 
 volumes:
   postgres-data:
@@ -230,11 +221,5 @@ volumes:
     name: npm-letsencrypt
     
 networks:
-  bms:
-    name: bms
-    driver: bridge
-  bms-monitoring:
-    name: bms-monitoring
-    driver: bridge
   proxy:
     external: true
