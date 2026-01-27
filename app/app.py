@@ -20,7 +20,13 @@ logging.basicConfig(
     ],
 )
 
-for logger_name in ["aiogram", "aiogram.event", "aiogram.dispatcher", "httpx"]:
+for logger_name in [
+    "aiogram",
+    "aiogram.event",
+    "aiogram.dispatcher",
+    "httpx",
+    "apscheduler",
+]:
     logging.getLogger(logger_name).setLevel(logging.WARNING)
 
 
