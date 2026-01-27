@@ -108,8 +108,8 @@ def get_bookings_router() -> Router:
             t1s, t2s = t_parts
 
         try:
-            t1 = datetime.strptime(t1s, "%H:%M").time()
-            t2 = datetime.strptime(t2s, "%H:%M").time()
+            t1 = datetime.strptime(t1s, "%H:%M").time() # noqa: DTZ007
+            t2 = datetime.strptime(t2s, "%H:%M").time() # noqa: DTZ007
         except ValueError:
             return None
 
@@ -340,6 +340,7 @@ def get_bookings_router() -> Router:
         await callback.answer()
 
     return router
+
 
 
 
