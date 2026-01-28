@@ -1,4 +1,5 @@
-from .role_check import RoleCheckMiddleware
-from .session import SessionMiddleware
+from app.bot.middlewares.database import DatabaseMiddleware
 
-__all__ = ["RoleCheckMiddleware", "SessionMiddleware"]
+from .role_check import RoleCheckMiddleware
+
+__all__ = ["DatabaseMiddleware", "RoleCheckMiddleware"]
