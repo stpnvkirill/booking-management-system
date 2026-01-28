@@ -1,5 +1,7 @@
 """Navigation handlers."""
 
+import contextlib
+
 from typing import TYPE_CHECKING
 
 from aiogram import Router, types
@@ -21,11 +23,8 @@ def get_navigation_router() -> Router:
         """Navigate to main menu."""
         await state.clear()
         await callback.message.answer("Главное меню:", reply_markup=get_main_menu())
-        try:
+        with contextlib.suppress(Exception):
             await callback.message.delete()
-        except Exception:  # noqa: BLE001
-            # Message might already be deleted or inaccessible, ignore
-            pass
         await callback.answer()
 
     return router
