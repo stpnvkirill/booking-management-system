@@ -17,6 +17,7 @@ MIN_DATE_PARTS = 2
 TIME_RANGE_PARTS = 2
 DATE_FORMATS = ("%Y-%m-%d", "%d.%m.%Y")
 TIME_FORMAT = "%H:%M"
+MAX_BOOKINGS_LIST = 10
 
 
 async def get_customer_id(bot_id: int) -> UUID:
@@ -77,12 +78,12 @@ def format_bookings_list(bookings: list) -> str:
         return "Нет забронированных слотов."
     
     lines = ["📅 *Занятые слоты:*\n"]
-    for booking in bookings[:10]:  # Limit to 10 most recent
+    for booking in bookings[:MAX_BOOKINGS_LIST]:  # Limit to 10 most recent
         start = format_short_dt(booking.start_time)
         end = format_short_dt(booking.end_time)
         lines.append(f"🔴 {start} - {end}")
     
-    if len(bookings) > 10:
+    if len(bookings) > MAX_BOOKINGS_LIST:
         lines.append(f"\n... и еще {len(bookings) - 10} бронирований")
     
     return "\n".join(lines)
@@ -144,4 +145,5 @@ def parse_period(text: str) -> tuple[datetime, datetime] | None:
     start = datetime.combine(date_obj, t1).replace(tzinfo=timezone.utc)
     end = datetime.combine(date_obj, t2).replace(tzinfo=timezone.utc)
     return (start, end)
+
 
