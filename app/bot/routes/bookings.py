@@ -147,7 +147,7 @@ def get_bookings_router() -> Router:  # noqa: PLR0915
 
     @router.callback_query(lambda c: c.data and c.data.startswith("book:res:"))
     @handler
-    async def pick_resource(
+    async def pick_resource( # noqa: ARG001
         callback: types.CallbackQuery,
         state: FSMContext,
         user: User,
