@@ -63,18 +63,6 @@ export const CalendarBookingCard = ({
                     <div className="text-xl text-accent-content font-bold mb-2">
                       {(booking?.price ?? 0).toLocaleString()} ₽{' '}
                     </div>
-                    {/* <Button
-                // Нужна ли эта кнопка?
-                  label={'Подробнее'}
-                  onClick={() => {
-                    if (booking !== null) {
-                      setSelectedResource(booking!);
-                      setActiveTab('Ресурсы');
-                    }
-                  }}
-                  variant="info"
-                  size="md"
-                ></Button> */}
                   </div>
                 </div>
               </motion.div>

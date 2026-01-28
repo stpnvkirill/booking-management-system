@@ -1,4 +1,4 @@
-export const getDaysInMonth = (year: number, month: number) => {
+const getDaysInMonth = (year: number, month: number) => {
   const date = new Date(year, month, 1);
   const days = [];
 

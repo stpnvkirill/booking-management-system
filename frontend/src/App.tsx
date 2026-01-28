@@ -6,12 +6,14 @@ import Navbar from '@/features/navbar/navbar';
 import { useState } from 'react';
 import Calendar from './pages/calendar-page/calendar-page';
 import Profile from './pages/profile-page/profile-page';
-export const App = () => {
+// import type { BookingItem } from './shared/types/types';
+export default function App() {
   window.Telegram?.WebApp?.ready();
   type Tabs = 'resources' | 'calendar' | 'profile';
   const user: boolean = true;
   const isAuthenticated: boolean = true;
   const [activeTab, setActiveTab] = useState<Tabs>('resources');
+
   // const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
   // Закоментить строки ниже для тестов визуальной части в браузере
   // Параметры из тг там не появятся!
@@ -47,4 +49,4 @@ export const App = () => {
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
     </>
   );
-};
+}

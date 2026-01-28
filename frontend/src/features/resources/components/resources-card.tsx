@@ -1,15 +1,14 @@
-import { type PropsWithChildren } from 'react';
 import Button from '@/shared/components/button/button';
 import type { BookingItem } from '@/shared/types/types';
 
-interface CardProps {
+export interface CardProps {
   data: BookingItem | undefined;
-  key?: string | number;
+  activeTab: Tabs;
+  setActiveTab: React.Dispatch<React.SetStateAction<Tabs>>;
+  handleResourceClick: (data: BookingItem | undefined) => void;
 }
-
-export const BookingCard = ({
-  data,
-}: PropsWithChildren<CardProps>): React.ReactElement => {
+import type { Tabs } from '@/shared/types/types';
+export default function BookingCard({ handleResourceClick, data }: CardProps) {
   function getDDMMDateFromUTCString(utcString: string): string {
     const dateObj = new Date(utcString);
     const isoString = dateObj.toISOString();
@@ -55,7 +54,8 @@ export const BookingCard = ({
             <Button
               label="Открыть"
               onClick={() => {
-                // if (data) handleResourceClick(data);
+                // console.log(data);
+                if (data) handleResourceClick?.(data);
               }}
               size="sm"
               variant="primary"
@@ -66,4 +66,4 @@ export const BookingCard = ({
       </div>
     </div>
   );
-};
+}

@@ -1,16 +1,27 @@
-export const ResourceDetails = () => {
-  const {
-    selectedResource,
-    // selectedDate,
-    setSelectedTimeSlot,
-    selectedTimeSlot,
-    handleBackClick,
-    timeSlots,
-    handleConfirmBooking,
-  } = useBookingContext();
-  if (!selectedResource) return null;
+import BlockMiniCalendar from '@/features/mini-calendar/mini-calendar';
+import Button from '@/shared/components/button/button';
+import { useState } from 'react';
+import type { BookingItem, Tabs } from '@/shared/types/types';
+interface ResourceDetailsProps {
+  data: BookingItem | undefined;
+  activeTab: Tabs;
+  selectedDate: string;
+  setActiveTab: React.Dispatch<React.SetStateAction<Tabs>>;
+  handleResourceClick: (data: BookingItem | undefined) => void;
+  handleBackClick: () => void;
+}
+export default function ResourceDetails({
+  data,
+  handleBackClick,
+}: ResourceDetailsProps) {
+  const [selectedDate, setSelectedDate] = useState<string>('1 янв');
+
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState();
+  const handleConfirmBooking = () => {};
+  const timeSlots: unknown[] = [];
+  // if (!data) return null;
   return (
-    <div className="pb-20 bg-neutral-content text-neutral font-sans">
+    <div className="pb-20 h-screen overflow-y-scroll bg-neutral-content text-neutral font-sans">
       <div className="p-4 max-w-125 mt-0 mb-0  ml-auto mr-auto">
         {/* Заголовок с кнопкой назад */}
         <div className="flex items-center gap-3 mb-6">
@@ -23,32 +34,23 @@ export const ResourceDetails = () => {
             label="←"
           />
           <div>
-            <h1 className="text-2xl font-bold mb-1">
-              {selectedResource.resource_id}
-            </h1>
+            <h1 className="text-2xl font-bold mb-1">{data?.resource_id}</h1>
             <div className="flex items-center gap-2 text-base-300">
-              <span>{selectedResource.booking_type}</span>
+              <span>{data?.booking_type}</span>
               <span>•</span>
-              <span>{selectedResource.location}</span>
+              <span>{data?.location}</span>
             </div>
           </div>
-          {/* 
-        // А нужна ли тут эта кнопка вообще
-        <Button
-          variant="primary"
-          size="lg"
-          width="responsive"
-          shape="text"
-          onClick={() => { }}
-          label="↗"
-          className="ml-auto"
-        /> */}
         </div>
-        <BlockMiniCalendar />
+        <BlockMiniCalendar
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          data={data}
+        />
         {/* Календарь */}
-
         {/* Слоты времени */}
         <div className="mb-8">
+          <div className="ml-4">{selectedDate}</div>
           <div className="grid grid-cols-4 gap-2 mb-2">
             {timeSlots.map((slot) => (
               <div className="">
@@ -65,14 +67,12 @@ export const ResourceDetails = () => {
             ))}
           </div>
         </div>
-
         {/* Итого */}
         <div className="rounded-2xl p-5 mb-6 text-neutral">
           <div className="flex justify-between mb-2">
             <span className="text-neutral">Итого</span>
             <span className="font-bold text-2xl text-neutral">
-              {/* {(selectedResource.price ?? 0).toLocaleString('ru-RU')} ₽ */}{' '}
-              ЦЕНА
+              {/* {(data.price ?? 0).toLocaleString('ru-RU')} ₽ */} ЦЕНА
             </span>
           </div>
           <div className="text-accent text-sm">
@@ -92,4 +92,4 @@ export const ResourceDetails = () => {
       </div>
     </div>
   );
-};
+}

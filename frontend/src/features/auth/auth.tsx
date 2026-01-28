@@ -17,17 +17,17 @@ export const AuthContainer = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [confirmPass, setConfirmPass] = useState('');
 
-  const {
-    setIsAuthenticated,
-    login,
-    pass,
-    setLogin,
-    setPass,
-    isLoading,
-    setIsLoading,
-    error,
-    setError,
-  } = useBookingContext();
+  // const {
+  //   setIsAuthenticated,
+  //   login,
+  //   pass,
+  //   setLogin,
+  //   setPass,
+  //   isLoading,
+  //   setIsLoading,
+  //   error,
+  //   setError,
+  // } = useBookingContext();
 
   const handleLogin = () => {
     console.log('LOGIN:', login);

@@ -11,6 +11,7 @@ interface BookingItem {
   booking_type: string;
   location: string;
 }
+export type Tabs = 'main' | 'details';
 interface TimeSlot {
   time: string;
   available: boolean;
@@ -27,17 +28,17 @@ type Filters =
   | 'Офис'
   | 'Коттедж'
   | 'Дом'
-  | 'Бар'
-  | 'Переговорная';
+  | 'Переговорная'
+  | "Студия";
 type FiltersArray = readonly Filters[];
 const FILTERS: FiltersArray = [
   'Все',
   'Квартира',
+  "Студия",
   'Офис',
-  'Коттедж',
   'Дом',
-  'Бар',
   'Переговорная',
+  'Коттедж',
 ] as const;
 
 export { type BookingItem, type TimeSlot, FILTERS };
