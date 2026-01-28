@@ -12,7 +12,8 @@ interface ResourceMainProps {
   activeTab: Tabs;
   setActiveTab: React.Dispatch<React.SetStateAction<Tabs>>;
   handleResourceClick: (data: BookingItem | undefined) => void;
-}
+} 
+
 export default function ResourceMain({
   activeTab,
   setActiveTab,
