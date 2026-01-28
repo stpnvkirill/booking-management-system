@@ -9,7 +9,7 @@ export const ResourcesScreen = () => {
     useBookingContext();
 
   const filteredBookings = bookings.filter((booking) =>
-    selectedFilter === 'Все' ? true : booking.type === selectedFilter
+    selectedFilter === 'Все' ? true : booking.description === selectedFilter
   );
 
   return (
@@ -91,10 +91,10 @@ export const ResourceDetails = () => {
           />
           <div>
             <h1 className="text-2xl font-bold mb-1">
-              {selectedResource.title}
+              {selectedResource.description}
             </h1>
             <div className="flex items-center gap-2 text-base-300">
-              <span>{selectedResource.type}</span>
+              <span>{selectedResource.booking_type}</span>
               <span>•</span>
               <span>{selectedResource.capacity}</span>
             </div>
