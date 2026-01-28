@@ -23,4 +23,4 @@ jobs:
           script: |
             cd /home/volodin_n/booking-management-system/
             git pull
-            sudo docker compose -f monitoring/docker-compose.monitoring.yaml up -d --build
+            sudo docker compose --env-file .env -f monitoring/docker-compose.monitoring.yaml up -d --build
