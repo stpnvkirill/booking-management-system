@@ -48,7 +48,7 @@ def get_application() -> FastAPI:
 
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=["*"],  # Для разработки чтобы можно было слать запрос c любого ip
         allow_credentials=True,  # Обязательно для withCredentials: true в React
         allow_methods=["*"],
         allow_headers=["*"],
