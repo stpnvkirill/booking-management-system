@@ -27,7 +27,7 @@ app.get('/api/bookings/all', (req, response) => {
     try {
       const res = await pool.query('SELECT * FROM bookings');
       console.log('Current time from pool (async):', res.rows[0]);
-      response.send(res.rows[0]);
+      response.send(res.rows);
     } catch (err) {
       console.error(err);
       response.send(err);
