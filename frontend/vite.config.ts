@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    basicSsl(), // Add the plugin to the array
+    // basicSsl(), // Add the plugin to the array
   ],
   resolve: {
     alias: {
@@ -25,3 +25,5 @@ export default defineConfig({
     },
   },
 });
+
+//curl -X GET http://localhost/api/bookings/all \ -H 'Accept: application/json' \ -H 'Authorization: Bearer AzurPmBtfk6yU31ZOF9A'

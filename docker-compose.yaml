@@ -15,7 +15,7 @@ services:
   backend:
     <<: [*env]
     container_name: bms-backend
-    entrypoint: sh -c "alembic upgrade head || true && uvicorn main:app --host 0.0.0.0 --port=80 --log-level=critical"
+    entrypoint: sh -c "alembic upgrade head || true && uvicorn main:app --host 0.0.0.0 --port=80 --log-level=info"
     build:
       dockerfile: Dockerfile
     restart: always

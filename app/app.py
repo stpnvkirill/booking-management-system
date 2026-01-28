@@ -2,7 +2,7 @@ import logging
 
 from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
-
+from fastapi.middleware.cors import CORSMiddleware
 from .api import routes
 from .bot import bot_manager
 from .domain.services import user_service
@@ -43,6 +43,16 @@ def get_application() -> FastAPI:
         swagger_ui_parameters=config.server.swagger_ui_parameters,
         on_startup=[bot_manager.run_all, user_service.create_test_user],
         on_shutdown=[bot_manager.stop_all],
+    )
+
+    origins = ["http://localhost:5173"]  #приколы с протоколами)
+
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True, # Обязательно для withCredentials: true в React
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 
     application.middleware("http")(LoggingMiddleware())
