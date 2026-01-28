@@ -11,7 +11,7 @@ services:
     ports:
       - "3100:3100"
     volumes:
-      - ./monitoring/loki/loki-config.yaml:/etc/loki/local-config.yaml
+      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
       - loki-data:/loki
     networks:
       - proxy
@@ -24,8 +24,8 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
-      - ./monitoring/prometheus/alerts.yaml:/etc/prometheus/alerts.yaml
+      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./prometheus/alerts.yaml:/etc/prometheus/alerts.yaml
       - prometheus-data:/prometheus
     networks:
       - proxy
@@ -51,8 +51,8 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://MONITORING_HOST:3000}
     volumes:
-      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - grafana-data:/var/lib/grafana
     depends_on:
       - prometheus
@@ -65,7 +65,7 @@ services:
     ports:
       - "9093:9093"
     volumes:
-      - ./monitoring/alertmanager/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml
+      - ./alertmanager/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml
       - alertmanager-data:/alertmanager
     networks:
       - proxy
@@ -75,7 +75,7 @@ services:
   alertserver:
     container_name: alertserver
     restart: always
-    build: ./monitoring/alertserver
+    build: ./alertserver
     ports:
       - "8080:8080"
     environment:
