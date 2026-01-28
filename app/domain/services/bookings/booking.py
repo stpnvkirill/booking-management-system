@@ -27,7 +27,7 @@ class BookingParams:
     resource_id: int
     start_time: datetime
     end_time: datetime
-    source: str = "api"  # Default source, can be "api", "bot", etc.
+    source: str = "api"
 
 
 class BookingService:
@@ -47,8 +47,6 @@ class BookingService:
         Uses SELECT FOR UPDATE to prevent race conditions during booking creation.
         Returns True if available (no conflicts), False otherwise.
         """
-        # Lock rows to prevent concurrent bookings on same resource
-        # Cannot use FOR UPDATE with aggregate functions, so select actual rows
         stmt = (
             sa.select(Booking)
             .where(
@@ -169,7 +167,7 @@ class BookingService:
         self,
         booking_id: int,
         user_id: UUID,
-        source: str = "api",  # Default source, can be "api", "bot", etc.
+        source: str = "api",
         session: AsyncSession = None,
     ) -> bool:
         """
