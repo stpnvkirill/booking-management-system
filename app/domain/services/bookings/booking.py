@@ -6,6 +6,10 @@ import sqlalchemy as sa
 
 from app.depends import AsyncSession, provider
 from app.infrastructure.database import Booking, Resource
+from app.infrastructure.database.models.notification import (
+    Notification,
+    NotificationStatus,
+)
 from app.metrics.business import (
     booking_cancelled_total,
     booking_created_total,
@@ -115,6 +119,27 @@ class BookingService:
             resource_id=params.resource_id,
             start_time=params.start_time,
             end_time=params.end_time,
+            session=session,
+        )
+        await session.flush()
+
+        notification_24h_time = params.start_time - timedelta(hours=24)
+        await Notification.create(
+            booking_id=booking.id,
+            user_id=params.user_id,
+            type="booking_24h",
+            status=NotificationStatus.PENDING,
+            scheduled_at=notification_24h_time,
+            session=session,
+        )
+
+        notification_1h_time = params.start_time - timedelta(hours=1)
+        await Notification.create(
+            booking_id=booking.id,
+            user_id=params.user_id,
+            type="booking_1h",
+            status=NotificationStatus.PENDING,
+            scheduled_at=notification_1h_time,
             session=session,
         )
         await session.commit()
