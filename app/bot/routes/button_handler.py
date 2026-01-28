@@ -4,14 +4,17 @@ from aiogram.types import Message
 
 from app.bot.keyboards.main_menu import get_main_menu
 
-router = Router()
 
+def get_backbutton_router() -> Router:
+    router: Router = Router()
 
-def get_button_handler_router():
+    @router.message(lambda m: m.text == "◀️ Назад")
+    async def back_button(message: Message, state: FSMContext):
+        await state.clear()
+        await message.answer(
+            "Вы вернулись в главное меню",
+            reply_markup=get_main_menu(),
+        )
+
     return router
-
-
-@router.message(lambda m: m.text == "◀️ Назад")
-async def back_button(message: Message, state: FSMContext):
-    await state.clear()
-    await message.answer("Вы вернулись в главное меню", reply_markup=get_main_menu())
+get_main_menu())
