@@ -184,7 +184,7 @@ def get_booking_details_inline() -> InlineKeyboardMarkup:
 
 
 def get_settings_keyboard() -> ReplyKeyboardMarkup:
-    "Клавиатура для настроек"
+    """Клавиатура для настроек."""
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="🔔 Уведомления")],
