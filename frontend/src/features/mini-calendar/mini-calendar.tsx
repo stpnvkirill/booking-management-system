@@ -29,22 +29,11 @@ export default function BlockMiniCalendar({
   selectedDate,
   setSelectedDate,
 }: BlockMiniCalendarProps) {
-  // console.log('data', data)
-  const monthNames = [
-    'Январь',
-    'Февраль',
-    'Март',
-    'Апрель',
-    'Май',
-    'Июнь',
-    'Июль',
-    'Август',
-    'Сентябрь',
-    'Октябрь',
-    'Ноябрь',
-    'Декабрь',
-  ];
-  const [viewDate, setViewDate] = useState(new Date(2026, 0, 1));
+  const monthNames = ["января", "февраля", "марта", "апрреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"]
+  const currentDateUTC = new Date();
+  // const utcDatetimeString = currentDateUTC.toISOString();
+  console.log(currentDateUTC.toISOString())
+  const [viewDate, setViewDate] = useState(currentDateUTC);
 
   const currentMonth = viewDate.getMonth();
   const currentYear = viewDate.getFullYear();
@@ -66,7 +55,7 @@ export default function BlockMiniCalendar({
   // const [activeButtonId, setActiveButtonId] = useState<number | null>(null);
 
   const selectedDayNumber = selectedDate.match(/\d+/)?.[0];
-  console.log(selectedDate);
+  console.log("selectedDate", selectedDate);
   return (
     <Card>
       <div className="flex justify-between items-center mb-5">
@@ -105,8 +94,10 @@ export default function BlockMiniCalendar({
       <div className="grid grid-cols-7 gap-2">
         {days.map((day, index) => {
           if (!day) return <div key={`empty-${index}`} />; // Пустая ячейка для отступа
-
-          const dayString = `${day} ${monthNames[currentMonth].slice(0, 3).toLowerCase()}`;
+          const date = new Date(day);
+          const year = date.getFullYear()
+          const dayString = `${day} ${monthNames[currentMonth]} ${year} г.`;
+          // `${day} ${monthNames[currentMonth].slice(0, 3).toLowerCase()}`;
           const isSelected = day.toString() === selectedDayNumber;
           // const hasBooking = bookings.some((b) => b.date === dayString);
           return (
@@ -114,9 +105,9 @@ export default function BlockMiniCalendar({
               key={`btn-${index}`}
               label={day.toString()}
               onClick={() => {
-                if (day && !isSelected) {
-                  setSelectedDate(dayString);
-                }
+                // if (day && !isSelected) {
+                setSelectedDate(dayString);
+                // }
               }}
               size="md"
               width="auto"

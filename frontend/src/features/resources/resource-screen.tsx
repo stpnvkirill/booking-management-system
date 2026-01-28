@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react';
 import ResourceMain from './components/resource-main';
 import ResourceDetails from './components/resource-details';
 import type { BookingItem, Tabs } from '@/shared/types/types';
-// interface ResourceScreenProps {
-//   handleResourceClick: (data: BookingItem | undefined) => void
-// }
+
 export default function ResourcesScreen() {
   const [activeTab, setActiveTab] = useState<Tabs>('main');
   const [data, setData] = useState<Array<BookingItem | undefined>>([]);
@@ -18,7 +16,7 @@ export default function ResourcesScreen() {
     // console.log(resource)
   };
   // console.log(data)
-  useEffect(() => {});
+  useEffect(() => { });
   const handleBackClick = () => {
     setActiveTab('main');
   };

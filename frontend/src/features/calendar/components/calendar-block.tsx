@@ -36,13 +36,14 @@ export default function CalendarBlock() {
   const selectedDayNumber = '13 янв';
   const bookings: unknown[] = [];
   const [viewDate, setViewDate] = useState(new Date(2026, 0, 1));
-  const [selectedDate, setSelectedDate] = useState<string>('1 янв');
+  // const [selectedDate, setSelectedDate] = useState<string>('1 янв');
+  const currentDateUTC = new Date().toISOString();
+  const [selectedDate, setSelectedDate] = useState<Date | string>(currentDateUTC);
   const currentMonth = viewDate.getMonth();
   const currentYear = viewDate.getFullYear();
   const handlePrevMonth = () => {
     const newDate = new Date(currentYear, currentMonth - 1, 1);
     setViewDate(newDate);
-
     setSelectedDate(
       `1 ${monthNames[newDate.getMonth()].slice(0, 3).toLowerCase()}`
     );
