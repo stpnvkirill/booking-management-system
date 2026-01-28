@@ -24,109 +24,123 @@ if TYPE_CHECKING:
     from app.infrastructure.database.models.users import User
 
 
-def get_bookings_router() -> Router:  # noqa: PLR0915
-    router: Router = Router()
+# Constants for date/time parsing
+MIN_DATE_PARTS = 2
+TIME_RANGE_PARTS = 2
+DATE_FORMATS = ("%Y-%m-%d", "%d.%m.%Y")
+TIME_FORMAT = "%H:%M"
 
-    def _main_back_inline() -> InlineKeyboardMarkup:
-        return InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text="⬅️ В главное меню",
-                        callback_data="nav:main",
-                    ),
-                ],
+
+def _main_back_inline() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="⬅️ В главное меню",
+                    callback_data="nav:main",
+                ),
+            ],
+        ],
+    )
+
+
+async def _get_customer_id(bot_id: int) -> UUID:
+    bot_cfg = await BotConfig.get(id=bot_id)
+    return bot_cfg.owner_id
+
+
+async def _list_resources(customer_id) -> list[Resource]:
+    async with provider.session_factory() as session:
+        stmt = (
+            sa.select(Resource)
+            .where(Resource.customer_id == customer_id)
+            .order_by(Resource.name.asc())
+        )
+        result = await session.scalars(stmt)
+        return result.all()
+
+
+def _resources_inline(resources: list[Resource]) -> InlineKeyboardMarkup:
+    rows: list[list[InlineKeyboardButton]] = []
+    for r in resources:
+        rows.append(
+            [
+                InlineKeyboardButton(
+                    text=r.name,
+                    callback_data=f"book:res:{r.id}",
+                ),
             ],
         )
+    rows.append(
+        [InlineKeyboardButton(text="⬅️ В главное меню", callback_data="nav:main")],
+    )
+    return InlineKeyboardMarkup(inline_keyboard=rows)
 
-    async def _get_customer_id(bot_id: int) -> UUID:
-        bot_cfg = await BotConfig.get(id=bot_id)
-        return bot_cfg.owner_id
 
-    async def _list_resources(customer_id) -> list[Resource]:
-        async with provider.session_factory() as session:
-            stmt = (
-                sa.select(Resource)
-                .where(Resource.customer_id == customer_id)
-                .order_by(Resource.name.asc())
-            )
-            result = await session.scalars(stmt)
-            return result.all()
+def _format_dt(dt: datetime) -> str:
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc).strftime("%d.%m.%Y %H:%M UTC")
 
-    def _resources_inline(resources: list[Resource]) -> InlineKeyboardMarkup:
-        rows: list[list[InlineKeyboardButton]] = []
-        for r in resources:
-            rows.append(
-                [
-                    InlineKeyboardButton(
-                        text=r.name,
-                        callback_data=f"book:res:{r.id}",
-                    ),
-                ],
-            )
-        rows.append(
-            [InlineKeyboardButton(text="⬅️ В главное меню", callback_data="nav:main")],
-        )
-        return InlineKeyboardMarkup(inline_keyboard=rows)
 
-    def _format_dt(dt: datetime) -> str:
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        return dt.astimezone(timezone.utc).strftime("%d.%m.%Y %H:%M UTC")
+def _get_status_emoji(is_available: bool) -> str:
+    """Return emoji for resource status: green circle if available, red if busy."""
+    return "🟢" if is_available else "🔴"
 
-    def _parse_period(text: str) -> tuple[datetime, datetime] | None:
-        """
-        Supported formats (minimal, for bot UX):
-        - 2026-01-26 10:00-12:00
-        - 26.01.2026 10:00-12:00
-        - 2026-01-26 10:00 12:00
-        - 26.01.2026 10:00 12:00
-        Times are interpreted as UTC if timezone not specified.
-        """
-        raw = " ".join(text.strip().split())
-        if not raw:
-            return None
 
-        # Split by space into date + time part(s)
-        min_date_part = 2
+def _parse_period(text: str) -> tuple[datetime, datetime] | None:
+    """
+    Supported formats (minimal, for bot UX):
+    - 2026-01-26 10:00-12:00
+    - 26.01.2026 10:00-12:00
+    - 2026-01-26 10:00 12:00
+    - 26.01.2026 10:00 12:00
+    Times are interpreted as UTC if timezone not specified.
+    """
+    raw = " ".join(text.strip().split())
+    if not raw:
+        return None
 
-        parts = raw.split(" ")
-        if len(parts) < min_date_part:
-            return None
-        date_part = parts[0]
-        time_part = " ".join(parts[1:])
+    # Split by space into date + time part(s)
+    parts = raw.split(" ")
+    if len(parts) < MIN_DATE_PARTS:
+        return None
+    date_part = parts[0]
+    time_part = " ".join(parts[1:])
 
-        # Parse date
-        date_formats = ("%Y-%m-%d", "%d.%m.%Y")
-        date_obj = None
-        for fmt in date_formats:
-            try:
-                date_obj = datetime.strptime(date_part, fmt).date()  # noqa: DTZ007
-                break
-            except ValueError:
-                continue
-        if date_obj is None:
-            return None
-
-        # Parse times (either "HH:MM-HH:MM" or "HH:MM HH:MM")
-        if "-" in time_part:
-            t1s, t2s = [s.strip() for s in time_part.split("-", 1)]
-        else:
-            t_parts = time_part.split(" ")
-            time_range_part = 2
-            if len(t_parts) != time_range_part:
-                return None
-            t1s, t2s = t_parts
-
+    # Parse date
+    date_obj = None
+    for fmt in DATE_FORMATS:
         try:
-            t1 = datetime.strptime(t1s, "%H:%M").time()  # noqa: DTZ007
-            t2 = datetime.strptime(t2s, "%H:%M").time()  # noqa: DTZ007
+            date_obj = datetime.strptime(date_part, fmt).date()  # noqa: DTZ007
+            break
         except ValueError:
-            return None
+            continue
+    if date_obj is None:
+        return None
 
-        start = datetime.combine(date_obj, t1).replace(tzinfo=timezone.utc)
-        end = datetime.combine(date_obj, t2).replace(tzinfo=timezone.utc)
-        return (start, end)
+    # Parse times (either "HH:MM-HH:MM" or "HH:MM HH:MM")
+    if "-" in time_part:
+        t1s, t2s = [s.strip() for s in time_part.split("-", 1)]
+    else:
+        t_parts = time_part.split(" ")
+        if len(t_parts) != TIME_RANGE_PARTS:
+            return None
+        t1s, t2s = t_parts
+
+    try:
+        t1 = datetime.strptime(t1s, TIME_FORMAT).time()  # noqa: DTZ007
+        t2 = datetime.strptime(t2s, TIME_FORMAT).time()  # noqa: DTZ007
+    except ValueError:
+        return None
+
+    start = datetime.combine(date_obj, t1).replace(tzinfo=timezone.utc)
+    end = datetime.combine(date_obj, t2).replace(tzinfo=timezone.utc)
+    return (start, end)
+
+
+def get_bookings_router() -> Router:
+    router: Router = Router()
 
     @router.message(lambda m: m.text == "📅 Забронировать")
     @handler
@@ -150,7 +164,6 @@ def get_bookings_router() -> Router:  # noqa: PLR0915
     async def pick_resource(
         callback: types.CallbackQuery,
         state: FSMContext,
-        user: User,  # noqa: ARG001
     ):
         _, _, resource_id_str = callback.data.split(":", 2)
         try:
@@ -168,6 +181,7 @@ def get_bookings_router() -> Router:  # noqa: PLR0915
         await state.update_data(resource_id=resource_id)
         await state.set_state(BookingStates.time)
         await callback.message.edit_text(
+            f"Выбран ресурс: *{resource.name}*\n\n"
             "Введите дату и время в формате:\n"
             "`26.01.2026 10:00-12:00`\n"
             "или\n"
@@ -200,6 +214,24 @@ def get_bookings_router() -> Router:  # noqa: PLR0915
         start_time, end_time = parsed
 
         customer_id = await _get_customer_id(message.bot.id)
+
+        # Check availability
+        is_available = await booking_service.check_availability(
+            resource_id=int(resource_id),
+            start_time=start_time,
+            end_time=end_time,
+        )
+
+        if not is_available:
+            status_emoji = _get_status_emoji(False)
+            await message.answer(
+                f"{status_emoji} *Ресурс занят на выбранное время*\n\n"
+                f"Интервал: {_format_dt(start_time)} – {_format_dt(end_time)}\n\n"
+                "Попробуйте выбрать другой день или время.",
+                parse_mode="Markdown",
+            )
+            return
+
         params = BookingParams(
             user_id=user.id,
             customer_id=customer_id,
@@ -209,16 +241,18 @@ def get_bookings_router() -> Router:  # noqa: PLR0915
         )
         booking = await booking_service.create_booking(params=params)
         if not booking:
-            await message.answer(
-                "Не удалось создать бронирование"
+            msg = (
+                "Не удалось создать бронирование "
                 "(время занято или введены некорректные даты). "
-                "Попробуйте другой интервал.",
+                "Попробуйте другой интервал."
             )
+            await message.answer(msg)
             return
 
         await state.clear()
+        status_emoji = _get_status_emoji(True)
         await message.answer(
-            "Готово! Бронирование создано:\n"
+            f"{status_emoji} *Бронирование успешно создано!*\n\n"
             f"- Ресурс: `{params.resource_id}`\n"
             f"- С: {_format_dt(params.start_time)}\n"
             f"- По: {_format_dt(params.end_time)}",
@@ -248,11 +282,13 @@ def get_bookings_router() -> Router:  # noqa: PLR0915
 
         rows: list[list[InlineKeyboardButton]] = []
         for b in bookings:
+            resource_name = resource_name_by_id.get(
+                b.resource_id,
+                f"ресурс {b.resource_id}",
+            )
+            status_emoji = _get_status_emoji(True)
             title = (
-                f"#{b.id} · {
-                    resource_name_by_id.get(b.resource_id, f'ресурс {b.resource_id}')
-                }"
-                f" · {_format_dt(b.start_time)}"
+                f"{status_emoji} #{b.id} · {resource_name} · {_format_dt(b.start_time)}"
             )
             rows.append(
                 [InlineKeyboardButton(text=title, callback_data=f"mybook:show:{b.id}")],
@@ -287,6 +323,7 @@ def get_bookings_router() -> Router:  # noqa: PLR0915
             return
 
         resource = await Resource.get(id=booking.resource_id)
+        status_emoji = _get_status_emoji(True)
         kb = InlineKeyboardMarkup(
             inline_keyboard=[
                 [
@@ -310,7 +347,7 @@ def get_bookings_router() -> Router:  # noqa: PLR0915
             ],
         )
         await callback.message.edit_text(
-            "Бронирование:\n"
+            f"{status_emoji} *Ваше бронирование*\n\n"
             f"- ID: `{booking.id}`\n"
             f"- Ресурс: {resource.name if resource else booking.resource_id}\n"
             f"- С: {_format_dt(booking.start_time)}\n"
@@ -342,11 +379,13 @@ def get_bookings_router() -> Router:  # noqa: PLR0915
 
         rows: list[list[InlineKeyboardButton]] = []
         for b in bookings:
+            resource_name = resource_name_by_id.get(
+                b.resource_id,
+                f"ресурс {b.resource_id}",
+            )
+            status_emoji = _get_status_emoji(True)
             title = (
-                f"#{b.id} · {
-                    resource_name_by_id.get(b.resource_id, f'ресурс {b.resource_id}')
-                }"
-                f" · {_format_dt(b.start_time)}"
+                f"{status_emoji} #{b.id} · {resource_name} · {_format_dt(b.start_time)}"
             )
             rows.append(
                 [InlineKeyboardButton(text=title, callback_data=f"mybook:show:{b.id}")],
