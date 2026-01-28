@@ -10,6 +10,13 @@ from app.infrastructure.database.models.notification import (
     Notification,
     NotificationStatus,
 )
+from app.metrics.business import (
+    booking_cancelled_total,
+    booking_created_total,
+    booking_duration_seconds,
+    booking_lead_time_seconds,
+    booking_status_changed_total,
+)
 
 # Maximum booking duration: 3 years in the future
 MAX_BOOKING_DURATION_DAYS = 365 * 3
@@ -24,6 +31,7 @@ class BookingParams:
     resource_id: int
     start_time: datetime
     end_time: datetime
+    source: str = "api"
 
 
 class BookingService:
@@ -43,8 +51,6 @@ class BookingService:
         Uses SELECT FOR UPDATE to prevent race conditions during booking creation.
         Returns True if available (no conflicts), False otherwise.
         """
-        # Lock rows to prevent concurrent bookings on same resource
-        # Cannot use FOR UPDATE with aggregate functions, so select actual rows
         stmt = (
             sa.select(Booking)
             .where(
@@ -138,6 +144,27 @@ class BookingService:
         )
         await session.commit()
 
+        # Record business metrics
+        booking_created_total.labels(
+            source=params.source,
+            customer_id=str(params.customer_id),
+            resource_id=str(params.resource_id),
+        ).inc()
+
+        # Record booking duration
+        duration_seconds = (params.end_time - params.start_time).total_seconds()
+        booking_duration_seconds.labels(
+            customer_id=str(params.customer_id),
+            resource_id=str(params.resource_id),
+        ).observe(duration_seconds)
+
+        # Record booking lead time (time from creation to start)
+        lead_time_seconds = (params.start_time - now).total_seconds()
+        booking_lead_time_seconds.labels(
+            customer_id=str(params.customer_id),
+            resource_id=str(params.resource_id),
+        ).observe(lead_time_seconds)
+
         return booking
 
     @provider.inject_session
@@ -165,6 +192,7 @@ class BookingService:
         self,
         booking_id: int,
         user_id: UUID,
+        source: str = "api",
         session: AsyncSession = None,
     ) -> bool:
         """
@@ -180,9 +208,29 @@ class BookingService:
             return False
 
         # Delete using session ORM API to avoid duplication with Base.delete
+        # Get resource info before deletion for metrics
+        resource = await Resource.get(id=booking.resource_id, session=session)
+        customer_id = resource.customer_id if resource else "unknown"
+
         await session.delete(booking)
         try:
             await session.commit()
+
+            # Record business metrics for cancellation
+            booking_cancelled_total.labels(
+                source=source,
+                customer_id=str(customer_id),
+                resource_id=str(booking.resource_id),
+            ).inc()
+
+            # Record status change metric
+            booking_status_changed_total.labels(
+                from_status="active",
+                to_status="cancelled",
+                customer_id=str(customer_id),
+                resource_id=str(booking.resource_id),
+            ).inc()
+
         except Exception:
             await session.rollback()
             raise

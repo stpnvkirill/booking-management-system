@@ -69,6 +69,7 @@ async def create_booking(
             resource_id=data.resource_id,
             start_time=data.start_time,
             end_time=data.end_time,
+            source="api",
         ),
         session=session,
     )
@@ -159,6 +160,7 @@ async def cancel_booking(
     success = await booking_service.cancel_booking(
         booking_id=booking_id,
         user_id=current_user.id,
+        source="api",
         session=session,
     )
 
