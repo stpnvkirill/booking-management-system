@@ -4,6 +4,5 @@ from app.bot.keyboards.main_menu import (
 )
 
 __all__ = [
-    "get_main_menu"
-    "get_backbutton_keyboard",
+    "get_main_menuget_backbutton_keyboard",
 ]

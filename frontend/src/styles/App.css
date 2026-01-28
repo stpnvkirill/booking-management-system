@@ -1,1 +1,12 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@plugin "flyonui" {
+  themes:
+    light --default,
+    dark --prefersdark,
+    gourmet,
+    spotify,
+    valorant,
+    vscode;
+}
+@source "./node_modules/flyonui/flyonui.js";
+@import 'flyonui/variants.css';
