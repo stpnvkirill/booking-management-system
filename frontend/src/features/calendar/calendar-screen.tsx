@@ -25,7 +25,7 @@ export default function CalendarScreen() {
     const fetchData = async () => {
       try {
         const response = await axios.get<BookingItem[]>(
-         '/api/bookings/all/',
+         'http://localhost:80/api/bookings/all/',
           {
             headers: {
               Accept: 'application/json',

@@ -15,15 +15,15 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'), // @ теперь ссылается на папку src
     },
   },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:80/api', // your backend server
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-    },
-  },
+  // server: {
+  //   proxy: {
+  //     '/api': {
+  //       target: 'http://localhost:80/api', // your backend server
+  //       changeOrigin: true,
+  //       rewrite: (path) => path.replace(/^\/api/, ''),
+  //     },
+  //   },
+  // },
 });
 
 //curl -X GET http://localhost/api/bookings/all \ -H 'Accept: application/json' \ -H 'Authorization: Bearer AzurPmBtfk6yU31ZOF9A'

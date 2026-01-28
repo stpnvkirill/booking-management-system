@@ -26,14 +26,12 @@ export default function ResourceMain({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        axios.defaults.headers.common['Authorization'] = `Bearer AZv-T3AfeMiZFIhuxYd-aw`;
         const response = await axios.get<BookingItem[]>(
-          '/api/bookings/all/',
+          'http://localhost:80/api/bookings/all/',
           {
             headers: {
               Accept: 'application/json',
-              // 'Authorization': 'Bearer AZv-T3AfeMiZFIhuxYd-aw'
-              // Authorization: 'Bearer ' + import.meta.env.VITE_BEARER_TOKEN,
+              'Authorization': 'Bearer ' + import.meta.env.VITE_BEARER_TOKEN,
             },
           }
         );
