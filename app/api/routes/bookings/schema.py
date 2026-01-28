@@ -14,6 +14,18 @@ class BookingCreate(BaseModel):
     resource_id: int = Field(..., description="ID of the resource to book")
     start_time: datetime = Field(..., description="Booking start time (ISO format)")
     end_time: datetime = Field(..., description="Booking end time (ISO format)")
+    description: str | None = Field(
+        None,
+        description="Описание брони",
+    )
+    booking_type: str | None = Field(
+        None,
+        description="тип брони (Квартира | Офис | и т.п.)",
+    )
+    location: str | None = Field(
+        None,
+        description="Расположение (район, вводится пользователем)",
+    )
 
 
 class BookingResponse(BaseModel):
@@ -25,6 +37,9 @@ class BookingResponse(BaseModel):
     resource_name: str | None = None
     start_time: datetime
     end_time: datetime
+    description: str | None = None
+    booking_type: str | None = None
+    location: str | None = None
     created_at: datetime
 
     model_config = {"from_attributes": True}

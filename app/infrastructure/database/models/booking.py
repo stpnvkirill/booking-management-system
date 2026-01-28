@@ -43,3 +43,15 @@ class Booking(BaseWithDt):
     end_time: so.Mapped[sa.DateTime] = so.mapped_column(
         sa.DateTime(timezone=True),
     )
+    description: so.Mapped[str | None] = so.mapped_column(
+        sa.Text,
+        nullable=True,
+    )
+    booking_type: so.Mapped[str | None] = so.mapped_column(
+        sa.VARCHAR(255),
+        nullable=True,
+    )
+    location: so.Mapped[str | None] = so.mapped_column(
+        sa.VARCHAR(255),
+        nullable=True,
+    )

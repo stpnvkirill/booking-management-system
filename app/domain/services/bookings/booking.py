@@ -20,6 +20,9 @@ class BookingParams:
     resource_id: int
     start_time: datetime
     end_time: datetime
+    description: str | None = None
+    booking_type: str | None = None
+    location: str | None = None
 
 
 class BookingService:
@@ -109,6 +112,9 @@ class BookingService:
             resource_id=params.resource_id,
             start_time=params.start_time,
             end_time=params.end_time,
+            description=params.description,
+            booking_type=params.booking_type,
+            location=params.location,
             session=session,
         )
         await session.commit()
@@ -131,6 +137,16 @@ class BookingService:
                 ),
             ),
         )
+        result = await session.scalars(stmt)
+        return result.all()
+
+    @provider.inject_session
+    async def get_all_bookings(
+        self,
+        session: AsyncSession = None,
+    ) -> list[Booking]:
+        """Get all bookings without filtering by customer."""
+        stmt = sa.select(Booking)
         result = await session.scalars(stmt)
         return result.all()
 
