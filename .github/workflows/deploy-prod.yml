@@ -21,4 +21,5 @@ jobs:
           script: |
             cd /home/kolupaev_e/booking-management-system/
             git pull
-            sudo LOKI_URL=${{ vars.LOKI_URL }} docker compose -f docker-compose.prod.yaml up -d --build
+            export LOKI_URL=${{ vars.LOKI_URL }}
+            sudo -E docker compose -f /home/kolupaev_e/booking-management-system/docker-compose.prod.yaml up -d --build
