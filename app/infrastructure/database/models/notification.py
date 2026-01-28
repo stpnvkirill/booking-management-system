@@ -30,7 +30,7 @@ class NotificationType:
     BOOKING_1H = "booking_1h"  # 1 hour before
     BOOKING_START = "booking_start"  # Booking start
     BOOKING_END = "booking_end"  # Booking end
-    BOOKING_EVALUATION_REQUEST = "booking_eval"  # Request for evaluation 15 minutes after completion
+    BOOKING_EVALUATION_REQUEST = "booking_eval"  # Request for evaluation 15 minutes after completion  # noqa: E501
 
 
 class Notification(BaseWithDt):

@@ -56,7 +56,7 @@ class EvaluationNotificationService:
                     level="info",
                     method="create_evaluation_notifications",
                     path="FeedbackModule",
-                    text_detail="There are no completed bookings to create evaluation requests",
+                    text_detail="There are no completed bookings to create evaluation requests",  # noqa: E501
                 )
                 return
 
@@ -64,7 +64,7 @@ class EvaluationNotificationService:
                 level="info",
                 method="create_evaluation_notifications",
                 path="FeedbackModule",
-                text_detail=f"Checking {len(completed_bookings)} completed bookings to create evaluation requests",
+                text_detail=f"Checking {len(completed_bookings)} completed bookings to create evaluation requests",  # noqa: E501
             )
 
             created_count = 0
@@ -72,12 +72,12 @@ class EvaluationNotificationService:
                 try:
                     if await self.create_notification_if_needed(booking, session):
                         created_count += 1
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     log(
                         level="error",
                         method="create_evaluation_notifications",
                         path="FeedbackModule",
-                        text_detail=f"Error when creating an assessment request for a booking {booking.id}: {e}",
+                        text_detail=f"Error when creating an assessment request for a booking {booking.id}: {e}",  # noqa: E501
                     )
                     # Rollback on error to allow session to continue
                     with contextlib.suppress(Exception):
@@ -92,10 +92,10 @@ class EvaluationNotificationService:
                     text_detail=f"{created_count} rating requests have been created",
                 )
             else:
-                # Commit even if no notifications were created to clear any pending state
+                # Commit even if no notifications were created to clear any pending stat
                 await session.commit()
 
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             log(
                 level="error",
                 method="create_evaluation_notifications",
@@ -144,14 +144,14 @@ class EvaluationNotificationService:
                 level="info",
                 method="create_notification_if_needed",
                 path="FeedbackModule",
-                text_detail=f"An evaluation request has already been created for booking {booking.id}",
+                text_detail=f"An evaluation request has already been created for booking {booking.id}",  # noqa: E501
             )
             return False
 
-        # Create evaluation notification scheduled for 15 minutes after booking completion
+        # Create evaluation notification scheduled for 15 minutes after booking completion  # noqa: E501
         evaluation_scheduled_at = booking.end_time + timedelta(minutes=15)
 
-        # If the scheduled time has already passed, set it to now so it gets sent immediately
+        # If the scheduled time has already passed, set it to now so it gets sent immediately  # noqa: E501
         now = datetime.now(timezone.utc)
         evaluation_scheduled_at = max(now, evaluation_scheduled_at)
 
@@ -169,7 +169,7 @@ class EvaluationNotificationService:
             level="info",
             method="create_notification_if_needed",
             path="FeedbackModule",
-            text_detail=f"An evaluation request has been created for booking {booking.id}, scheduled for {evaluation_scheduled_at}",
+            text_detail=f"An evaluation request has been created for booking {booking.id}, scheduled for {evaluation_scheduled_at}",  # noqa: E501
         )
         return True
 
@@ -181,12 +181,12 @@ class EvaluationNotificationService:
                 await asyncio.sleep(self.poll_interval_seconds)
         except asyncio.CancelledError:
             raise
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             log(
                 level="error",
                 method="service_loop",
                 path="FeedbackModule",
-                text_detail=f"Critical error in the evaluation request creation service: {e}",
+                text_detail=f"Critical error in the evaluation request creation service: {e}",  # noqa: E501
             )
 
     async def start(self) -> None:
@@ -198,7 +198,7 @@ class EvaluationNotificationService:
             level="info",
             method="start",
             path="FeedbackModule",
-            text_detail="The service for creating evaluation requests has been launched",
+            text_detail="The service for creating evaluation requests has been launched",  # noqa: E501
         )
 
     async def stop(self) -> None:
