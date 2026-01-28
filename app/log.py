@@ -5,6 +5,8 @@ from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel, Field, computed_field
 
+from app.config import config
+
 MSK_ZONE = ZoneInfo("Europe/Moscow")
 
 
@@ -134,3 +136,5 @@ def log(  # noqa: PLR0913
     )
 
     logging.info(model.model_dump_json(exclude_defaults=True, exclude_none=True))
+    if config.server.EXCEPT_LOG and exception is not None:
+        logging.exception(msg="Error", stack_info=True, stacklevel=1)
