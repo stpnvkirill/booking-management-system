@@ -12,7 +12,7 @@ interface ResourceMainProps {
   activeTab: Tabs;
   setActiveTab: React.Dispatch<React.SetStateAction<Tabs>>;
   handleResourceClick: (data: BookingItem | undefined) => void;
-} 
+}
 
 export default function ResourceMain({
   activeTab,
@@ -26,12 +26,14 @@ export default function ResourceMain({
   useEffect(() => {
     const fetchData = async () => {
       try {
+        axios.defaults.headers.common['Authorization'] = `Bearer AZv-T3AfeMiZFIhuxYd-aw`;
         const response = await axios.get<BookingItem[]>(
-          'http://localhost:88/api/bookings/all/',
+          '/api/bookings/all/',
           {
             headers: {
               Accept: 'application/json',
-              Authorization: 'Bearer ' + import.meta.env.VITE_BEARER_TOKEN,
+              // 'Authorization': 'Bearer AZv-T3AfeMiZFIhuxYd-aw'
+              // Authorization: 'Bearer ' + import.meta.env.VITE_BEARER_TOKEN,
             },
           }
         );
@@ -45,6 +47,7 @@ export default function ResourceMain({
     };
     fetchData();
   }, []);
+  // uv run python -c "from app.api.security import compress_token; print(compress_token('019bfe4f-701f-78c8-9914-886ec5877e6b'))"
   const filteredBookings = data.filter((booking: BookingItem) => {
     if (activeFilter === 'Все') {
       return true;

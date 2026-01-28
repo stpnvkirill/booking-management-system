@@ -25,11 +25,11 @@ export default function CalendarScreen() {
     const fetchData = async () => {
       try {
         const response = await axios.get<BookingItem[]>(
-          'http://localhost:88/api/bookings/all/',
+         '/api/bookings/all/',
           {
             headers: {
               Accept: 'application/json',
-              Authorization: 'Bearer ' + import.meta.env.VITE_BEARER_TOKEN,
+              'Authorization': 'Bearer ' + import.meta.env.VITE_BEARER_TOKEN,
             },
           }
         );
