@@ -1,15 +1,13 @@
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
-from sqlalchemy import select
 
-from app.domain.services.user.customer import customer_service
-from app.domain.services.user.user import user_service
-from app.infrastructure.database.models.users import Customer, User
+from app.infrastructure.database.models.users import User
 
 from .keyboards import main_menu
 
-
+# TODO: <разберемся почему не работает позже>  # noqa: TD002, TD003
+"""
 def get_create_owner_router() -> Router:
     router = Router()
 
@@ -79,6 +77,7 @@ def get_create_owner_router() -> Router:
                 await message.answer(f"❌ Ошибка при создании компании: {e!s}")
 
     return router
+"""  # noqa: E501
 
 
 def get_admin_handlers_router() -> Router:
