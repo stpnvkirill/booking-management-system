@@ -45,7 +45,8 @@ def get_application() -> FastAPI:
         on_shutdown=[bot_manager.stop_all],
     )
 
-    origins = ["http://localhost:5173"]  #приколы с протоколами)
+    origins = ["http://localhost:5173",
+               "http://localhost:5174"]  #приколы с протоколами)
 
     application.add_middleware(
         CORSMiddleware,

@@ -20,7 +20,7 @@ interface BookingContextType {
   filters: FilterType[];
   bookings: BookingItem[];
   setBookings: React.Dispatch<React.SetStateAction<BookingItem[]>>;
-  timeSlots: TimeSlot[];
+   timeSlots: TimeSlot[];
   calendarDays: string[];
 
   handleResourceClick: (resource: BookingItem) => void;
@@ -42,12 +42,23 @@ interface BookingContextType {
   getDaysInMonth: (year: number, month: number) => (number | null)[];
   viewDate: Date;
   setViewDate: React.Dispatch<React.SetStateAction<Date>>;
+  handleTimeClick: (time: string) => void
+
+  bookingRange: {
+    start: string | null;
+    end: string | null;
+}
+setBookingRange: React.Dispatch<React.SetStateAction<{
+    start: string | null;
+    end: string | null;
+}>>
+
 }
 export interface BookingItem {
   price?: number;
   id?: string;
   capacity?: string;
-  location?: string;
+  location: string;
   rating?: string | number;
   timeLeft?: string;
   time?: string;
@@ -293,6 +304,28 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     { time: '21:00', available: true },
     { time: '21:30', available: true },
   ];
+
+const [bookingRange, setBookingRange] = useState<{ start: string | null, end: string | null }>({
+  start: null,
+  end: null
+});
+
+const handleTimeClick = (time: string) => {
+  if (!bookingRange.start || (bookingRange.start && bookingRange.end)) {
+    
+    setBookingRange({ start: time, end: null });
+  } else {
+    
+    if (time > bookingRange.start) {
+      setBookingRange(prev => ({ ...prev, end: time }));
+    } else {
+      
+      setBookingRange({ start: time, end: null });
+    }
+  }
+};
+
+
   const calendarDays = Array.from({ length: 31 }, (_, i) => String(i + 1));
 
   const getDaysInMonth = (year: number, month: number) => {
@@ -403,6 +436,9 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     getDaysInMonth,
     viewDate,
     setViewDate,
+    handleTimeClick,
+    bookingRange,
+    setBookingRange
   };
 
   return (

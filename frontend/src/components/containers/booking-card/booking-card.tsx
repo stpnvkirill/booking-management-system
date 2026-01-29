@@ -52,7 +52,7 @@ export const BookingCard = ({
           </div>
           <div className="flex flex-col gap-2">
             <Button
-              label="Открыть"
+              label="бронь"
               onClick={() => {
                 if (data) handleResourceClick(data);
               }}

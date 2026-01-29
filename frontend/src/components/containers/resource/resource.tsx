@@ -73,10 +73,24 @@ export const ResourceDetails = () => {
     selectedTimeSlot,
     handleBackClick,
     timeSlots,
+    bookingRange,
+    setBookingRange,
+    handleTimeClick,
     handleConfirmBooking,
   } = useBookingContext();
   if (!selectedResource) return null;
+
+const endSlots = timeSlots.filter(slot => {
+  if (!bookingRange.start) return false;
+  return slot.time > bookingRange.start; 
+});
+
+const step = !bookingRange.start 
+    ? 'SELECT_START' 
+    : (!bookingRange.end ? 'SELECT_END' : 'COMPLETED');
+
   return (
+    ///////////от сюда
     <div className="pb-20 bg-neutral-content text-neutral font-sans">
       <div className="p-4 max-w-125 mt-0 mb-0  ml-auto mr-auto">
         {/* Заголовок с кнопкой назад */}
@@ -117,45 +131,58 @@ export const ResourceDetails = () => {
         {/* Слоты времени */}
         <div className="mb-8">
           <div className="grid grid-cols-4 gap-2 mb-2">
-            {timeSlots.map((slot) => (
-              <div className="">
-                <Button
-                  label={slot.time}
-                  onClick={() => setSelectedTimeSlot(slot.time)}
-                  size="md"
-                  variant={
-                    selectedTimeSlot === slot.time ? 'primary' : 'secondary'
-                  }
-                  shape="default"
-                />
-              </div>
-            ))}
+            
+        {timeSlots.map((slot) => {
+              const isStart = bookingRange.start === slot.time;
+              const isEnd = bookingRange.end === slot.time;
+              const isInRange = 
+                bookingRange.start && 
+                bookingRange.end && 
+                slot.time > bookingRange.start && 
+                slot.time < bookingRange.end;
+
+              return (
+                <div key={slot.time}>
+                  <Button
+                    label={slot.time}
+                    onClick={() => handleTimeClick(slot.time)}
+                    size="md"
+                    variant={isStart || isEnd ? 'primary' : 'secondary'}
+                    // Дополнительный стиль для слотов "между"
+                    className={isInRange ? 'bg-primary/30 border-primary' : ''}
+                    shape="default"
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* Итого */}
-        <div className="rounded-2xl p-5 mb-6 text-neutral">
+        <div className="rounded-2xl p-5 mb-6 text-neutral bg-base-200">
           <div className="flex justify-between mb-2">
             <span className="text-neutral">Итого</span>
-            <span className="font-bold text-2xl text-neutral">
+            <span className="font-bold text-2xl">
               {(selectedResource.price ?? 0).toLocaleString('ru-RU')} ₽
             </span>
           </div>
-          <div className="text-accent text-sm">
-            Слот: {selectedTimeSlot || '—'}
+          <div className="text-accent text-sm font-medium">
+            Выбрано: {bookingRange.start || '—'} 
+            {bookingRange.end ? ` — ${bookingRange.end}` : ''}
           </div>
         </div>
         {/* Кнопка подтверждения */}
         <Button
-          label={'Подтвердить'}
+             label={'Подтвердить бронь'}
           onClick={handleConfirmBooking}
-          disabled={!selectedTimeSlot}
+          // Кнопка активна только если выбран и старт, и конец
+          disabled={!bookingRange.start || !bookingRange.end}
           size="xl"
           width="full"
           variant="primary"
-          shape="default"
         />
       </div>
     </div>
+    ////////до сюда
   );
 };
