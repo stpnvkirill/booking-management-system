@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 import ResourceMain from './components/resource-main';
 import ResourceDetails from './components/resource-details';
-import type { BookingItem, Tabs } from '@/shared/types/types';
+import type { ResourceItem, Tabs } from '@/shared/types/types';
 
 export default function ResourcesScreen() {
   const [activeTab, setActiveTab] = useState<Tabs>('main');
-  const [, setData] = useState<Array<BookingItem | undefined | BookingItem[]>>(
+  const [, setData] = useState<Array<ResourceItem | undefined | ResourceItem[]>>(
     []
   );
   const [selectedResource, setSelectedResource] = useState<
-    BookingItem | undefined
+    ResourceItem | undefined
   >(undefined);
-  const handleResourceClick = (resource: BookingItem | undefined) => {
+  const handleResourceClick = (resource: ResourceItem | undefined) => {
     setActiveTab('details');
     setSelectedResource(resource);
     setData([resource]);

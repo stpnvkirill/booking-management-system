@@ -1,12 +1,12 @@
-import type { BookingItem } from '@/shared/types/types';
+import type { ResourceItem } from '@/shared/types/types';
 import { AnimatePresence, motion } from 'framer-motion';
 import BookingCard from './resources-card';
 type Tabs = 'main' | 'details';
 interface BookingsListProps {
-  data: BookingItem[]; // Ожидаем уже отфильтрованный массив
+  data: ResourceItem[]; // Ожидаем уже отфильтрованный массив
   activeTab: Tabs;
   setActiveTab: React.Dispatch<React.SetStateAction<Tabs>>;
-  handleResourceClick: (data: BookingItem | undefined) => void;
+  handleResourceClick: (data: ResourceItem | undefined) => void;
 }
 export default function BookingList({
   data,
@@ -23,9 +23,9 @@ export default function BookingList({
   return (
     <div className="flex flex-col gap-4 max-h-[calc(100vh-290px)] overflow-y-scroll">
       <AnimatePresence mode="popLayout">
-        {data.map((bookingItem) => (
+        {data.map((ResourceItem) => (
           <motion.div
-            key={bookingItem.id}
+            key={ResourceItem.id}
             layout
             initial={{ opacity: 0, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
@@ -33,7 +33,7 @@ export default function BookingList({
             transition={{ duration: 0.2 }}
           >
             <BookingCard
-              data={bookingItem}
+              data={ResourceItem}
               activeTab={activeTab}
               setActiveTab={setActiveTab}
               handleResourceClick={handleResourceClick}

@@ -1,6 +1,6 @@
 import Card from './components/card.tsx';
 import Button from '../button/button.tsx';
-import type { BookingItem } from '@/shared/types/types.tsx';
+import type { ResourceItem } from '@/shared/types/types.tsx';
 import { useState } from 'react';
 const getDaysInMonth = (year: number, month: number) => {
   const date = new Date(year, month, 1);
@@ -21,7 +21,7 @@ const getDaysInMonth = (year: number, month: number) => {
   return days;
 };
 interface BlockMiniCalendarProps {
-  data: BookingItem | undefined | BookingItem[];
+  data: ResourceItem | undefined | ResourceItem[];
   selectedDate: string;
   setSelectedDate: React.Dispatch<React.SetStateAction<string>>;
 }

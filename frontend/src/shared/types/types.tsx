@@ -1,4 +1,21 @@
 // types.d.ts
+// {
+//   "customer_id": "019c0b05-2fa7-742d-a914-b8cb00fc9236",
+//   "name": "Название места",
+//   "description": "Описание места",
+//   "resource_type": "Квартира",
+//   "location": "Новосибирск",
+//   "price_per_hour": 1500
+// }
+interface ResourceItem {
+  id: string;
+  customer_id: string;
+  name: string;
+  description: string;
+  resource_type: string;
+  location: string;
+  price_per_hour: number;
+}
 interface BookingItem {
   id: number;
   resource_id: number;
@@ -41,5 +58,5 @@ const FILTERS: FiltersArray = [
   'Коттедж',
 ] as const;
 
-export { type BookingItem, type TimeSlot, FILTERS };
+export { type BookingItem, type ResourceItem, type TimeSlot, FILTERS };
 export type { Filters, ActiveFilter };

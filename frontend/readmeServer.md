@@ -19,3 +19,9 @@ VITE_BEARER_TOKEN=AZurPmBtfk6yU3lZ_Omf9A
 cd frontend (если не в папке)
 
 node server.js
+
+## **Что сделать:**
+
+##### Искать в коде по #TODO
+
+* [ ] #TODO переделать получение данных

@@ -1,13 +1,14 @@
 import BlockMiniCalendar from '@/shared/components/calendar/mini-calendar';
 import Button from '@/shared/components/button/button';
 import { useState } from 'react';
-import type { BookingItem, Tabs, TimeSlot } from '@/shared/types/types';
+import { firstBigLetter } from "@/shared/types/functions"
+import type { ResourceItem, Tabs, TimeSlot } from '@/shared/types/types';
 interface ResourceDetailsProps {
-  data: BookingItem | undefined;
+  data: ResourceItem | undefined;
   activeTab: Tabs;
   selectedDate: string;
   setActiveTab: React.Dispatch<React.SetStateAction<Tabs>>;
-  handleResourceClick: (data: BookingItem | undefined) => void;
+  handleResourceClick: (data: ResourceItem | undefined) => void;
   handleBackClick: () => void;
 }
 export default function ResourceDetails({
@@ -19,8 +20,9 @@ export default function ResourceDetails({
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<
     string | undefined
   >();
-  const handleConfirmBooking = () => {};
+  const handleConfirmBooking = () => { };
   const timeSlots: TimeSlot[] = [];
+
   // if (!data) return null;
   return (
     <div className="pb-20 h-screen overflow-y-scroll bg-neutral-content text-neutral font-sans">
@@ -36,9 +38,9 @@ export default function ResourceDetails({
             label="←"
           />
           <div>
-            <h1 className="text-2xl font-bold mb-1">{data?.resource_id}</h1>
+            <h1 className="text-2xl font-bold mb-1">{data?.name}</h1>
             <div className="flex items-center gap-2 text-base-300">
-              <span>{data?.booking_type}</span>
+              <span>{firstBigLetter(data?.resource_type)}</span>
               <span>•</span>
               <span>{data?.location}</span>
             </div>
@@ -74,7 +76,7 @@ export default function ResourceDetails({
           <div className="flex justify-between mb-2">
             <span className="text-neutral">Итого</span>
             <span className="font-bold text-2xl text-neutral">
-              {/* {(data.price ?? 0).toLocaleString('ru-RU')} ₽ */} ЦЕНА
+              {(data?.price_per_hour ?? 0).toLocaleString('ru-RU')} ₽
             </span>
           </div>
           <div className="text-accent text-sm">

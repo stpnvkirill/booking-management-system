@@ -1,13 +1,13 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { CalendarBookingCard } from './components/booking-card';
-import type { BookingItem } from '@/shared/types/types';
+import type { ResourceItem } from '@/shared/types/types';
 import BlockMiniCalendar from '../../shared/components/calendar/mini-calendar';
 import axios from 'axios';
 // import ErrMessage from '../resources/components/resource-error';
 import { Spinner } from '@/shared/components/spinner/spinner';
 // interface CalendarScreenProps {
-//   data: BookingItem | undefined;
+//   data: ResourceItem | undefined;
 // }
 export default function CalendarScreen() {
   const currentDateUTC = new Date();
@@ -20,11 +20,11 @@ export default function CalendarScreen() {
   // const [activeFilter, setActiveFilter] = useState<Filters | undefined>('Все');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<BookingItem[] | undefined>([]);
+  const [data, setData] = useState<ResourceItem[] | undefined>([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<BookingItem[]>(
+        const response = await axios.get<ResourceItem[]>(
           `${import.meta.env.VITE_SERVER_IP}/api/resources/all`,
           {
             headers: {
@@ -76,7 +76,7 @@ export default function CalendarScreen() {
               <Spinner />
             ) : data?.length != 0 ? (
               <CalendarBookingCard
-                bookings={data}
+                bookings={[]} // #TODO переделать получение данных
                 selectedDate={selectedDate}
               />
             ) : data.length == 0 ? "Ошибка загрузки данных" : ""}
