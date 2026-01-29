@@ -42,25 +42,6 @@ def _merge_intervals(
     return merged
 
 
-@dataclass(frozen=True)
-class ResourceCreateParams:
-    name: str
-    customer_id: UUID | None = None
-    description: str | None = None
-    resource_type: str | None = None
-    location: str | None = None
-    price_per_hour: int | None = None
-
-
-@dataclass(frozen=True)
-class ResourceUpdateParams:
-    name: str | None = None
-    description: str | None = None
-    resource_type: str | None = None
-    location: str | None = None
-    price_per_hour: int | None = None
-
-
 class ResourceService:
     """Service for resource CRUD operations with multitenancy checks."""
 
@@ -137,7 +118,8 @@ class ResourceService:
     async def create_resource(
         self,
         current_user: User,
-        params: ResourceCreateParams,
+        name: str,
+        customer_id: UUID | None = None,
         session: AsyncSession | None = None,
     ) -> Resource | None:
         """Create a new resource for a customer.
@@ -145,7 +127,6 @@ class ResourceService:
         If customer_id is not provided, uses the customer where user is owner/admin.
         """
         # Determine customer_id
-        customer_id = params.customer_id
         if customer_id is None:
             customer = await self.get_customer_for_user(
                 user_id=current_user.id,
@@ -162,14 +143,7 @@ class ResourceService:
         ):
             return None
 
-        resource = Resource(
-            customer_id=customer_id,
-            name=params.name,
-            description=params.description,
-            resource_type=params.resource_type,
-            location=params.location,
-            price_per_hour=params.price_per_hour,
-        )
+        resource = Resource(customer_id=customer_id, name=name)
         session.add(resource)
         await session.flush()
         await session.refresh(resource)
@@ -241,7 +215,7 @@ class ResourceService:
         self,
         resource_id: int,
         current_user: User,
-        params: ResourceUpdateParams,
+        name: str | None = None,
         session: AsyncSession | None = None,
     ) -> Resource | None:
         """Update resource with permission check."""
@@ -253,32 +227,12 @@ class ResourceService:
         if not resource:
             return None
 
-        if params.name is not None:
-            resource.name = params.name
-        if params.description is not None:
-            resource.description = params.description
-        if params.resource_type is not None:
-            resource.resource_type = params.resource_type
-        if params.location is not None:
-            resource.location = params.location
-        if params.price_per_hour is not None:
-            resource.price_per_hour = params.price_per_hour
+        if name is not None:
+            resource.name = name
 
         await session.flush()
         await session.refresh(resource)
         return resource
-
-    @provider.inject_session
-    async def get_all_resources(
-        self,
-        skip: int = 0,
-        limit: int = 100,
-        session: AsyncSession | None = None,
-    ) -> list[Resource]:
-        """Get all resources (no multitenancy filter)."""
-        stmt = sa.select(Resource).offset(skip).limit(limit)
-        result = await session.scalars(stmt)
-        return list(result.all())
 
     @provider.inject_session
     async def delete_resource(

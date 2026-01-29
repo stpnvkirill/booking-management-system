@@ -1,7 +1,6 @@
 import logging
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.depends import provider
@@ -69,14 +68,6 @@ def get_application() -> FastAPI:
             bot_manager.stop_all,
             scheduler.stop,
         ],
-    )
-
-    application.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],  # Для разработки доступ c любого ip
-        allow_credentials=True,  # Обязательно для withCredentials: true в React
-        allow_methods=["*"],
-        allow_headers=["*"],
     )
 
     application.middleware("http")(LoggingMiddleware())

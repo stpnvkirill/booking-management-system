@@ -188,16 +188,6 @@ class BookingService:
         return result.all()
 
     @provider.inject_session
-    async def get_all_bookings(
-        self,
-        session: AsyncSession = None,
-    ) -> list[Booking]:
-        """Get all bookings without filtering by customer."""
-        stmt = sa.select(Booking)
-        result = await session.scalars(stmt)
-        return result.all()
-
-    @provider.inject_session
     async def get_resource_bookings(
         self,
         resource_id: int,

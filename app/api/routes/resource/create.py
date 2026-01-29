@@ -7,7 +7,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.api.security import security
 from app.depends import AsyncSession, provider
 from app.domain.services.resource import resource_service
-from app.domain.services.resource.resource import ResourceCreateParams
 from app.infrastructure.database.models.users import User
 
 from .schema import ResourceCreate, ResourceResponse
@@ -33,14 +32,8 @@ async def create_resource(
     """
     resource = await resource_service.create_resource(
         current_user=current_user,
-        params=ResourceCreateParams(
-            name=data.name,
-            customer_id=data.customer_id,
-            description=data.description,
-            resource_type=data.resource_type,
-            location=data.location,
-            price_per_hour=data.price_per_hour,
-        ),
+        name=data.name,
+        customer_id=data.customer_id,
         session=session,
     )
 

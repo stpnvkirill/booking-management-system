@@ -1,8 +1,5 @@
-// import { MainPage } from './views/main-page/main-page.tsx';
-import { BookingProvider } from './types/bookingContext.tsx';
 import { MainPage } from './views/main-page/main-page.tsx';
-import BookingsList2 from './views/main-page/req/req2.tsx'
-
+import { BookingProvider } from './types/bookingContext.tsx';
 function App() {
   window.Telegram?.WebApp?.ready();
   // const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
@@ -18,15 +15,6 @@ function App() {
   // }
   // Коментировать до этой строчки!
   // Далее идет код страницы
-  // return <BookingProvider>{<MainPage />}</BookingProvider>;
-    // return <BookingProvider>{<BookingsList2 />}</BookingProvider>;
-      return (
-    <BookingProvider>
-      <>
-        <BookingsList2 />
-        <MainPage /> 
-      </>
-    </BookingProvider>
-  );
+  return <BookingProvider>{<MainPage />}</BookingProvider>;
 }
 export default App;

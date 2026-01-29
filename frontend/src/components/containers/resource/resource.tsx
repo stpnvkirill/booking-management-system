@@ -9,7 +9,7 @@ export const ResourcesScreen = () => {
     useBookingContext();
 
   const filteredBookings = bookings.filter((booking) =>
-    selectedFilter === 'Все' ? true : booking.description === selectedFilter
+    selectedFilter === 'Все' ? true : booking.type === selectedFilter
   );
 
   return (
@@ -69,32 +69,14 @@ export const ResourceDetails = () => {
   const {
     selectedResource,
     // selectedDate,
-    // setSelectedTimeSlot,
-    // selectedTimeSlot,
+    setSelectedTimeSlot,
+    selectedTimeSlot,
     handleBackClick,
     timeSlots,
-    bookingRange,
-    setBookingRange,
-    // handleTimeClick,
     handleConfirmBooking,
   } = useBookingContext();
-
-  // const endSlots = timeSlots.filter(slot => {
-  //   if (!bookingRange.start) return false;
-  //   return slot.time > bookingRange.start;
-  // });
-
-  const step = !bookingRange.start
-    ? 'SELECT_START'
-    : (!bookingRange.end ? 'SELECT_END' : 'COMPLETED');
-
-  const resetBookingRange = () => {
-    setBookingRange({ start: null, end: null });
-  };
-
   if (!selectedResource) return null;
   return (
-    ///////////от сюда
     <div className="pb-20 bg-neutral-content text-neutral font-sans">
       <div className="p-4 max-w-125 mt-0 mb-0  ml-auto mr-auto">
         {/* Заголовок с кнопкой назад */}
@@ -109,10 +91,10 @@ export const ResourceDetails = () => {
           />
           <div>
             <h1 className="text-2xl font-bold mb-1">
-              {selectedResource.description}
+              {selectedResource.title}
             </h1>
             <div className="flex items-center gap-2 text-base-300">
-              <span>{selectedResource.booking_type}</span>
+              <span>{selectedResource.type}</span>
               <span>•</span>
               <span>{selectedResource.capacity}</span>
             </div>
@@ -132,116 +114,48 @@ export const ResourceDetails = () => {
         <BlockMiniCalendar />
         {/* Календарь */}
 
-
-
-
         {/* Слоты времени */}
-        {/* <div className="mb-8 min-h-[200px]"> */}
-        {/* <div className="grid grid-cols-4 gap-2 mb-2"> */}
-        {step === 'SELECT_START' && (
-          <div>
-            <h3 className="text-sm font-semibold mb-3">Выберите время начала:</h3>
-            <div className="grid grid-cols-4 gap-2">
-              {timeSlots.map((slot) => (
+        <div className="mb-8">
+          <div className="grid grid-cols-4 gap-2 mb-2">
+            {timeSlots.map((slot) => (
+              <div className="">
                 <Button
-                  key={slot.time}
                   label={slot.time}
-                  onClick={() => setBookingRange({ start: slot.time, end: null })}
-                  variant="secondary"
+                  onClick={() => setSelectedTimeSlot(slot.time)}
+                  size="md"
+                  variant={
+                    selectedTimeSlot === slot.time ? 'primary' : 'secondary'
+                  }
+                  shape="default"
                 />
-              ))}
-
-            </div>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
 
-        {step === 'SELECT_END' && (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-semibold">Выберите время окончания:</h3>
-              <button
-                onClick={() => setBookingRange({ start: null, end: null })}
-                className="text-xs text-primary underline"
-              >
-                Изменить старт ({bookingRange.start})
-              </button>
-            </div>
-            <div className="grid grid-cols-4 gap-2">
-              {timeSlots
-                .filter(slot => slot.time > bookingRange.start!)
-                .map((slot) => (
-                  <Button
-                    key={slot.time}
-                    label={slot.time}
-                    onClick={() => setBookingRange({ ...bookingRange, end: slot.time })}
-                    variant="primary"
-                    shape="outline"
-                  />
-                ))}
-            </div>
-          </motion.div>
-        )}
-
-
-        {step === 'COMPLETED' && (
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="rounded-2xl p-5 mb-6 text-neutral bg-base-200"
-          >
-            <div className="flex justify-between mb-2">
-              <span className="text-neutral">Итого</span>
-              <span className="font-bold text-2xl text-neutral">
-                {(selectedResource.price ?? 0).toLocaleString('ru-RU')} ₽
-              </span>
-            </div>
-
-            <div className="text-accent text-sm font-medium">
-              Выбрано: **{bookingRange.start} — {bookingRange.end}**
-            </div>
-          </motion.div>
-        )}
-
-
-
-
-        <AnimatePresence>
-          {step === 'COMPLETED' && (
-            <motion.div initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="grid grid-cols-12 gap-4 w-full mt-6" >
-
-
-
-              <Button
-                label="Подтвердить бронь"
-                onClick={handleConfirmBooking}
-                size="xl"
-                width="full"
-                variant="primary"
-                shape="rounded"
-                className="col-span-6"
-              />
-
-              <Button
-                label="Сбросить"
-                onClick={resetBookingRange}
-                disabled={false}
-                size="xl"
-                width="full"
-                variant="info"
-                shape="rounded"
-                className="col-span-6"
-              />
-
-
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* </div> */}
+        {/* Итого */}
+        <div className="rounded-2xl p-5 mb-6 text-neutral">
+          <div className="flex justify-between mb-2">
+            <span className="text-neutral">Итого</span>
+            <span className="font-bold text-2xl text-neutral">
+              {(selectedResource.price ?? 0).toLocaleString('ru-RU')} ₽
+            </span>
+          </div>
+          <div className="text-accent text-sm">
+            Слот: {selectedTimeSlot || '—'}
+          </div>
+        </div>
+        {/* Кнопка подтверждения */}
+        <Button
+          label={'Подтвердить'}
+          onClick={handleConfirmBooking}
+          disabled={!selectedTimeSlot}
+          size="xl"
+          width="full"
+          variant="primary"
+          shape="default"
+        />
       </div>
     </div>
-
   );
 };
