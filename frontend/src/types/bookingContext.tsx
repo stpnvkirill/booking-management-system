@@ -101,7 +101,6 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
 
   // useEffect(() => {
   //   const API_URL = 'http://localhost:80/api/bookings/all'; // Твой URL из BookingsList2
-  //   const AUTH_TOKEN = 'AZurPmBtfk6yU3lZ_Omf9A'; // Твой токен
 
   //   const fetchBookings = async () => {
   //     setIsLoading(true); // Используем стейт из провайдера
