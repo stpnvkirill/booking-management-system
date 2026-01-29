@@ -1,9 +1,10 @@
 import Button from '@/shared/components/button/button';
+import type { BookingItem } from '@/shared/types/types';
 // import { useBookingContext } from "../bookingContext/bookingContext.tsx";
 export interface ActiveBookingProps {
   bookings?: string; //потом будет подругому
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any; // Позже замени на BookingItem
+  data: BookingItem | undefined; // Позже замени на BookingItem
   onCancel: () => void;
 }
 export default function ActiveBookingCard({
@@ -14,14 +15,14 @@ export default function ActiveBookingCard({
     <div className="rounded-2xl p-5 bg-base-200 hover:bg-base-100 duration-200">
       <div className="mb-3">
         <div className="text-lg font-semibold mb-1 text-base-content">
-          {data.title}
+          {data?.description}
         </div>
         <div className="text-sm text-base-content/60">
-          {data.date} • {data.time}
+          {data?.start_time} • {data?.end_time}
         </div>
       </div>
       <div className="flex gap-3 justify-center flex-row ">
-        <div className="w-full">
+        {/* <div className="w-full">
           <Button
             onClick={() => {}}
             label="Открыть"
@@ -29,7 +30,7 @@ export default function ActiveBookingCard({
             size="md"
             width="full"
           ></Button>
-        </div>
+        </div> */}
         <div className="w-full">
           <Button
             onClick={onCancel}

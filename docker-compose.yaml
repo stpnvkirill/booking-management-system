@@ -1,21 +1,12 @@
-x-logging: &default-logging
-  driver: loki
-  options:
-    loki-url: "${LOKI_URL:-http://localhost:3100/loki/api/v1/push}"
-    loki-batch-size: "400"
-    loki-batch-wait: "1s"
-    loki-external-labels: "job=bms-backend,service=bms"
-
 x-env: &env
   env_file:
     - ${ENV_FILE:-.env}
 
 services:
-  # --------------------- PROD ---------------------
   backend:
-    <<: [*env]
+    <<: [ *env ]
     container_name: bms-backend
-    entrypoint: sh -c "alembic upgrade head || true && uvicorn main:app --host 0.0.0.0 --port=80 --log-level=info"
+    entrypoint: sh -c "alembic upgrade head || true && uvicorn main:app --host 0.0.0.0 --port=80 --log-level=info 2>&1"
     build:
       dockerfile: Dockerfile
     restart: always
@@ -25,16 +16,14 @@ services:
         protocol: tcp
     networks:
       - bms
-    profiles: ["prod"]
+    profiles: [ "prod" ]
     environment:
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
       - BOT_REDIS_DSN=redis://rediska:6379/0
-      - LOKI_SERVICE=bms-backend
-    logging: *default-logging
 
   db:
-    <<: [*env]
+    <<: [ *env ]
     image: postgres:18.1-alpine
     container_name: bms-db
     restart: always
@@ -46,10 +35,6 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - bms
-
-    environment:
-      - LOKI_SERVICE=db
-    logging: *default-logging
 
   rediska:
     image: redis:8.2.1-alpine
@@ -64,83 +49,6 @@ services:
       - target: 6379
         published: 6379
         protocol: tcp
-
-    environment:
-      - LOKI_SERVICE=redis
-    logging: *default-logging
-
-  postgres-exporter:
-    image: prometheuscommunity/postgres-exporter:v0.18.1
-    container_name: bms-postgres-exporter
-    environment:
-      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@bms-db:5432/${POSTGRES_DB}?sslmode=disable"
-    ports:
-      - "9187:9187"
-    networks:
-      - bms
-
-  # ----------------- MONITORING -------------------
-  loki:
-    image: grafana/loki:3.6.3
-    container_name: bms-loki
-    restart: unless-stopped
-    user: "0:0"
-    ports:
-      - "3100:3100"
-    volumes:
-      - ./monitoring/loki/loki-config.yaml:/etc/loki/local-config.yaml
-      - loki-data:/loki
-    networks:
-      - bms-monitoring
-      - bms
-    profiles: ["monitoring"]
-    command: -config.file=/etc/loki/local-config.yaml
-
-  prometheus:
-    image: prom/prometheus:v3.9.1
-    container_name: bms-prometheus
-    restart: unless-stopped
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
-      - ./monitoring/prometheus/alerts.yaml:/etc/prometheus/alerts.yaml
-      - prometheus-data:/prometheus
-    networks:
-      - bms-monitoring
-      - bms
-    profiles: ["monitoring"]
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yaml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
-      - "--web.console.templates=/usr/share/prometheus/consoles"
-      - "--storage.tsdb.retention.time=30d"
-      - "--web.enable-lifecycle"
-
-  grafana:
-    image: grafana/grafana:12.3.1
-    container_name: bms-grafana
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    networks:
-      - bms-monitoring
-      - bms
-    profiles: ["monitoring"]
-    environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000}
-      - GF_INSTALL_PLUGINS=
-    volumes:
-      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - grafana-data:/var/lib/grafana
-    depends_on:
-      - prometheus
-      - loki
 
   frontend:
     <<: [*env]
@@ -164,26 +72,14 @@ services:
     profiles: ["prod"]
     environment:
       - NODE_ENV=production
-    logging: *default-logging
 
 volumes:
   postgres-data:
     name: bms-db-data
   redis-data:
     name: bms-redis-data
-  loki-data:
-    name: bms-loki-data
-  prometheus-data:
-    name: bms-prometheus-data
-  grafana-data:
-    name: bms-grafana-data
-  alertmanager-data:
-    name: bms-alertmanager-data
 
 networks:
   bms:
     name: bms
-    driver: bridge
-  bms-monitoring:
-    name: bms-monitoring
     driver: bridge

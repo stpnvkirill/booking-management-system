@@ -1,0 +1,27 @@
+name: Deploy PROD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/kolupaev_e/booking-management-system/
+            git pull
+            export LOKI_URL=${{ vars.LOKI_URL }}
+            sudo -E docker compose -f /home/kolupaev_e/booking-management-system/docker-compose.prod.yaml pull
+            sudo -E docker compose -f /home/kolupaev_e/booking-management-system/docker-compose.prod.yaml down --timeout=60 --remove-orphans
+            sudo -E docker compose -f /home/kolupaev_e/booking-management-system/docker-compose.prod.yaml up -d --build

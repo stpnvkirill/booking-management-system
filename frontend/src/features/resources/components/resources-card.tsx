@@ -52,7 +52,7 @@ export default function BookingCard({ handleResourceClick, data }: CardProps) {
           </div>
           <div className="flex flex-col gap-2">
             <Button
-              label="Открыть"
+              label="бронь"
               onClick={() => {
                 // console.log(data);
                 if (data) handleResourceClick?.(data);

@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 import uuid as uuid_lib
 
 import sqlalchemy as sa
@@ -10,6 +11,9 @@ from app.infrastructure.database.models.shared import (
     CreatedMixin,
 )
 
+if TYPE_CHECKING:
+    from app.infrastructure.database.models.notification import Notification
+
 
 class Resource(Base, CreatedMixin):
     __tablename__ = "resources"
@@ -21,6 +25,22 @@ class Resource(Base, CreatedMixin):
     customer_id: so.Mapped[uuid_lib.UUID] = so.mapped_column(
         UUID,
         sa.ForeignKey("customers.id", ondelete="CASCADE"),
+    )
+    description: so.Mapped[str | None] = so.mapped_column(
+        sa.Text,
+        nullable=True,
+    )
+    resource_type: so.Mapped[str | None] = so.mapped_column(
+        sa.Enum("квартира", "дом", "студия", "офис", name="resource_type"),
+        nullable=True,
+    )
+    location: so.Mapped[str | None] = so.mapped_column(
+        sa.VARCHAR(255),
+        nullable=True,
+    )
+    price_per_hour: so.Mapped[int | None] = so.mapped_column(
+        sa.Integer,
+        nullable=True,
     )
 
 
@@ -43,15 +63,15 @@ class Booking(BaseWithDt):
     end_time: so.Mapped[sa.DateTime] = so.mapped_column(
         sa.DateTime(timezone=True),
     )
-    description: so.Mapped[str | None] = so.mapped_column(
-        sa.Text,
-        nullable=True,
+
+    notifications: so.Mapped[list["Notification"]] = so.relationship(
+        "Notification",
+        back_populates="booking",
+        lazy="select",  # Используем select вместо dynamic
+        cascade="all, delete-orphan",
     )
-    booking_type: so.Mapped[str | None] = so.mapped_column(
-        sa.VARCHAR(255),
-        nullable=True,
-    )
-    location: so.Mapped[str | None] = so.mapped_column(
-        sa.VARCHAR(255),
-        nullable=True,
+    resource_obj: so.Mapped["Resource"] = so.relationship(
+        "Resource",
+        backref="bookings",
+        lazy="select",
     )

@@ -16,9 +16,10 @@ class BotManager:
     def __init__(self):
         self.bots: dict[uuid.UUID, Bot] = {}
         self.tasks: dict[uuid.UUID, asyncio.Task] = {}
-        self.runners: list[uuid.UUID] = []
+        self.runners: set[int] = set()
         self.dispatchers: dict[uuid.UUID, Dispatcher] = {}
         self.storages: dict[uuid.UUID, RedisStorage | MemoryStorage] = {}
+        self._starting_bots: set[int] = set()
 
     def create_storage(self, bot_id: int):
         storage = self.storages.get(bot_id)
@@ -56,23 +57,33 @@ class BotManager:
         return dp
 
     async def start_bot(self, bot_id: int, bot_token: str | None = None):
+        if bot_id in self._starting_bots:
+            return
         if bot_id in self.runners:
             await self.stop_bot(bot_id)
-        bot = self.bots.get(bot_id)
-        dp = self.dispatchers.get(bot_id)
-        if bot is None:
-            if bot_token is None:
-                bot_config = await BotConfig.get(id=bot_id)
-                bot_token = bot_config.token
 
-            bot: Bot = Bot(
-                token=bot_token,
-            )
-            self.bots[bot_id] = bot
+        self._starting_bots.add(bot_id)
+        try:
+            bot = self.bots.get(bot_id)
+            if bot is None:
+                if bot_token is None:
+                    bot_config = await BotConfig.get(id=bot_id)
+                    bot_token = bot_config.token
+
+                bot: Bot = Bot(
+                    token=bot_token,
+                )
+                self.bots[bot_id] = bot
+
             dp = self.get_dispatcher(bot_id)
             await self.run_bot(bot_id=bot_id, bot=bot, dp=dp)
+        finally:
+            self._starting_bots.discard(bot_id)
 
     async def run_bot(self, bot_id: int, bot, dp):
+        if bot_id in self.runners:
+            return
+
         if config.bot.USE_WEBHOOK:
             webhook_url = config.bot.webhook_url.format(
                 bot_id=bot_id,
@@ -82,6 +93,13 @@ class BotManager:
                 allowed_updates=dp.resolve_used_update_types(),
             )
         else:
+            if bot_id in self.tasks:
+                self.tasks[bot_id].cancel()
+                try:  # noqa: SIM105
+                    await self.tasks[bot_id]
+                except asyncio.CancelledError:
+                    pass
+
             task = asyncio.create_task(
                 dp.start_polling(
                     bot,
@@ -91,8 +109,9 @@ class BotManager:
                 ),
             )
             self.tasks[bot_id] = task
+
         start_type = " set webhook" if config.bot.USE_WEBHOOK else "start polling"
-        self.runners.append(bot_id)
+        self.runners.add(bot_id)
         bot_username = (await bot.get_me()).username
         log(
             level="info",
@@ -108,28 +127,46 @@ class BotManager:
         if bot_id in self.bots:
             await self.bots[bot_id].session.close()
             del self.bots[bot_id]
+        if bot_id in self.dispatchers:
             del self.dispatchers[bot_id]
-            self.runners.remove(bot_id)
+        self.runners.discard(bot_id)
+        self._starting_bots.discard(bot_id)
 
     async def stop_bot(self, bot_id: int):
         """Остановка конкретного бота"""
-        if bot_id in self.tasks:
-            bot = self.bots.get(bot_id)
-            bot_username = (await bot.get_me()).username
-            if config.bot.USE_WEBHOOK:
-                await bot.delete_webhook()
-            self.tasks[bot_id].cancel()
-            await self.remove_bot(bot_id)
-            stop_type = "delete webhook" if config.bot.USE_WEBHOOK else "stop polling"
+        if bot_id not in self.runners:
+            return
 
-            log(
-                level="info",
-                method="stop_bot",
-                path="BotManager",
-                bot_id=bot_id,
-                bot_username=bot_username,
-                text_detail=f"Bot {stop_type}",
-            )
+        bot = self.bots.get(bot_id)
+        bot_username = None
+        if bot:
+            try:  # noqa: SIM105
+                bot_username = (await bot.get_me()).username
+            except Exception:  # noqa: BLE001, S110
+                pass
+
+        if config.bot.USE_WEBHOOK:
+            if bot:
+                await bot.delete_webhook()
+        elif bot_id in self.tasks:
+            self.tasks[bot_id].cancel()
+            try:  # noqa: SIM105
+                await self.tasks[bot_id]
+            except asyncio.CancelledError:
+                pass
+            del self.tasks[bot_id]
+
+        await self.remove_bot(bot_id)
+        stop_type = "delete webhook" if config.bot.USE_WEBHOOK else "stop polling"
+
+        log(
+            level="info",
+            method="stop_bot",
+            path="BotManager",
+            bot_id=bot_id,
+            bot_username=bot_username,
+            text_detail=f"Bot {stop_type}",
+        )
 
     async def run_all(self):
         """Запуск всех ботов из конфига"""

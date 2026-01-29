@@ -19,12 +19,23 @@ class ResourceCreate(BaseModel):
         max_length=255,
         description="Resource name",
     )
+    description: str | None = Field(None, description="Resource description")
+    resource_type: str | None = Field(
+        None,
+        description="Resource type (квартира/дом/студия/офис)",
+    )
+    location: str | None = Field(None, description="Resource location (free-form)")
+    price_per_hour: int | None = Field(None, ge=0, description="Price per hour")
 
 
 class ResourceUpdate(BaseModel):
     """Schema for partial resource update (PATCH /api/resources/{id})."""
 
     name: str | None = Field(None, min_length=1, max_length=255)
+    description: str | None = Field(None)
+    resource_type: str | None = Field(None)
+    location: str | None = Field(None)
+    price_per_hour: int | None = Field(None, ge=0)
 
 
 class ResourceResponse(BaseModel):
@@ -33,7 +44,18 @@ class ResourceResponse(BaseModel):
     id: int
     customer_id: uuid.UUID
     name: str
+    description: str | None = None
+    resource_type: str | None = None
+    location: str | None = None
+    price_per_hour: int | None = None
     created_at: datetime
 
     class Config:
         from_attributes = True
+
+
+class FreeSlotResponse(BaseModel):
+    """Response schema for a free time slot."""
+
+    start_time: datetime = Field(..., description="Slot start time (ISO format)")
+    end_time: datetime = Field(..., description="Slot end time (ISO format)")
