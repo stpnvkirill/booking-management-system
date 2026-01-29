@@ -1,5 +1,4 @@
 import base64
-import uuid
 
 from aiogram import Router
 from aiogram.filters import Command
@@ -10,7 +9,7 @@ from app.infrastructure.database.models.users import User
 from .keyboards import main_menu
 
 
-# TODO: <разберемся почему не работает позже>  # noqa: TD002, TD003
+# TODO: не работают инсерты в БД, просто все виснет именно из бота  # noqa: TD002, TD003
 def get_create_owner_router() -> Router:
     router = Router()
 
@@ -32,10 +31,10 @@ def get_create_owner_router() -> Router:
     async def token(message: Message, user: User):
         await token_answer(message, user)
 
-    @router.message(Command(commands=["refresh_token"]))
+    """@router.message(Command(commands=["refresh_token"]))
     async def refresh_token(message: Message, user: User):
         new_user = await User.update(id=user.id, api_token=uuid.uuid4())
-        await token_answer(message, new_user)
+        await token_answer(message, new_user)"""
 
     """@router.message(Command(commands=["create_owner"]))
     async def create_owner(message: Message):
