@@ -892,7 +892,7 @@
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "{service_name=\"bms-backend\"}",
+          "expr": "{job=\"bms-backend\"} ",
           "hide": false,
           "queryType": "range",
           "refId": "A"
@@ -959,5 +959,5 @@
   "timezone": "",
   "title": "Backend",
   "uid": "fastapi-observability",
-  "version": 1
+  "version": 2
 }

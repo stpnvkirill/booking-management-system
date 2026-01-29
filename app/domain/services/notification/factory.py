@@ -62,19 +62,6 @@ class BookingEndMessageFactory(NotificationMessageFactory):
         )
 
 
-class BookingEvaluationRequestMessageFactory(NotificationMessageFactory):
-    """Message requesting evaluation after booking completion."""
-
-    def create_message(self, booking: "Booking") -> str:
-        return (
-            "Оцените ваше бронирование!\n\n"
-            f"Бронирование завершено: {booking.end_time.strftime('%d.%m.%Y %H:%M')}\n\n"
-            "Пожалуйста, оцените ваше бронирование от 1 до 5 звезд.\n"
-            "Вы также можете оставить комментарий.\n\n"
-            "Используйте команду /feedback для оценки."
-        )
-
-
 class NotificationFactory:
     """Factory for creating messages by notification type."""
 
@@ -83,7 +70,6 @@ class NotificationFactory:
         "booking_1h": Booking1HMessageFactory(),
         "booking_start": BookingStartMessageFactory(),
         "booking_end": BookingEndMessageFactory(),
-        "booking_eval": BookingEvaluationRequestMessageFactory(),
     }
 
     @classmethod

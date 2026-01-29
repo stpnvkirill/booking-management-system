@@ -69,5 +69,5 @@ class LoggingMiddleware(BaseMiddleware):
                 else None,
                 exception=err,
                 bot_id=event.bot.id,
-                bot_username=event.bot._me.username,  # noqa: SLF001
+                bot_username=event.bot.username,
             )
