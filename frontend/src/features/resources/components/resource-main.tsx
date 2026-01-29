@@ -75,7 +75,7 @@ export default function ResourceMain({
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
-        ) : data.length == 0 ? "Ошибка загрузки данных" : ""}
+        ) : data.length == 0 ? <div className='text-center'>Нет доступных бронирований</div> : ""}
       </div>
     </div>
   );

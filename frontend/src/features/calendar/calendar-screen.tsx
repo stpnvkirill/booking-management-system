@@ -79,7 +79,7 @@ export default function CalendarScreen() {
                 bookings={[]} // #TODO переделать получение данных
                 selectedDate={selectedDate}
               />
-            ) : data.length == 0 ? "Ошибка загрузки данных" : ""}
+            ) : data.length == 0 ? <div className='text-center'>Нет доступных бронирований</div> : ""}
           </motion.div>
         </AnimatePresence>
       </div>
