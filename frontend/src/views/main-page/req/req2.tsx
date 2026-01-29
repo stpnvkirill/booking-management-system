@@ -3,7 +3,7 @@ import axios from 'axios'; // Импортируем Axios
 import { useBookingContext } from '../../../types/bookingContext';
 
 function BookingsList2() {
-  const { bookings, setBookings } = useBookingContext();
+  const { setBookings } = useBookingContext();
   // Устанавливаем начальные значения и типы
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState<string | null>(null); 

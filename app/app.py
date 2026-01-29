@@ -1,8 +1,9 @@
 import logging
 
 from fastapi import FastAPI
-from prometheus_fastapi_instrumentator import Instrumentator
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
+
 from .api import routes
 from .bot import bot_manager
 from .domain.services import user_service
@@ -45,13 +46,15 @@ def get_application() -> FastAPI:
         on_shutdown=[bot_manager.stop_all],
     )
 
-    origins = ["http://localhost:5173",
-               "http://localhost:5174"]  #приколы с протоколами)
+    origins = [
+        "http://localhost:5173",
+        "http://localhost:5174",
+    ]  # protocol quirks
 
     application.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
-        allow_credentials=True, # Обязательно для withCredentials: true в React
+        allow_credentials=True,  # Обязательно для withCredentials: true в React
         allow_methods=["*"],
         allow_headers=["*"],
     )
