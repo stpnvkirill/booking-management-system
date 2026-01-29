@@ -1,0 +1,225 @@
+x-logging: &default-logging
+  driver: loki
+  options:
+    loki-url: "${LOKI_URL:-http://localhost:3100/loki/api/v1/push}"
+    loki-batch-size: "400"
+    loki-batch-wait: "1s"
+    loki-external-labels: "job=bms-backend,service=bms"
+
+x-env: &env
+  env_file:
+    - ${ENV_FILE:-.env}
+
+services:
+  # --------------------- PROD ---------------------
+  backend:
+    <<: [*env]
+    container_name: bms-backend
+    entrypoint: sh -c "alembic upgrade head || true && uvicorn main:app --host 0.0.0.0 --port=80 --log-level=critical"
+    build:
+      dockerfile: Dockerfile
+    restart: always
+    expose:
+      - "80"
+    networks:
+      - proxy
+    profiles: ["prod"]
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - BOT_REDIS_DSN=redis://rediska:6379/0
+      - LOKI_SERVICE=bms-backend
+    logging: *default-logging
+
+  db:
+    <<: [*env]
+    image: postgres:18.1-alpine
+    container_name: bms-db
+    restart: always
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - proxy
+    environment:
+      - LOKI_SERVICE=db
+    logging: *default-logging
+
+  rediska:
+    image: redis:8.2.1-alpine
+    container_name: bms-redis
+    restart: always
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - proxy
+    environment:
+      - LOKI_SERVICE=redis
+    logging: *default-logging
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.18.1
+    container_name: bms-postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@bms-db:5432/${POSTGRES_DB}?sslmode=disable"
+    expose:
+      - "9187"
+    networks:
+      - proxy
+
+  frontend:
+    <<: [*env]
+    container_name: bms-frontend
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM node:20-alpine AS build
+        RUN apk add --no-cache python3 make g++ bash
+        WORKDIR /app/frontend
+        COPY frontend/ .
+        RUN npm install
+        RUN npm run build
+
+        FROM nginx:alpine
+        COPY --from=build /app/frontend/dist /usr/share/nginx/html
+        EXPOSE 80
+
+    restart: always
+    expose:
+      - "80"
+    networks:
+      - proxy
+    profiles: ["prod"]
+    environment:
+      - NODE_ENV=production
+    logging: *default-logging
+
+  # ----------------- MONITORING -------------------
+  loki:
+    image: grafana/loki:3.6.3
+    container_name: bms-loki
+    restart: unless-stopped
+    user: "0:0"
+    expose:
+      - "3100"
+    volumes:
+      - ./monitoring/loki/loki-config.yaml:/etc/loki/local-config.yaml
+      - loki-data:/loki
+    networks:
+      - proxy
+    profiles: ["monitoring"]
+    command: -config.file=/etc/loki/local-config.yaml
+
+  prometheus:
+    image: prom/prometheus:v3.9.1
+    container_name: bms-prometheus
+    restart: unless-stopped
+    expose:
+      - "9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./monitoring/prometheus/alerts.yaml:/etc/prometheus/alerts.yaml
+      - prometheus-data:/prometheus
+    networks:
+      - proxy
+    profiles: ["monitoring"]
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yaml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.enable-lifecycle"
+
+  grafana:
+    image: grafana/grafana:12.3.1
+    container_name: bms-grafana
+    restart: unless-stopped
+    expose:
+      - "3000"
+    networks:
+      - proxy
+    profiles: ["monitoring"]
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000}
+      - GF_INSTALL_PLUGINS=
+    volumes:
+      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+      - loki
+
+  alertmanager:
+    image: prom/alertmanager:v0.30.1
+    container_name: bms-alertmanager
+    restart: unless-stopped
+    expose:
+      - "9093"
+    volumes:
+      - ./monitoring/alertmanager/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml
+      - alertmanager-data:/alertmanager
+    networks:
+      - proxy
+    depends_on:
+      - alertserver
+      - prometheus
+    profiles: ["monitoring"]
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yaml"
+      - "--storage.path=/alertmanager"
+
+  alertserver:
+    container_name: alertserver
+    restart: always
+    build: ./monitoring/alertserver
+    expose:
+      - "8080"
+    environment:
+      TG_BOT_ALERT_TOKEN: ${TG_BOT_ALERT_TOKEN}
+      TG_ALERT_CHAT_ID: ${TG_ALERT_CHAT_ID}
+    profiles: ["monitoring"]
+    networks:
+      - proxy
+
+
+# ----------------- Nginx Proxy Manager -------------------
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:2.13.6
+    container_name: nginx-proxy-manager
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"
+    volumes:
+      - npm-data:/data
+      - npm-letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy
+
+volumes:
+  postgres-data:
+    name: bms-db-data
+  redis-data:
+    name: bms-redis-data
+  loki-data:
+    name: bms-loki-data
+  prometheus-data:
+    name: bms-prometheus-data
+  grafana-data:
+    name: bms-grafana-data
+  alertmanager-data:
+    name: bms-alertmanager-data
+  npm-data:
+    name: npm-data
+  npm-letsencrypt:
+    name: npm-letsencrypt
+    
+networks:
+  proxy:
+    external: true

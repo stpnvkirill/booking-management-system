@@ -6,6 +6,10 @@ import sqlalchemy as sa
 
 from app.depends import AsyncSession, provider
 from app.infrastructure.database import Booking, Resource
+from app.infrastructure.database.models.notification import (
+    Notification,
+    NotificationStatus,
+)
 
 # Maximum booking duration: 3 years in the future
 MAX_BOOKING_DURATION_DAYS = 365 * 3
@@ -117,7 +121,29 @@ class BookingService:
             location=params.location,
             session=session,
         )
+        await session.flush()
+
+        notification_24h_time = params.start_time - timedelta(hours=24)
+        await Notification.create(
+            booking_id=booking.id,
+            user_id=params.user_id,
+            type="booking_24h",
+            status=NotificationStatus.PENDING,
+            scheduled_at=notification_24h_time,
+            session=session,
+        )
+
+        notification_1h_time = params.start_time - timedelta(hours=1)
+        await Notification.create(
+            booking_id=booking.id,
+            user_id=params.user_id,
+            type="booking_1h",
+            status=NotificationStatus.PENDING,
+            scheduled_at=notification_1h_time,
+            session=session,
+        )
         await session.commit()
+
         return booking
 
     @provider.inject_session
