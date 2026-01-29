@@ -1,13 +1,45 @@
 """Resource service for handling resource business logic with multitenancy support."""
 
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 import sqlalchemy as sa
 
 from app.depends import AsyncSession, provider
+from app.infrastructure.database import Booking
 from app.infrastructure.database.models.booking import Resource
-from app.infrastructure.database.models.users import Customer, CustomerAdmin, User
+from app.infrastructure.database.models.users import (
+    Customer,
+    CustomerAdmin,
+    CustomerMember,
+    User,
+)
+
+
+@dataclass(frozen=True)
+class FreeSlotsParams:
+    """Params for get_free_slots. slot is size in seconds."""
+
+    start: datetime
+    end: datetime
+    slot: int
+
+
+def _merge_intervals(
+    intervals: list[tuple[datetime, datetime]],
+) -> list[tuple[datetime, datetime]]:
+    if not intervals:
+        return []
+    intervals = sorted(intervals, key=lambda x: x[0])
+    merged: list[tuple[datetime, datetime]] = [intervals[0]]
+    for start, end in intervals[1:]:
+        last_start, last_end = merged[-1]
+        if start <= last_end:
+            merged[-1] = (last_start, max(last_end, end))
+        else:
+            merged.append((start, end))
+    return merged
 
 
 @dataclass(frozen=True)
@@ -58,12 +90,33 @@ class ResourceService:
         return admin is not None
 
     @provider.inject_session
+    async def is_member_or_admin_or_owner(
+        self,
+        user_id: UUID,
+        customer_id: UUID,
+        session: AsyncSession | None = None,
+    ) -> bool:
+        """Check if user is member, admin, or owner of the customer."""
+        if await self.is_admin_or_owner(
+            user_id=user_id,
+            customer_id=customer_id,
+            session=session,
+        ):
+            return True
+        member = await CustomerMember.get_by(
+            user_id=user_id,
+            customer_id=customer_id,
+            session=session,
+        )
+        return member is not None
+
+    @provider.inject_session
     async def get_customer_for_user(
         self,
         user_id: UUID,
         session: AsyncSession | None = None,
     ) -> Customer | None:
-        """Get customer where user is owner or admin."""
+        """Get customer where user is owner, admin, or member."""
         # First check if user is owner
         customer = await Customer.get_by(owner_id=user_id, session=session)
         if customer:
@@ -73,6 +126,10 @@ class ResourceService:
         admin_record = await CustomerAdmin.get_by(user_id=user_id, session=session)
         if admin_record:
             return await Customer.get(id=admin_record.customer_id, session=session)
+
+        member_record = await CustomerMember.get_by(user_id=user_id, session=session)
+        if member_record:
+            return await Customer.get(id=member_record.customer_id, session=session)
 
         return None
 
@@ -129,7 +186,7 @@ class ResourceService:
     ) -> list[Resource]:
         """Get resources filtered by customer (multitenancy).
 
-        Only returns resources for customers where user is admin or owner.
+        Returns resources for customers where user is member, admin, or owner.
         """
         if customer_id is None:
             customer = await self.get_customer_for_user(
@@ -139,7 +196,7 @@ class ResourceService:
             if not customer:
                 return []
             customer_id = customer.id
-        elif not await self.is_admin_or_owner(
+        elif not await self.is_member_or_admin_or_owner(
             user_id=current_user.id,
             customer_id=customer_id,
             session=session,
@@ -244,6 +301,89 @@ class ResourceService:
 
         await session.delete(resource)
         return True
+
+    @provider.inject_session
+    async def get_free_slots(
+        self,
+        resource_id: int,
+        current_user: User,
+        params: FreeSlotsParams,
+        session: AsyncSession | None = None,
+    ) -> list[tuple[datetime, datetime]] | None:
+        """Return list of free slots (start,end) for given interval and slot size.
+
+        Returns None if resource not found or access denied (multitenancy).
+        Raises ValueError for invalid params.
+        """
+        start = params.start
+        end = params.end
+        slot = params.slot
+
+        if start.tzinfo is None or end.tzinfo is None:
+            msg = "start and end must be timezone-aware datetimes"
+            raise ValueError(msg)
+        if end <= start:
+            msg = "end must be after start"
+            raise ValueError(msg)
+        if (end - start) > timedelta(days=1):
+            msg = "interval duration must not exceed 1 days"
+            raise ValueError(msg)
+        if slot <= 0:
+            msg = "slot must be a positive integer (seconds)"
+            raise ValueError(msg)
+
+        now = datetime.now(timezone.utc)
+        effective_start = max(start, now)
+        if effective_start >= end:
+            return []
+
+        # Permission/resource existence check
+        resource = await self.get_resource(
+            resource_id=resource_id,
+            current_user=current_user,
+            session=session,
+        )
+        if resource is None:
+            return None
+
+        # Load bookings that overlap requested interval (SQL does the filtering)
+        stmt = sa.select(Booking).where(
+            sa.and_(
+                Booking.resource_id == resource_id,
+                Booking.start_time < end,
+                Booking.end_time > start,
+            ),
+        )
+        result = await session.scalars(stmt)
+        bookings = list(result.all())
+
+        busy = _merge_intervals(
+            [
+                (max(b.start_time, effective_start), min(b.end_time, end))
+                for b in bookings
+            ],
+        )
+
+        # Build free intervals (gaps between busy intervals)
+        free_intervals: list[tuple[datetime, datetime]] = []
+        cursor = effective_start
+        for b_start, b_end in busy:
+            if cursor < b_start:
+                free_intervals.append((cursor, b_start))
+            cursor = max(cursor, b_end)
+        if cursor < end:
+            free_intervals.append((cursor, end))
+
+        # Split free intervals into fixed-size slots
+        slot_delta = timedelta(seconds=slot)
+        free_slots: list[tuple[datetime, datetime]] = []
+        for free_start, free_end in free_intervals:
+            t = free_start
+            while t + slot_delta <= free_end:
+                free_slots.append((t, t + slot_delta))
+                t = t + slot_delta
+
+        return free_slots
 
 
 resource_service = ResourceService()

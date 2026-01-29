@@ -6,6 +6,7 @@ from .models import (
     CustomerAdmin,
     CustomerMember,
     Feedback,
+    Notification,
     Resource,
     User,
     UserBot,

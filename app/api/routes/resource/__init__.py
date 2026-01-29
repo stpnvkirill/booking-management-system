@@ -13,6 +13,7 @@ from fastapi import APIRouter
 
 from .create import router as create_router
 from .delete import router as delete_router
+from .free_slots import router as free_slots_router
 from .read import router as read_router
 from .update import router as update_router
 
@@ -21,5 +22,6 @@ router = APIRouter(prefix="/resources", tags=["Resource"])
 # Include all routers
 router.include_router(create_router)
 router.include_router(read_router)
+router.include_router(free_slots_router)
 router.include_router(update_router)
 router.include_router(delete_router)

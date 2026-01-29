@@ -6,6 +6,17 @@ import sqlalchemy as sa
 
 from app.depends import AsyncSession, provider
 from app.infrastructure.database import Booking, Resource
+from app.infrastructure.database.models.notification import (
+    Notification,
+    NotificationStatus,
+)
+from app.metrics.business import (
+    booking_cancelled_total,
+    booking_created_total,
+    booking_duration_seconds,
+    booking_lead_time_seconds,
+    booking_status_changed_total,
+)
 
 # Maximum booking duration: 3 years in the future
 MAX_BOOKING_DURATION_DAYS = 365 * 3
@@ -20,9 +31,7 @@ class BookingParams:
     resource_id: int
     start_time: datetime
     end_time: datetime
-    description: str | None = None
-    booking_type: str | None = None
-    location: str | None = None
+    source: str = "api"
 
 
 class BookingService:
@@ -42,8 +51,6 @@ class BookingService:
         Uses SELECT FOR UPDATE to prevent race conditions during booking creation.
         Returns True if available (no conflicts), False otherwise.
         """
-        # Lock rows to prevent concurrent bookings on same resource
-        # Cannot use FOR UPDATE with aggregate functions, so select actual rows
         stmt = (
             sa.select(Booking)
             .where(
@@ -112,12 +119,52 @@ class BookingService:
             resource_id=params.resource_id,
             start_time=params.start_time,
             end_time=params.end_time,
-            description=params.description,
-            booking_type=params.booking_type,
-            location=params.location,
+            session=session,
+        )
+        await session.flush()
+
+        notification_24h_time = params.start_time - timedelta(hours=24)
+        await Notification.create(
+            booking_id=booking.id,
+            user_id=params.user_id,
+            type="booking_24h",
+            status=NotificationStatus.PENDING,
+            scheduled_at=notification_24h_time,
+            session=session,
+        )
+
+        notification_1h_time = params.start_time - timedelta(hours=1)
+        await Notification.create(
+            booking_id=booking.id,
+            user_id=params.user_id,
+            type="booking_1h",
+            status=NotificationStatus.PENDING,
+            scheduled_at=notification_1h_time,
             session=session,
         )
         await session.commit()
+
+        # Record business metrics
+        booking_created_total.labels(
+            source=params.source,
+            customer_id=str(params.customer_id),
+            resource_id=str(params.resource_id),
+        ).inc()
+
+        # Record booking duration
+        duration_seconds = (params.end_time - params.start_time).total_seconds()
+        booking_duration_seconds.labels(
+            customer_id=str(params.customer_id),
+            resource_id=str(params.resource_id),
+        ).observe(duration_seconds)
+
+        # Record booking lead time (time from creation to start)
+        lead_time_seconds = (params.start_time - now).total_seconds()
+        booking_lead_time_seconds.labels(
+            customer_id=str(params.customer_id),
+            resource_id=str(params.resource_id),
+        ).observe(lead_time_seconds)
+
         return booking
 
     @provider.inject_session
@@ -151,10 +198,32 @@ class BookingService:
         return result.all()
 
     @provider.inject_session
+    async def get_resource_bookings(
+        self,
+        resource_id: int,
+        session: AsyncSession = None,
+    ) -> list[Booking]:
+        """Get all future bookings for a resource."""
+        now = datetime.now(timezone.utc)
+        stmt = (
+            sa.select(Booking)
+            .where(
+                sa.and_(
+                    Booking.resource_id == resource_id,
+                    Booking.start_time >= now,  # Only future bookings
+                ),
+            )
+            .order_by(Booking.start_time.asc())
+        )
+        result = await session.scalars(stmt)
+        return list(result.all())
+
+    @provider.inject_session
     async def cancel_booking(
         self,
         booking_id: int,
         user_id: UUID,
+        source: str = "api",
         session: AsyncSession = None,
     ) -> bool:
         """
@@ -170,9 +239,29 @@ class BookingService:
             return False
 
         # Delete using session ORM API to avoid duplication with Base.delete
+        # Get resource info before deletion for metrics
+        resource = await Resource.get(id=booking.resource_id, session=session)
+        customer_id = resource.customer_id if resource else "unknown"
+
         await session.delete(booking)
         try:
             await session.commit()
+
+            # Record business metrics for cancellation
+            booking_cancelled_total.labels(
+                source=source,
+                customer_id=str(customer_id),
+                resource_id=str(booking.resource_id),
+            ).inc()
+
+            # Record status change metric
+            booking_status_changed_total.labels(
+                from_status="active",
+                to_status="cancelled",
+                customer_id=str(customer_id),
+                resource_id=str(booking.resource_id),
+            ).inc()
+
         except Exception:
             await session.rollback()
             raise
