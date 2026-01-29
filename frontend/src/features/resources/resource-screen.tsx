@@ -18,7 +18,7 @@ export default function ResourcesScreen() {
     // console.log(resource)
   };
   // console.log(data)
-  useEffect(() => {});
+  useEffect(() => { });
   const handleBackClick = () => {
     setActiveTab('main');
   };

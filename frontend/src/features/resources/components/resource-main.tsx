@@ -27,7 +27,7 @@ export default function ResourceMain({
     const fetchData = async () => {
       try {
         const response = await axios.get<BookingItem[]>(
-          'http://localhost:80/api/bookings/all/',
+          `${import.meta.env.VITE_SERVER_IP}/api/resources/all`,
           {
             headers: {
               Accept: 'application/json',
@@ -75,9 +75,7 @@ export default function ResourceMain({
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
-        ) : (
-          ''
-        )}
+          ) : data.length == 0 ? "Ошибка загрузки данных" : ""}
       </div>
     </div>
   );

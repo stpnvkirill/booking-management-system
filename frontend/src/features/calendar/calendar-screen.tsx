@@ -25,7 +25,7 @@ export default function CalendarScreen() {
     const fetchData = async () => {
       try {
         const response = await axios.get<BookingItem[]>(
-          'http://localhost:80/api/bookings/all/',
+          `${import.meta.env.VITE_SERVER_IP}/api/resources/all`,
           {
             headers: {
               Accept: 'application/json',
@@ -71,9 +71,7 @@ export default function CalendarScreen() {
               <div className="text-red-500 text-center">
                 Ошибка загрузки данных!
               </div>
-            ) : (
-              ''
-            )}
+            ) : ""}
             {loading ? (
               <Spinner />
             ) : data?.length != 0 ? (
@@ -81,9 +79,7 @@ export default function CalendarScreen() {
                 bookings={data}
                 selectedDate={selectedDate}
               />
-            ) : (
-              ''
-            )}
+            ) : data.length == 0 ? "Ошибка загрузки данных" : ""}
           </motion.div>
         </AnimatePresence>
       </div>

@@ -11,7 +11,7 @@ import { Spinner } from './shared/components/spinner/spinner';
 
 const useAuth = () => {
   // Состояние, указывающее, авторизован ли пользователь
-  const [isAuth, setIsAuth] = useState(false);
+  const [isAuth, setIsAuth] = useState(true);
 
   // Функция для отправки данных на сервер и получения статуса аутентификации
   const signIn = async (initData?: string | object) => {
@@ -29,7 +29,7 @@ export default function App() {
   window.Telegram?.WebApp?.ready();
   type Tabs = 'resources' | 'calendar' | 'profile';
   const user: boolean = true;
-  const isAuthenticated: boolean = true;    
+  const isAuthenticated: boolean = true;
   const [activeTab, setActiveTab] = useState<Tabs>('resources');
   const { isAuth, signIn } = useAuth();
   useEffect(() => {
@@ -74,9 +74,11 @@ export default function App() {
         <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
       </>
     );
+  } else {
+    return (
+      <><Spinner /></>
+    )
   }
-  return (
-    <><Spinner /></>
-  )
+
 
 }

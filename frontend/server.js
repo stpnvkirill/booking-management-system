@@ -34,7 +34,18 @@ app.get('/api/bookings/all', (req, response) => {
     }
   })();
 });
-
+app.get('/api/resources/all', (req, response) => {
+  (async () => {
+    try {
+      const res = await pool.query('SELECT * FROM resources');
+      console.log('Data from db:', res.rows.length, 'rows');
+      response.send(res.rows);
+    } catch (err) {
+      console.error(err);
+      response.send(err);
+    }
+  })();
+});
 app.listen(88, () => {
   console.log('Server running on http://localhost:88/');
 });
