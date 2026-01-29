@@ -1,12 +1,13 @@
 import FilterBTNS from './resources-filters';
 import BookingList from './resource-bookings-list';
-import ErrMessage from './resource-error';
+import ErrMessage from '../../../shared/components/messages/error-message';
 import Header from '../../../shared/components/header/header';
 import List from './resources-list';
 import { Spinner } from '@/shared/components/spinner/spinner';
 import type { ResourceItem, Filters } from '@/shared/types/types';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Message from '@/shared/components/messages/message';
 type Tabs = 'main' | 'details';
 interface ResourceMainProps {
   activeTab: Tabs;
@@ -65,7 +66,7 @@ export default function ResourceMain({
         {/* Список бронирований */}
         <List count={filteredBookings.length} />
         {/* Карточки ресурсов */}
-        {error ? <ErrMessage /> : ''}
+        {error ? <ErrMessage error={error} /> : data.length == 0 && !loading ? <Message message="Нет доступных бронирований"/> : ''}
         {loading ? (
           <Spinner />
         ) : data.length != 0 ? (
@@ -75,7 +76,7 @@ export default function ResourceMain({
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
-        ) : data.length == 0 ? <div className='text-center'>Нет доступных бронирований</div> : ""}
+        ) : ""}
       </div>
     </div>
   );

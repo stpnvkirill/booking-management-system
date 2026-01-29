@@ -6,6 +6,8 @@ import BlockMiniCalendar from '../../shared/components/calendar/mini-calendar';
 import axios from 'axios';
 // import ErrMessage from '../resources/components/resource-error';
 import { Spinner } from '@/shared/components/spinner/spinner';
+import ErrMessage from '../../shared/components/messages/error-message';
+import Message from '@/shared/components/messages/message';
 // interface CalendarScreenProps {
 //   data: ResourceItem | undefined;
 // }
@@ -67,11 +69,7 @@ export default function CalendarScreen() {
             exit={{ opacity: 0, y: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {error ? (
-              <div className="text-red-500 text-center">
-                Ошибка загрузки данных!
-              </div>
-            ) : ""}
+            {error ? <ErrMessage error={error} /> : data?.length == 0 && !loading ? <Message message="Нет доступных бронирований"/> : ''}
             {loading ? (
               <Spinner />
             ) : data?.length != 0 ? (
@@ -79,7 +77,7 @@ export default function CalendarScreen() {
                 bookings={[]} // #TODO переделать получение данных
                 selectedDate={selectedDate}
               />
-            ) : data.length == 0 ? <div className='text-center'>Нет доступных бронирований</div> : ""}
+            ) : ""}
           </motion.div>
         </AnimatePresence>
       </div>
