@@ -42,6 +42,10 @@ class NotificationService:
         """Send booking end notification."""
         return await self._send_notification(notification)
 
+    async def send_booking_eval(self, notification: Notification) -> bool:
+        """Send booking evaluation"""
+        return await self._send_notification(notification)
+
     async def _send_notification(  # noqa: PLR0912
         self,
         notification: Notification,

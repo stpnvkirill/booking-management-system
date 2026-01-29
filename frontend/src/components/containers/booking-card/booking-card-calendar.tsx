@@ -41,11 +41,11 @@ export const BookingCardCalendar = ({
                 <div className="flex justify-between items-start mb-3">
                   <div className="text-left">
                     <h3 className="text-lg font-semibold mb-1 text-accent-content">
-                      {booking?.description}
+                      {booking?.title}
                     </h3>
                     <div className="flex items-center gap-2 mb-2">
                       <span className="bg-accent text-accent-content pt-0.5 pb-0.5 pr-2 pl-2 rounded-xl text-xs font-medium">
-                        {booking?.description}
+                        {booking?.type}
                       </span>
                       <span className="text-accent-content text-sm">•</span>
                       <span className="text-accent-content text-sm">

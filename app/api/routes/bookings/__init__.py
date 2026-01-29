@@ -69,9 +69,7 @@ async def create_booking(
             resource_id=data.resource_id,
             start_time=data.start_time,
             end_time=data.end_time,
-            description=data.description,
-            booking_type=data.booking_type,
-            location=data.location,
+            source="api",
         ),
         session=session,
     )
@@ -134,37 +132,6 @@ async def list_user_bookings(
     return result
 
 
-@router.get(
-    "/all",
-    response_model=list[BookingResponse],
-    summary="Get all bookings",
-    description="Get all bookings without filtering by customer",
-    responses={
-        200: {"description": "List of all bookings"},
-    },
-)
-async def list_all_bookings(
-    _current_user: Annotated[User, Depends(security.get_current_user)],
-    session: Annotated[AsyncSession, Depends(provider.get_session)],
-):
-    """Get all bookings without customer filter."""
-    # Get all bookings
-    bookings = await booking_service.get_all_bookings(session=session)
-
-    # Enrich with resource names
-    result = []
-    for booking in bookings:
-        resource = await Resource.get(id=booking.resource_id, session=session)
-        result.append(
-            BookingResponse(
-                **booking.to_dict(),
-                resource_name=resource.name if resource else None,
-            ),
-        )
-
-    return result
-
-
 @router.delete(
     "/{booking_id}",
     summary="Cancel a booking",
@@ -193,6 +160,7 @@ async def cancel_booking(
     success = await booking_service.cancel_booking(
         booking_id=booking_id,
         user_id=current_user.id,
+        source="api",
         session=session,
     )
 

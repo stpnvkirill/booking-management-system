@@ -26,22 +26,6 @@ class Resource(Base, CreatedMixin):
         UUID,
         sa.ForeignKey("customers.id", ondelete="CASCADE"),
     )
-    description: so.Mapped[str | None] = so.mapped_column(
-        sa.Text,
-        nullable=True,
-    )
-    resource_type: so.Mapped[str | None] = so.mapped_column(
-        sa.Enum("квартира", "дом", "студия", "офис", name="resource_type"),
-        nullable=True,
-    )
-    location: so.Mapped[str | None] = so.mapped_column(
-        sa.VARCHAR(255),
-        nullable=True,
-    )
-    price_per_hour: so.Mapped[int | None] = so.mapped_column(
-        sa.Integer,
-        nullable=True,
-    )
 
 
 class Booking(BaseWithDt):

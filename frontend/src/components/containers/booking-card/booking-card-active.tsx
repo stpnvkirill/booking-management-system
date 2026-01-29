@@ -1,6 +1,5 @@
 import type { PropsWithChildren } from 'react';
 import Button from '../../small/button/button';
-import type { BookingItem } from '../../../types/bookingContext';
 // import { useBookingContext } from "../bookingContext/bookingContext.tsx";
 export interface ActiveBookingProps {
   // bookings?: BookingItem;
@@ -8,7 +7,7 @@ export interface ActiveBookingProps {
   bookings?: string; //потом будет подругому
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: BookingItem; // Позже замени на BookingItem
+  data: any; // Позже замени на BookingItem
   onCancel: () => void;
 }
 export const ActiveBookingCard = ({
@@ -21,14 +20,14 @@ export const ActiveBookingCard = ({
     <div className="rounded-2xl p-5 bg-base-200 hover:bg-base-100 duration-200">
       <div className="mb-3">
         <div className="text-lg font-semibold mb-1 text-base-content">
-          {data.description}
+          {data.title}
         </div>
         <div className="text-sm text-base-content/60">
           {data.date} • {data.time}
         </div>
       </div>
       <div className="flex gap-3 justify-center flex-row ">
-        {/* <div className="w-full">
+        <div className="w-full">
           <Button
             onClick={() => {}}
             label="Открыть"
@@ -36,7 +35,7 @@ export const ActiveBookingCard = ({
             size="md"
             width="full"
           ></Button>
-        </div> */}
+        </div>
         <div className="w-full">
           <Button
             onClick={onCancel}

@@ -1,32 +1,30 @@
+x-env: &env
+  env_file:
+    - ${ENV_FILE:-.env}
+
 services:
   loki:
     image: grafana/loki:3.6.3
     container_name: bms-loki
-    restart: unless-stopped
+    restart: always
     user: "0:0"
     ports:
       - "3100:3100"
     volumes:
       - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
       - loki-data:/loki
-    networks:
-      - bms-monitoring
-      - bms
     command: -config.file=/etc/loki/local-config.yaml
 
   prometheus:
     image: prom/prometheus:v3.9.1
     container_name: bms-prometheus
-    restart: unless-stopped
+    restart: always
     ports:
       - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
       - ./prometheus/alerts.yaml:/etc/prometheus/alerts.yaml
       - prometheus-data:/prometheus
-    networks:
-      - bms-monitoring
-      - bms
     command:
       - "--config.file=/etc/prometheus/prometheus.yaml"
       - "--storage.tsdb.path=/prometheus"
@@ -38,24 +36,55 @@ services:
   grafana:
     image: grafana/grafana:12.3.1
     container_name: bms-grafana
-    restart: unless-stopped
+    restart: always
     ports:
       - "3000:3000"
-    networks:
-      - bms-monitoring
-      - bms
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
       - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000}
-      - GF_INSTALL_PLUGINS=
+      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://10.130.0.21:3000}
     volumes:
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
       - grafana-data:/var/lib/grafana
     depends_on:
       - prometheus
       - loki
+
+  alertmanager:
+    image: prom/alertmanager:v0.30.1
+    container_name: bms-alertmanager
+    restart: always
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml
+      - alertmanager-data:/alertmanager
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yaml"
+      - "--storage.path=/alertmanager"
+    depends_on:
+      - prometheus
+
+  alertserver:
+    container_name: alertserver
+    restart: always
+    build: ./alertserver
+    ports:
+      - "8080:8080"
+    environment:
+      TG_BOT_ALERT_TOKEN: ${TG_BOT_ALERT_TOKEN}
+      TG_ALERT_CHAT_ID: ${TG_ALERT_CHAT_ID}
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.18.1
+    container_name: bms-postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@10.130.0.8:5432/${POSTGRES_DB}?sslmode=disable" # указал внутренний ip машинки прода
+    ports:
+      - "9187:9187"
 
 volumes:
   loki-data:
@@ -64,11 +93,5 @@ volumes:
     name: bms-prometheus-data
   grafana-data:
     name: bms-grafana-data
-
-networks:
-  bms-monitoring:
-    name: bms-monitoring
-    driver: bridge
-  bms:
-    name: bms
-    external: true
+  alertmanager-data:
+    name: bms-alertmanager-data
