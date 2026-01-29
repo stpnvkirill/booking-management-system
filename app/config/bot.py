@@ -16,4 +16,4 @@ class BotConfig(BaseModel):
 
     @property
     def webhook_url(self) -> str:
-        return f"https://{self.BOT_DOMAIN}{self.WEBHOOK_ENDPOINT}"
+        return f"https://{self.BOT_DOMAIN}/api{self.WEBHOOK_ENDPOINT}"
