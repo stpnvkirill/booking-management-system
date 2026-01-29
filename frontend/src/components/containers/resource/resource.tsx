@@ -69,20 +69,20 @@ export const ResourceDetails = () => {
   const {
     selectedResource,
     // selectedDate,
-    setSelectedTimeSlot,
-    selectedTimeSlot,
+    // setSelectedTimeSlot,
+    // selectedTimeSlot,
     handleBackClick,
     timeSlots,
     bookingRange,
     setBookingRange,
-    handleTimeClick,
+    // handleTimeClick,
     handleConfirmBooking,
   } = useBookingContext();
 
-  const endSlots = timeSlots.filter(slot => {
-    if (!bookingRange.start) return false;
-    return slot.time > bookingRange.start;
-  });
+  // const endSlots = timeSlots.filter(slot => {
+  //   if (!bookingRange.start) return false;
+  //   return slot.time > bookingRange.start;
+  // });
 
   const step = !bookingRange.start
     ? 'SELECT_START'
