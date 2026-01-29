@@ -63,14 +63,9 @@ def get_application() -> FastAPI:
         on_shutdown=[bot_manager.stop_all, scheduler.stop],
     )
 
-    origins = [
-        "http://localhost:5173",
-        "http://localhost:5174",
-    ]  # protocol quirks
-
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
+        allow_origins=["*"],
         allow_credentials=True,  # Обязательно для withCredentials: true в React
         allow_methods=["*"],
         allow_headers=["*"],
