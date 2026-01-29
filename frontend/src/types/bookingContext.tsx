@@ -19,7 +19,7 @@ interface BookingContextType {
   filters: FilterType[];
   bookings: BookingItem[];
   setBookings: React.Dispatch<React.SetStateAction<BookingItem[]>>;
-   timeSlots: TimeSlot[];
+  timeSlots: TimeSlot[];
   calendarDays: string[];
 
   handleResourceClick: (resource: BookingItem) => void;
@@ -46,11 +46,11 @@ interface BookingContextType {
   bookingRange: {
     start: string | null;
     end: string | null;
-}
-setBookingRange: React.Dispatch<React.SetStateAction<{
+  }
+  setBookingRange: React.Dispatch<React.SetStateAction<{
     start: string | null;
     end: string | null;
-}>>
+  }>>
 
 }
 export interface BookingItem {
@@ -163,8 +163,8 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
   const [bookings, setBookings] = useState<BookingItem[]>([
     {
       id: '0',
-      
-      
+
+
       capacity: '30–50 гостей',
       location: 'Центр',
       rating: 4.8,
@@ -186,8 +186,8 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     },
     {
       id: '1',
-      
-      
+
+
       capacity: '30–50 гостей',
       location: 'Центр',
       rating: 4.8,
@@ -209,8 +209,8 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     },
     {
       id: '2',
-      
-     
+
+
       capacity: 'Дневной доступ',
       location: 'Центр',
       rating: 4.7,
@@ -231,7 +231,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     },
     {
       id: '3',
-      
+
       capacity: '80–120 гостей',
       location: 'Набережная',
       rating: 4.9,
@@ -252,7 +252,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     },
     {
       id: '4',
-      
+
       capacity: '1 ночь',
       location: 'Набережная',
       rating: 4.9,
@@ -273,7 +273,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     },
     {
       id: '5',
-      
+
       capacity: '1 ночь',
       location: 'Набережная',
       rating: 4.9,
@@ -294,6 +294,17 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     },
   ]);
   const timeSlots: TimeSlot[] = [
+    { time: '12:00', available: true },
+    { time: '12:30', available: true },
+    { time: '13:00', available: true },
+    { time: '13:30', available: true },
+    { time: '14:30', available: true },
+    { time: '15:00', available: true },
+    { time: '15:30', available: true },
+    { time: '16:00', available: true },
+    { time: '16:30', available: true },
+    { time: '17:00', available: true },
+    { time: '17:30', available: true },
     { time: '18:00', available: true },
     { time: '18:30', available: true },
     { time: '19:00', available: true },
@@ -302,27 +313,28 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     { time: '20:30', available: true },
     { time: '21:00', available: true },
     { time: '21:30', available: true },
+    { time: '22:00', available: true },
   ];
 
-const [bookingRange, setBookingRange] = useState<{ start: string | null, end: string | null }>({
-  start: null,
-  end: null
-});
+  const [bookingRange, setBookingRange] = useState<{ start: string | null, end: string | null }>({
+    start: null,
+    end: null
+  });
 
-const handleTimeClick = (time: string) => {
-  if (!bookingRange.start || (bookingRange.start && bookingRange.end)) {
-    
-    setBookingRange({ start: time, end: null });
-  } else {
-    
-    if (time > bookingRange.start) {
-      setBookingRange(prev => ({ ...prev, end: time }));
-    } else {
-      
+  const handleTimeClick = (time: string) => {
+    if (!bookingRange.start || (bookingRange.start && bookingRange.end)) {
+
       setBookingRange({ start: time, end: null });
+    } else {
+
+      if (time > bookingRange.start) {
+        setBookingRange(prev => ({ ...prev, end: time }));
+      } else {
+
+        setBookingRange({ start: time, end: null });
+      }
     }
-  }
-};
+  };
 
 
   const calendarDays = Array.from({ length: 31 }, (_, i) => String(i + 1));
@@ -356,26 +368,50 @@ const handleTimeClick = (time: string) => {
 
   /// чтоб вернуть обратно кнопку брони раскоменти и переименуй(обязательно)
   // закоменченый handleConfirmBooking ниже и вызови его в самой кнопке
+  // const handleConfirmBooking = () => {
+  //   if (selectedTimeSlot && selectedResource) {
+  //     setBookings((prevBookings) =>
+  //       prevBookings.map((item) =>
+  //         item.id === selectedResource.id
+  //           ? {
+  //             ...item,
+  //             active: true,
+  //             date: selectedDate,
+  //             time: selectedTimeSlot,
+  //           }
+  //           : item
+  //       )
+  //     );
+
+  //     alert(`Бронирование подтверждено: ${selectedResource.description}`);
+
+  //     setSelectedResource(null);
+  //     setSelectedTimeSlot(null);
+  //   }
+  // };
+
   const handleConfirmBooking = () => {
-    if (selectedTimeSlot && selectedResource) {
-      setBookings((prevBookings) =>
-        prevBookings.map((item) =>
-          item.id === selectedResource.id
-            ? {
-              ...item,
-              active: true,
-              date: selectedDate,
-              time: selectedTimeSlot,
-            }
-            : item
-        )
-      );
+    if (!bookingRange.start || !bookingRange.end || !selectedResource) return;
 
-      alert(`Бронирование подтверждено: ${selectedResource.description}`);
+    setBookings((prevBookings) =>
+      prevBookings.map((item) =>
+        item.id === selectedResource.id
+          ? {
+            ...item,
+            active: true,
+            date: selectedDate,
 
-      setSelectedResource(null);
-      setSelectedTimeSlot(null);
-    }
+            time: `${bookingRange.start} — ${bookingRange.end}`,
+          }
+          : item
+      )
+    );
+
+    // alert(`Бронирование подтверждено: ${selectedResource.description}`);
+
+
+    setBookingRange({ start: null, end: null });
+    handleBackClick();
   };
 
   const handleCancelBooking = (id: string) => {

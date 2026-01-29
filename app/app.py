@@ -71,14 +71,9 @@ def get_application() -> FastAPI:
         ],
     )
 
-    origins = [
-        "http://localhost:5173",
-        "http://localhost:5174",
-    ]  # protocol quirks
-
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
+        allow_origins=["*"],  # Для разработки доступ c любого ip
         allow_credentials=True,  # Обязательно для withCredentials: true в React
         allow_methods=["*"],
         allow_headers=["*"],

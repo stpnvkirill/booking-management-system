@@ -69,14 +69,30 @@ export const ResourceDetails = () => {
   const {
     selectedResource,
     // selectedDate,
+    // setSelectedTimeSlot,
+    // selectedTimeSlot,
     handleBackClick,
     timeSlots,
     bookingRange,
-    handleTimeClick,
+    setBookingRange,
+    // handleTimeClick,
     handleConfirmBooking,
   } = useBookingContext();
-  if (!selectedResource) return null;
 
+  // const endSlots = timeSlots.filter(slot => {
+  //   if (!bookingRange.start) return false;
+  //   return slot.time > bookingRange.start;
+  // });
+
+  const step = !bookingRange.start
+    ? 'SELECT_START'
+    : (!bookingRange.end ? 'SELECT_END' : 'COMPLETED');
+
+  const resetBookingRange = () => {
+    setBookingRange({ start: null, end: null });
+  };
+
+  if (!selectedResource) return null;
   return (
     ///////////от сюда
     <div className="pb-20 bg-neutral-content text-neutral font-sans">
@@ -116,61 +132,116 @@ export const ResourceDetails = () => {
         <BlockMiniCalendar />
         {/* Календарь */}
 
+
+
+
         {/* Слоты времени */}
-        <div className="mb-8">
-          <div className="grid grid-cols-4 gap-2 mb-2">
-            
-        {timeSlots.map((slot) => {
-              const isStart = bookingRange.start === slot.time;
-              const isEnd = bookingRange.end === slot.time;
-              const isInRange = 
-                bookingRange.start && 
-                bookingRange.end && 
-                slot.time > bookingRange.start && 
-                slot.time < bookingRange.end;
+        {/* <div className="mb-8 min-h-[200px]"> */}
+        {/* <div className="grid grid-cols-4 gap-2 mb-2"> */}
+        {step === 'SELECT_START' && (
+          <div>
+            <h3 className="text-sm font-semibold mb-3">Выберите время начала:</h3>
+            <div className="grid grid-cols-4 gap-2">
+              {timeSlots.map((slot) => (
+                <Button
+                  key={slot.time}
+                  label={slot.time}
+                  onClick={() => setBookingRange({ start: slot.time, end: null })}
+                  variant="secondary"
+                />
+              ))}
 
-              return (
-                <div key={slot.time}>
+            </div>
+          </div>
+        )}
+
+        {step === 'SELECT_END' && (
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-sm font-semibold">Выберите время окончания:</h3>
+              <button
+                onClick={() => setBookingRange({ start: null, end: null })}
+                className="text-xs text-primary underline"
+              >
+                Изменить старт ({bookingRange.start})
+              </button>
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {timeSlots
+                .filter(slot => slot.time > bookingRange.start!)
+                .map((slot) => (
                   <Button
+                    key={slot.time}
                     label={slot.time}
-                    onClick={() => handleTimeClick(slot.time)}
-                    size="md"
-                    variant={isStart || isEnd ? 'primary' : 'secondary'}
-                    // Дополнительный стиль для слотов "между"
-                    className={isInRange ? 'bg-primary/30 border-primary' : ''}
-                    shape="default"
+                    onClick={() => setBookingRange({ ...bookingRange, end: slot.time })}
+                    variant="primary"
+                    shape="outline"
                   />
-                </div>
-              );
-            })}
-          </div>
-        </div>
+                ))}
+            </div>
+          </motion.div>
+        )}
 
-        {/* Итого */}
-        <div className="rounded-2xl p-5 mb-6 text-neutral bg-base-200">
-          <div className="flex justify-between mb-2">
-            <span className="text-neutral">Итого</span>
-            <span className="font-bold text-2xl">
-              {(selectedResource.price ?? 0).toLocaleString('ru-RU')} ₽
-            </span>
-          </div>
-          <div className="text-accent text-sm font-medium">
-            Выбрано: {bookingRange.start || '—'} 
-            {bookingRange.end ? ` — ${bookingRange.end}` : ''}
-          </div>
-        </div>
-        {/* Кнопка подтверждения */}
-        <Button
-             label={'Подтвердить бронь'}
-          onClick={handleConfirmBooking}
-          // Кнопка активна только если выбран и старт, и конец
-          disabled={!bookingRange.start || !bookingRange.end}
-          size="xl"
-          width="full"
-          variant="primary"
-        />
+
+        {step === 'COMPLETED' && (
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="rounded-2xl p-5 mb-6 text-neutral bg-base-200"
+          >
+            <div className="flex justify-between mb-2">
+              <span className="text-neutral">Итого</span>
+              <span className="font-bold text-2xl text-neutral">
+                {(selectedResource.price ?? 0).toLocaleString('ru-RU')} ₽
+              </span>
+            </div>
+
+            <div className="text-accent text-sm font-medium">
+              Выбрано: **{bookingRange.start} — {bookingRange.end}**
+            </div>
+          </motion.div>
+        )}
+
+
+
+
+        <AnimatePresence>
+          {step === 'COMPLETED' && (
+            <motion.div initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              className="grid grid-cols-12 gap-4 w-full mt-6" >
+
+
+
+              <Button
+                label="Подтвердить бронь"
+                onClick={handleConfirmBooking}
+                size="xl"
+                width="full"
+                variant="primary"
+                shape="rounded"
+                className="col-span-6"
+              />
+
+              <Button
+                label="Сбросить"
+                onClick={resetBookingRange}
+                disabled={false}
+                size="xl"
+                width="full"
+                variant="info"
+                shape="rounded"
+                className="col-span-6"
+              />
+
+
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* </div> */}
       </div>
     </div>
-    ////////до сюда
+
   );
 };
