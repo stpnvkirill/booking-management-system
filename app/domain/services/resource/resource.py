@@ -9,7 +9,12 @@ import sqlalchemy as sa
 from app.depends import AsyncSession, provider
 from app.infrastructure.database import Booking
 from app.infrastructure.database.models.booking import Resource
-from app.infrastructure.database.models.users import Customer, CustomerAdmin, User
+from app.infrastructure.database.models.users import (
+    Customer,
+    CustomerAdmin,
+    CustomerMember,
+    User,
+)
 
 
 @dataclass(frozen=True)
@@ -66,12 +71,33 @@ class ResourceService:
         return admin is not None
 
     @provider.inject_session
+    async def is_member_or_admin_or_owner(
+        self,
+        user_id: UUID,
+        customer_id: UUID,
+        session: AsyncSession | None = None,
+    ) -> bool:
+        """Check if user is member, admin, or owner of the customer."""
+        if await self.is_admin_or_owner(
+            user_id=user_id,
+            customer_id=customer_id,
+            session=session,
+        ):
+            return True
+        member = await CustomerMember.get_by(
+            user_id=user_id,
+            customer_id=customer_id,
+            session=session,
+        )
+        return member is not None
+
+    @provider.inject_session
     async def get_customer_for_user(
         self,
         user_id: UUID,
         session: AsyncSession | None = None,
     ) -> Customer | None:
-        """Get customer where user is owner or admin."""
+        """Get customer where user is owner, admin, or member."""
         # First check if user is owner
         customer = await Customer.get_by(owner_id=user_id, session=session)
         if customer:
@@ -81,6 +107,10 @@ class ResourceService:
         admin_record = await CustomerAdmin.get_by(user_id=user_id, session=session)
         if admin_record:
             return await Customer.get(id=admin_record.customer_id, session=session)
+
+        member_record = await CustomerMember.get_by(user_id=user_id, session=session)
+        if member_record:
+            return await Customer.get(id=member_record.customer_id, session=session)
 
         return None
 
@@ -130,7 +160,7 @@ class ResourceService:
     ) -> list[Resource]:
         """Get resources filtered by customer (multitenancy).
 
-        Only returns resources for customers where user is admin or owner.
+        Returns resources for customers where user is member, admin, or owner.
         """
         if customer_id is None:
             customer = await self.get_customer_for_user(
@@ -140,7 +170,7 @@ class ResourceService:
             if not customer:
                 return []
             customer_id = customer.id
-        elif not await self.is_admin_or_owner(
+        elif not await self.is_member_or_admin_or_owner(
             user_id=current_user.id,
             customer_id=customer_id,
             session=session,

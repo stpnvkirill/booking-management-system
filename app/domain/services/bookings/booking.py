@@ -188,6 +188,27 @@ class BookingService:
         return result.all()
 
     @provider.inject_session
+    async def get_resource_bookings(
+        self,
+        resource_id: int,
+        session: AsyncSession = None,
+    ) -> list[Booking]:
+        """Get all future bookings for a resource."""
+        now = datetime.now(timezone.utc)
+        stmt = (
+            sa.select(Booking)
+            .where(
+                sa.and_(
+                    Booking.resource_id == resource_id,
+                    Booking.start_time >= now,  # Only future bookings
+                ),
+            )
+            .order_by(Booking.start_time.asc())
+        )
+        result = await session.scalars(stmt)
+        return list(result.all())
+
+    @provider.inject_session
     async def cancel_booking(
         self,
         booking_id: int,
