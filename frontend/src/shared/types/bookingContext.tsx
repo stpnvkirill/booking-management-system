@@ -61,10 +61,7 @@ export interface BookingItem {
   booking_type: string;
   start_time: string;
   end_time: string;
-
 }
-
-
 
 // контекст
 const BookingContext = createContext<BookingContextType | undefined>(undefined);
@@ -106,7 +103,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
   //       // САМЫЙ ВАЖНЫЙ ЭТАП: Маппинг полей из БД в твой интерфейс
   //       const mappedData: BookingItem2[] = response.data.map((dbItem: any) => {
 
-  //         // Здесь берем поля из `dbItem` (как на твоем скрине БД) 
+  //         // Здесь берем поля из `dbItem` (как на твоем скрине БД)
   //         // и присваиваем их полям твоего `BookingItem` интерфейса (как в твоем коде)
   //         return {
   //           id: dbItem.id.toString(), // id (serial4)
@@ -138,7 +135,6 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
   //   fetchBookings();
   // }, []);
 
-
   // const filters: Filters[] = [
   //   'Все',
   //   'Площадка',
@@ -148,11 +144,9 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
   //   'Жильё',
   // ];
 
-
   const [bookings, setBookings] = useState<BookingItem[]>([
     {
       id: '0',
-
 
       capacity: '30–50 гостей',
       location: 'Центр',
@@ -162,7 +156,6 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
       date: '',
       time: '',
       active: false,
-
 
       start_time: '',
       end_time: '',
@@ -175,7 +168,6 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     },
     {
       id: '1',
-
 
       capacity: '30–50 гостей',
       location: 'Центр',
@@ -194,11 +186,9 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
       user_id: '',
       description: '',
       booking_type: '',
-
     },
     {
       id: '2',
-
 
       capacity: 'Дневной доступ',
       location: 'Центр',
@@ -329,11 +319,11 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
         prevBookings.map((item) =>
           item.id === selectedResource.id
             ? {
-              ...item,
-              active: true,
-              date: selectedDate,
-              time: selectedTimeSlot,
-            }
+                ...item,
+                active: true,
+                date: selectedDate,
+                time: selectedTimeSlot,
+              }
             : item
         )
       );
@@ -402,7 +392,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     getDaysInMonth,
     viewDate,
     setViewDate,
-    filters: []
+    filters: [],
   };
 
   return (

@@ -12,7 +12,7 @@ import { Spinner } from '@/shared/components/spinner/spinner';
 export default function CalendarScreen() {
   const currentDateUTC = new Date();
   const utcDatetimeString = currentDateUTC.toISOString();
-  console.log(utcDatetimeString)
+  console.log(utcDatetimeString);
   // const [selectedDate, setSelectedDate] = useState<string>('1 янв');
   const [selectedDate, setSelectedDate] = useState<string>(utcDatetimeString);
 
@@ -29,7 +29,7 @@ export default function CalendarScreen() {
           {
             headers: {
               Accept: 'application/json',
-              'Authorization': 'Bearer ' + import.meta.env.VITE_BEARER_TOKEN,
+              Authorization: 'Bearer ' + import.meta.env.VITE_BEARER_TOKEN,
             },
           }
         );
@@ -44,7 +44,7 @@ export default function CalendarScreen() {
     fetchData();
   }, []);
 
-  console.log("CalendarScreen", data)
+  console.log('CalendarScreen', data);
   return (
     <div className="pb-20 h-screen bg-neutral-content text-neutral font-sans">
       <div className="p-4 h-screen overflow-auto">
@@ -67,10 +67,23 @@ export default function CalendarScreen() {
             exit={{ opacity: 0, y: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {error ? <div className="text-red-500 text-center">Ошибка загрузки данных!</div> : ''}
+            {error ? (
+              <div className="text-red-500 text-center">
+                Ошибка загрузки данных!
+              </div>
+            ) : (
+              ''
+            )}
             {loading ? (
               <Spinner />
-            ) : data?.length != 0 ? (<CalendarBookingCard bookings={data} selectedDate={selectedDate} />) : ""}
+            ) : data?.length != 0 ? (
+              <CalendarBookingCard
+                bookings={data}
+                selectedDate={selectedDate}
+              />
+            ) : (
+              ''
+            )}
           </motion.div>
         </AnimatePresence>
       </div>

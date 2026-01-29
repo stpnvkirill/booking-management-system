@@ -15,6 +15,6 @@ export default function Calendar() {
         <CalendarScreen />;
       </motion.div>
     </AnimatePresence>
-  )
-  return
+  );
+  return;
 }

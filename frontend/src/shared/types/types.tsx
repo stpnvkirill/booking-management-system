@@ -29,12 +29,12 @@ type Filters =
   | 'Коттедж'
   | 'Дом'
   | 'Переговорная'
-  | "Студия";
+  | 'Студия';
 type FiltersArray = readonly Filters[];
 const FILTERS: FiltersArray = [
   'Все',
   'Квартира',
-  "Студия",
+  'Студия',
   'Офис',
   'Дом',
   'Переговорная',

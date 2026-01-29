@@ -29,10 +29,23 @@ export default function BlockMiniCalendar({
   selectedDate,
   setSelectedDate,
 }: BlockMiniCalendarProps) {
-  const monthNames = ["января", "февраля", "марта", "апрреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"]
+  const monthNames = [
+    'января',
+    'февраля',
+    'марта',
+    'апрреля',
+    'мая',
+    'июня',
+    'июля',
+    'августа',
+    'сентября',
+    'октября',
+    'ноября',
+    'декабря',
+  ];
   const currentDateUTC = new Date();
   // const utcDatetimeString = currentDateUTC.toISOString();
-  console.log(currentDateUTC.toISOString())
+  console.log(currentDateUTC.toISOString());
   const [viewDate, setViewDate] = useState(currentDateUTC);
 
   const currentMonth = viewDate.getMonth();
@@ -55,7 +68,7 @@ export default function BlockMiniCalendar({
   // const [activeButtonId, setActiveButtonId] = useState<number | null>(null);
 
   const selectedDayNumber = selectedDate.match(/\d+/)?.[0];
-  console.log("selectedDate", selectedDate);
+  console.log('selectedDate', selectedDate);
   return (
     <Card>
       <div className="flex justify-between items-center mb-5">
@@ -95,7 +108,7 @@ export default function BlockMiniCalendar({
         {days.map((day, index) => {
           if (!day) return <div key={`empty-${index}`} />; // Пустая ячейка для отступа
           const date = new Date(day);
-          const year = date.getFullYear()
+          const year = date.getFullYear();
           const dayString = `${day} ${monthNames[currentMonth]} ${year} г.`;
           // `${day} ${monthNames[currentMonth].slice(0, 3).toLowerCase()}`;
           const isSelected = day.toString() === selectedDayNumber;

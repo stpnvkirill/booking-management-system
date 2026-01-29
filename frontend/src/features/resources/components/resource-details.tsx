@@ -16,8 +16,10 @@ export default function ResourceDetails({
 }: ResourceDetailsProps) {
   const [selectedDate, setSelectedDate] = useState<string>('1 янв');
 
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | undefined>();
-  const handleConfirmBooking = () => { };
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<
+    string | undefined
+  >();
+  const handleConfirmBooking = () => {};
   const timeSlots: TimeSlot[] = [];
   // if (!data) return null;
   return (

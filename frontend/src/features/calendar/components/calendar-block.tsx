@@ -39,8 +39,10 @@ export default function CalendarBlock() {
   const [viewDate, setViewDate] = useState(new Date(2026, 0, 1));
   // const [selectedDate, setSelectedDate] = useState<string>('1 янв');
   const currentDateUTC = new Date().toISOString();
-  const [selectedDate, setSelectedDate] = useState<Date | string>(currentDateUTC);
-  console.log(selectedDate)
+  const [selectedDate, setSelectedDate] = useState<Date | string>(
+    currentDateUTC
+  );
+  console.log(selectedDate);
   const currentMonth = viewDate.getMonth();
   const currentYear = viewDate.getFullYear();
   const handlePrevMonth = () => {

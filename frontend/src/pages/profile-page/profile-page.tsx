@@ -15,5 +15,5 @@ export default function Profile() {
         <ProfileScreen />;
       </motion.div>
     </AnimatePresence>
-  )
+  );
 }

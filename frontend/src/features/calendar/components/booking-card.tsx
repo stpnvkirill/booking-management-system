@@ -9,15 +9,16 @@ export const CalendarBookingCard = ({
   bookings,
   selectedDate,
 }: PropsWithChildren<CalendarCardProps>): React.ReactElement => {
-  console.log(bookings)
+  console.log(bookings);
   // const { setSelectedResource, setActiveTab } = useBookingContext();
   // карточка бронирования на странице с календарем
   //фильтр списка
   const filteredBookings =
     bookings?.filter(
-      (booking: BookingItem) => booking.start_time === selectedDate && booking.end_time
+      (booking: BookingItem) =>
+        booking.start_time === selectedDate && booking.end_time
     ) || [];
-  console.log("booking-card", bookings)
+  console.log('booking-card', bookings);
 
   const getDDMMDateFromUTCString = (utcString: string | undefined): string => {
     if (!utcString) {
@@ -25,12 +26,25 @@ export const CalendarBookingCard = ({
     }
     const dateObject = new Date(utcString);
     const day = dateObject.getDate();
-    const year = dateObject.getFullYear()
-    const monthNames = ["января", "февраля", "марта", "апрреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+    const year = dateObject.getFullYear();
+    const monthNames = [
+      'января',
+      'февраля',
+      'марта',
+      'апрреля',
+      'мая',
+      'июня',
+      'июля',
+      'августа',
+      'сентября',
+      'октября',
+      'ноября',
+      'декабря',
+    ];
     const month = monthNames[dateObject.getMonth()];
     return `${day} ${month} ${year} г.`;
   };
-  console.log(getDDMMDateFromUTCString(selectedDate))
+  console.log(getDDMMDateFromUTCString(selectedDate));
   return (
     <AnimatePresence mode="popLayout">
       <h2 className="text-[16px] font-semibold mb-4">

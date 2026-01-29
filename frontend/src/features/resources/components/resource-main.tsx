@@ -31,7 +31,7 @@ export default function ResourceMain({
           {
             headers: {
               Accept: 'application/json',
-              'Authorization': 'Bearer ' + import.meta.env.VITE_BEARER_TOKEN,
+              Authorization: 'Bearer ' + import.meta.env.VITE_BEARER_TOKEN,
             },
           }
         );
@@ -56,7 +56,7 @@ export default function ResourceMain({
     <div className="pb-20 h-screen bg-neutral-content text-neutral font-sans">
       <div className="p-4">
         {/* Заголовок */}
-        <Header title="NightBooks" subtitle='Ресурсы'/>
+        <Header title="NightBooks" subtitle="Ресурсы" />
         {/* Фильтры */}
         <FilterBTNS
           activeFilter={activeFilter}

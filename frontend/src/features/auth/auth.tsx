@@ -54,9 +54,7 @@ export const AuthContainer = () => {
   //     }, 1500);
   //   }
   // };
-  return (
-    <> -- Authorization --  </>
-  )
+  return <> -- Authorization -- </>;
   // return (
   //   <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50 p-6 backdrop-blur-sm">
   //     <div className="w-full max-w-sm bg-base-200 p-6 rounded-2xl shadow-xl">
