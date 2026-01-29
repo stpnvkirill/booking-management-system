@@ -13,7 +13,7 @@ from app.infrastructure.database import User
 
 from .schema import AddBotModel
 
-router = APIRouter(tags=["Telegram"], prefix="/tg")
+router = APIRouter(tags=["Telegram"])
 
 
 @router.post(config.bot.WEBHOOK_ENDPOINT, include_in_schema=False)
@@ -26,7 +26,7 @@ async def webhook_handler(
 
 
 @router.post(
-    "/add_bot",
+    "/tg/add_bot",
     status_code=status.HTTP_201_CREATED,
     summary="Create a new bot",
     response_description="Created Bot ID [from Telegram]",
