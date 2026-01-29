@@ -62,6 +62,9 @@ services:
     volumes:
       - ./alertmanager/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml
       - alertmanager-data:/alertmanager
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yaml"
+      - "--storage.path=/alertmanager"
     depends_on:
       - prometheus
 
