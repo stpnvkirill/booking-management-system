@@ -1,4 +1,5 @@
 import Button from '@/shared/components/button/button';
+import type { BookingItem } from '@/shared/types/types';
 import { useState } from 'react';
 const monthNames = [
   'Январь',
@@ -34,11 +35,12 @@ export default function CalendarBlock() {
     return days;
   };
   const selectedDayNumber = '13 янв';
-  const bookings: unknown[] = [];
+  const bookings: BookingItem[] = [];
   const [viewDate, setViewDate] = useState(new Date(2026, 0, 1));
   // const [selectedDate, setSelectedDate] = useState<string>('1 янв');
   const currentDateUTC = new Date().toISOString();
   const [selectedDate, setSelectedDate] = useState<Date | string>(currentDateUTC);
+  console.log(selectedDate)
   const currentMonth = viewDate.getMonth();
   const currentYear = viewDate.getFullYear();
   const handlePrevMonth = () => {
@@ -59,10 +61,10 @@ export default function CalendarBlock() {
   const days = getDaysInMonth(currentYear, currentMonth);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const getSelectedDayNumber = () => {
-    const match = selectedDate.match(/\d+/);
-    return match ? match[0] : null;
-  };
+  // const getSelectedDayNumber = () => {
+  //   const match = selectedDate.match(/\d+/);
+  //   return match ? match[0] : null;
+  // };
   return (
     <div className="bg-base-100 rounded-2xl p-5 mb-6">
       <div className="flex justify-between items-center mb-5">
@@ -101,7 +103,7 @@ export default function CalendarBlock() {
           if (!day) return <div key={`empty-${index}`} />; // Пустая ячейка для отступа
           const dayString = `${day} ${monthNames[currentMonth].slice(0, 3).toLowerCase()}`;
           const isSelected = day.toString() === selectedDayNumber;
-          const hasBooking = bookings.some((b) => b.date === dayString);
+          const hasBooking = bookings.some((b) => b.start_time === dayString);
           return (
             <Button
               key={index}

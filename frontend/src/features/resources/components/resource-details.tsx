@@ -1,7 +1,7 @@
-import BlockMiniCalendar from '@/features/mini-calendar/mini-calendar';
+import BlockMiniCalendar from '@/shared/components/calendar/mini-calendar';
 import Button from '@/shared/components/button/button';
 import { useState } from 'react';
-import type { BookingItem, Tabs } from '@/shared/types/types';
+import type { BookingItem, Tabs, TimeSlot } from '@/shared/types/types';
 interface ResourceDetailsProps {
   data: BookingItem | undefined;
   activeTab: Tabs;
@@ -16,9 +16,9 @@ export default function ResourceDetails({
 }: ResourceDetailsProps) {
   const [selectedDate, setSelectedDate] = useState<string>('1 янв');
 
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState();
-  const handleConfirmBooking = () => {};
-  const timeSlots: unknown[] = [];
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | undefined>();
+  const handleConfirmBooking = () => { };
+  const timeSlots: TimeSlot[] = [];
   // if (!data) return null;
   return (
     <div className="pb-20 h-screen overflow-y-scroll bg-neutral-content text-neutral font-sans">

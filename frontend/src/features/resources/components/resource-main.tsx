@@ -1,7 +1,7 @@
 import FilterBTNS from './resources-filters';
 import BookingList from './resource-bookings-list';
 import ErrMessage from './resource-error';
-import Header from './resources-header';
+import Header from '../../../shared/components/header/header';
 import List from './resources-list';
 import { Spinner } from '@/shared/components/spinner/spinner';
 import type { BookingItem, Filters } from '@/shared/types/types';
@@ -56,7 +56,7 @@ export default function ResourceMain({
     <div className="pb-20 h-screen bg-neutral-content text-neutral font-sans">
       <div className="p-4">
         {/* Заголовок */}
-        <Header title="NightBooks" />
+        <Header title="NightBooks" subtitle='Ресурсы'/>
         {/* Фильтры */}
         <FilterBTNS
           activeFilter={activeFilter}

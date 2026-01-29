@@ -1,14 +1,13 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import {
-  type FilterType,
-  type TimeSlot,
-} from '../views/main-page/main-page.tsx';
-import axios from 'axios';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { createContext, useContext, useState, type ReactNode } from 'react';
+import type { Filters, TimeSlot } from './types.tsx';
+// import axios from 'axios';
 interface BookingContextType {
   activeTab: 'Ресурсы' | 'Календарь' | 'Профиль';
   setActiveTab: (tab: 'Ресурсы' | 'Календарь' | 'Профиль') => void;
-  selectedFilter: FilterType;
-  setSelectedFilter: (filter: FilterType) => void;
+  selectedFilter: Filters;
+  setSelectedFilter: (filter: Filters) => void;
   selectedDate: string;
   setSelectedDate: (date: string) => void;
   selectedTimeSlot: string | null;
@@ -17,7 +16,7 @@ interface BookingContextType {
   selectedResource: BookingItem | null;
   setSelectedResource: (resource: BookingItem | null) => void;
 
-  filters: FilterType[];
+  filters: Filters[];
   bookings: BookingItem[];
   setBookings: React.Dispatch<React.SetStateAction<BookingItem[]>>;
   timeSlots: TimeSlot[];
@@ -74,7 +73,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
   const [activeTab, setActiveTab] = useState<
     'Ресурсы' | 'Календарь' | 'Профиль'
   >('Ресурсы');
-  const [selectedFilter, setSelectedFilter] = useState<FilterType>('Все');
+  const [selectedFilter, setSelectedFilter] = useState<Filters>('Все');
   const [selectedDate, setSelectedDate] = useState<string>('1 янв');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [selectedResource, setSelectedResource] = useState<BookingItem | null>(
@@ -140,21 +139,21 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
   // }, []);
 
 
-  const filters: FilterType[] = [
-    'Все',
-    'Площадка',
-    'Работа',
-    'Здоровье',
-    'Авто',
-    'Жильё',
-  ];
+  // const filters: Filters[] = [
+  //   'Все',
+  //   'Площадка',
+  //   'Работа',
+  //   'Здоровье',
+  //   'Авто',
+  //   'Жильё',
+  // ];
 
 
   const [bookings, setBookings] = useState<BookingItem[]>([
     {
       id: '0',
-      
-      
+
+
       capacity: '30–50 гостей',
       location: 'Центр',
       rating: 4.8,
@@ -176,8 +175,8 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     },
     {
       id: '1',
-      
-      
+
+
       capacity: '30–50 гостей',
       location: 'Центр',
       rating: 4.8,
@@ -199,8 +198,8 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     },
     {
       id: '2',
-      
-     
+
+
       capacity: 'Дневной доступ',
       location: 'Центр',
       rating: 4.7,
@@ -221,7 +220,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     },
     {
       id: '3',
-      
+
       capacity: '80–120 гостей',
       location: 'Набережная',
       rating: 4.9,
@@ -242,7 +241,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     },
     {
       id: '4',
-      
+
       capacity: '1 ночь',
       location: 'Набережная',
       rating: 4.9,
@@ -263,7 +262,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     },
     {
       id: '5',
-      
+
       capacity: '1 ночь',
       location: 'Набережная',
       rating: 4.9,
@@ -378,7 +377,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     selectedResource,
     setSelectedResource,
 
-    filters,
+    // filters,
     bookings,
     setBookings,
     timeSlots,
@@ -403,6 +402,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     getDaysInMonth,
     viewDate,
     setViewDate,
+    filters: []
   };
 
   return (

@@ -1,8 +1,5 @@
 import { type PropsWithChildren } from 'react';
-// import Button from '../../small/button/button';
-// import { useBookingContext } from '../../../types/bookingContext.tsx';
-
-import type { BookingItem } from '../../../shared/types/bookingContext.tsx';
+import type { BookingItem } from '@/shared/types/types';
 import { AnimatePresence, motion } from 'framer-motion';
 export interface CalendarCardProps {
   bookings: BookingItem[] | undefined;
@@ -18,7 +15,7 @@ export const CalendarBookingCard = ({
   //фильтр списка
   const filteredBookings =
     bookings?.filter(
-      (booking: BookingItem) => booking.date === selectedDate && booking.active
+      (booking: BookingItem) => booking.start_time === selectedDate && booking.end_time
     ) || [];
   console.log("booking-card", bookings)
 
@@ -54,27 +51,27 @@ export const CalendarBookingCard = ({
               <div className="flex justify-between items-start mb-3">
                 <div className="text-left">
                   <h3 className="text-lg font-semibold mb-1 text-accent-content">
-                    {booking?.title}
+                    {booking?.id}
                   </h3>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="bg-accent text-accent-content pt-0.5 pb-0.5 pr-2 pl-2 rounded-xl text-xs font-medium">
-                      {booking?.type}
+                      {booking?.booking_type}
                     </span>
                     <span className="text-accent-content text-sm">•</span>
                     <span className="text-accent-content text-sm">
-                      {booking?.capacity}
+                      {booking?.description}
                     </span>
                   </div>
-                  {booking?.time && (
+                  {booking?.start_time && (
                     <div className="text-info text-sm font-medium">
-                      ⏰ {booking?.time}
+                      ⏰ {getDDMMDateFromUTCString(booking?.start_time)}
                     </div>
                   )}
                   {/* ⏰ */}
                 </div>
                 <div className="text-right">
                   <div className="text-xl text-accent-content font-bold mb-2">
-                    {(booking?.price ?? 0).toLocaleString()} ₽{' '}
+                    {/* {(booking?.price ?? 0).toLocaleString()} ₽ */} {'Цена'}
                   </div>
                 </div>
               </div>

@@ -4,11 +4,12 @@ import Button from '@/shared/components/button/button';
 import { AUTH_CREDENTIALS } from '../auth/services/service.tsx';
 import { useState } from 'react';
 import CardEmpty from './components/profile-bookings-empty.tsx';
+import type { BookingItem } from '@/shared/types/types.tsx';
 
 export default function ProfileScreen() {
   const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
   // const activeBookings = bookings.filter((b) => b.active);
-  const activeBookings: unknown[] = [];
+  const activeBookings: BookingItem[] = [];
   const [isChecked, setIsChecked] = useState(true);
   const handleChange = () => {
     setIsChecked((prev) => !prev);
@@ -20,9 +21,9 @@ export default function ProfileScreen() {
 
         <div className="flex-none">
           <div className="flex justify-between mb-8">
-            <div className="mb-2 mt-2">
-              <h1 className="text-3xl font-bold mb-2">Профиль</h1>
-              <p className="text-sm text-base-300">Личный кабинет</p>
+            <div className="mb-6">
+              <h1 className="text-3xl text-neutral font-bold mb-2">Профиль</h1>
+              <p className="text-base-300 text-sm">Личный кабинет</p>
             </div>
             <div className="mb-2 mt-2">
               <Button

@@ -1,10 +1,20 @@
 import CalendarScreen from '@/features/calendar/calendar-screen';
-// import type { BookingItem } from '@/shared/types/types';
-// import axios from 'axios';
-// import { useEffect, useState } from 'react';
-// interface CalendarProps {
-//   data: BookingItem | undefined;
-// }
+import { AnimatePresence, motion } from 'framer-motion';
+import { pageVariants } from '@/shared/types/constants';
 export default function Calendar() {
-  return <CalendarScreen />;
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        // key={selectedResource ? 'details' : activeTab}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        variants={pageVariants}
+        transition={{ duration: 0.2 }}
+      >
+        <CalendarScreen />;
+      </motion.div>
+    </AnimatePresence>
+  )
+  return
 }

@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { CalendarBookingCard } from './components/booking-card';
-import type { BookingItem, Filters } from '@/shared/types/types';
-import BlockMiniCalendar from '../mini-calendar/mini-calendar';
+import type { BookingItem } from '@/shared/types/types';
+import BlockMiniCalendar from '../../shared/components/calendar/mini-calendar';
 import axios from 'axios';
 // import ErrMessage from '../resources/components/resource-error';
 import { Spinner } from '@/shared/components/spinner/spinner';
@@ -14,18 +14,18 @@ export default function CalendarScreen() {
   const utcDatetimeString = currentDateUTC.toISOString();
   console.log(utcDatetimeString)
   // const [selectedDate, setSelectedDate] = useState<string>('1 янв');
-  const [selectedDate, setSelectedDate] = useState<Date | string>(utcDatetimeString);
+  const [selectedDate, setSelectedDate] = useState<string>(utcDatetimeString);
 
   // useEffect для получения данных с бд
-  const [activeFilter, setActiveFilter] = useState<Filters | undefined>('Все');
+  // const [activeFilter, setActiveFilter] = useState<Filters | undefined>('Все');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<BookingItem[]>([]);
+  const [data, setData] = useState<BookingItem[] | undefined>([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get<BookingItem[]>(
-         'http://localhost:80/api/bookings/all/',
+          'http://localhost:80/api/bookings/all/',
           {
             headers: {
               Accept: 'application/json',
@@ -50,8 +50,8 @@ export default function CalendarScreen() {
       <div className="p-4 h-screen overflow-auto">
         {/* Заголовок */}
         <div className="mb-6">
-          <h1 className="text-3xl font-semibold mb-2">Календарь</h1>
-          <p className="text-accent-content text-sm">Расписание бронирований</p>
+          <h1 className="text-3xl text-neutral font-bold mb-2">Календарь</h1>
+          <p className="text-base-300 text-sm">Расписание бронирований</p>
         </div>
         {/* Текущий месяц */}
         <BlockMiniCalendar
@@ -61,7 +61,7 @@ export default function CalendarScreen() {
         />
         <AnimatePresence mode="wait">
           <motion.div
-            key={selectedDate}
+            key={selectedDate.toLocaleString()}
             initial={{ opacity: 0, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 0 }}
@@ -70,7 +70,7 @@ export default function CalendarScreen() {
             {error ? <div className="text-red-500 text-center">Ошибка загрузки данных!</div> : ''}
             {loading ? (
               <Spinner />
-            ) : data.length != 0 ? (<CalendarBookingCard bookings={data} selectedDate={selectedDate} />) : ""}
+            ) : data?.length != 0 ? (<CalendarBookingCard bookings={data} selectedDate={selectedDate} />) : ""}
           </motion.div>
         </AnimatePresence>
       </div>

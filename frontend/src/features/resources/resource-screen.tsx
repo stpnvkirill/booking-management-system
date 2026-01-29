@@ -5,14 +5,14 @@ import type { BookingItem, Tabs } from '@/shared/types/types';
 
 export default function ResourcesScreen() {
   const [activeTab, setActiveTab] = useState<Tabs>('main');
-  const [data, setData] = useState<Array<BookingItem | undefined>>([]);
+  const [, setData] = useState<Array<BookingItem | undefined | BookingItem[]>>([]);
   const [selectedResource, setSelectedResource] = useState<
     BookingItem | undefined
   >(undefined);
-  const handleResourceClick = (resource: BookingItem) => {
+  const handleResourceClick = (resource: BookingItem | undefined) => {
     setActiveTab('details');
     setSelectedResource(resource);
-    setData(resource);
+    setData([resource]);
     // console.log(resource)
   };
   // console.log(data)
@@ -34,8 +34,7 @@ export default function ResourcesScreen() {
           handleBackClick={handleBackClick}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
-          handleResourceClick={handleResourceClick}
-        />
+          handleResourceClick={handleResourceClick} selectedDate={''} />
       ) : (
         ''
       )}
