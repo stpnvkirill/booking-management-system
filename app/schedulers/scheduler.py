@@ -10,9 +10,6 @@ from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.domain.services.feedback.evaluation_notification import (
-    EvaluationNotificationService,
-)
 from app.domain.services.notification.service import NotificationService
 from app.infrastructure.database.models.booking import Booking
 from app.infrastructure.database.models.notification import (
@@ -23,15 +20,9 @@ from app.log import log
 
 
 class NotificationScheduler:
-    def __init__(
-        self,
-        session_factory,
-        notification_service: NotificationService,
-        evaluation_service: EvaluationNotificationService,
-    ):
+    def __init__(self, session_factory, notification_service: NotificationService):
         self.session_factory = session_factory
         self.notification_service = notification_service
-        self.evaluation_service = evaluation_service
         self.scheduler = AsyncIOScheduler(
             timezone="UTC",
             job_defaults={
@@ -62,19 +53,6 @@ class NotificationScheduler:
             replace_existing=True,
         )
 
-        # Add evaluation notification creation job
-        evaluation_trigger = IntervalTrigger(
-            minutes=self.check_interval,
-            start_date=datetime.now(ZoneInfo("UTC")) + timedelta(seconds=15),
-        )
-        self.scheduler.add_job(
-            self._create_evaluation_notifications_job,
-            trigger=evaluation_trigger,
-            id="create_evaluation_notifications",
-            name="Create evaluation notifications",
-            replace_existing=True,
-        )
-
         self.scheduler.start()
         self.is_running = True
         log(
@@ -85,8 +63,6 @@ class NotificationScheduler:
         )
         # First run after 5 seconds
         asyncio.create_task(self._process_notifications_job())  # noqa: RUF006
-        # First run of evaluation notifications after 15 seconds
-        asyncio.create_task(self._create_evaluation_notifications_job())  # noqa: RUF006
 
     async def stop(self) -> None:
         """Stop the scheduler."""
@@ -205,8 +181,6 @@ class NotificationScheduler:
             return await self.notification_service.send_booking_start(notification)
         if notification_type == "booking_end":
             return await self.notification_service.send_booking_end(notification)
-        if notification_type == "booking_eval":
-            return await self.notification_service.send_booking_eval(notification)
         log(
             level="error",
             method="_send_by_type",
@@ -214,19 +188,6 @@ class NotificationScheduler:
             text_detail=f"Unknown notification type: {notification_type}",
         )
         return False
-
-    async def _create_evaluation_notifications_job(self):
-        """Job for creating evaluation request notifications for completed bookings."""
-        try:
-            await self.evaluation_service.create_evaluation_notifications()
-        except Exception as e:  # noqa: BLE001
-            log(
-                level="error",
-                method="_create_evaluation_notifications_job",
-                path="NotificationScheduler",
-                text_detail=f"Error in evaluation notification creation job: {e}",
-                exception=e,
-            )
 
     async def force_check(self) -> dict[str, Any]:
         """Force manual check of pending notifications."""

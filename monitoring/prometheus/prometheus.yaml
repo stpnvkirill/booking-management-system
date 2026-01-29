@@ -22,14 +22,14 @@ scrape_configs:
   - job_name: "bms-backend"
     metrics_path: /metrics
     static_configs:
-      - targets: ["10.130.0.8:8000"]
+      - targets: ["backend:80"]
         labels:
           service: "backend"
           component: "api"
 
   - job_name: "bms-db"
     static_configs:
-      - targets: ["postgres-exporter:9187"]
+      - targets: ["bms-postgres-exporter:9187"]
         labels:
           service: "database"
           component: "db"

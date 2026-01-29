@@ -1,5 +1,6 @@
 """
 GET /api/resources     - List resources for the customer (admin/owner only)
+GET /api/resources/all - List all resources (no customer filter)
 GET /api/resources/{id} - Get resource details
 """
 
@@ -38,6 +39,27 @@ async def list_resources(
     return await resource_service.get_resources_for_customer(
         current_user=current_user,
         customer_id=customer_id,
+        skip=skip,
+        limit=limit,
+        session=session,
+    )
+
+
+@router.get(
+    "/all",
+    response_model=list[ResourceResponse],
+    summary="List all resources",
+)
+async def list_all_resources(
+    current_user: Annotated[User, Depends(security.get_current_user)],
+    session: Annotated[AsyncSession, Depends(provider.get_session)],
+    skip: int = 0,
+    limit: int = 100,
+):
+    """Get list of all resources (no customer filter)."""
+    # Auth is required, but no customer scoping is applied.
+    _ = current_user
+    return await resource_service.get_all_resources(
         skip=skip,
         limit=limit,
         session=session,

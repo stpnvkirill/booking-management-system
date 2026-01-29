@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.api.security import security
 from app.depends import AsyncSession, provider
 from app.domain.services.resource import resource_service
+from app.domain.services.resource.resource import ResourceUpdateParams
 from app.infrastructure.database.models.users import User
 
 from .schema import ResourceResponse, ResourceUpdate
@@ -35,8 +36,8 @@ async def update_resource(
     resource = await resource_service.update_resource(
         resource_id=resource_id,
         current_user=current_user,
+        params=ResourceUpdateParams(**update_data),
         session=session,
-        **update_data,
     )
 
     if resource is None:
