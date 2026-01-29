@@ -69,25 +69,13 @@ export const ResourceDetails = () => {
   const {
     selectedResource,
     // selectedDate,
-    setSelectedTimeSlot,
-    selectedTimeSlot,
     handleBackClick,
     timeSlots,
     bookingRange,
-    setBookingRange,
     handleTimeClick,
     handleConfirmBooking,
   } = useBookingContext();
   if (!selectedResource) return null;
-
-const endSlots = timeSlots.filter(slot => {
-  if (!bookingRange.start) return false;
-  return slot.time > bookingRange.start; 
-});
-
-const step = !bookingRange.start 
-    ? 'SELECT_START' 
-    : (!bookingRange.end ? 'SELECT_END' : 'COMPLETED');
 
   return (
     ///////////от сюда

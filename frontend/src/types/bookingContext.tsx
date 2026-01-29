@@ -1,9 +1,8 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 import {
   type FilterType,
   type TimeSlot,
 } from '../views/main-page/main-page.tsx';
-import axios from 'axios';
 interface BookingContextType {
   activeTab: 'Ресурсы' | 'Календарь' | 'Профиль';
   setActiveTab: (tab: 'Ресурсы' | 'Календарь' | 'Профиль') => void;
