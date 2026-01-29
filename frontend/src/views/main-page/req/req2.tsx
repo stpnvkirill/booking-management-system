@@ -11,7 +11,8 @@ function BookingsList2() {
   useEffect(() => {
     const API_URL = 'http://localhost:80/api/bookings/all';
     // Этот токен может больше не понадобиться, если куки будут работать
-    const AUTH_TOKEN = import.meta.env.VITE_BEARER_TOKEN
+    // const AUTH_TOKEN = import.meta.env.VITE_BEARER_TOKEN
+    const AUTH_TOKEN = "AZurPmBtfk6yU3lZ_Omf9A"
 
     const fetchBookings = async () => {
       try {
