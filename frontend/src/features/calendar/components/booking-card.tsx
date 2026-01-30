@@ -25,7 +25,8 @@ export const CalendarBookingCard = ({
   const filteredBookings =
     bookings?.filter(
       (booking: BookingItem) =>
-        GetDD_MM_YYYY(booking.start_time) === selectedDate.format("YYYY-MM-DD").toString() && booking.end_time
+        GetDD_MM_YYYY(booking.start_time) ===
+          selectedDate.format('YYYY-MM-DD').toString() && booking.end_time
     ) || [];
   console.log('booking-card', bookings);
 
@@ -40,11 +41,11 @@ export const CalendarBookingCard = ({
     const month = monthNames[dateObject.getMonth()];
     return `${day} ${month} ${year} г.`;
   };
-  console.log(selectedDate.format("DD-MM-YYYY").toString());
+  console.log(selectedDate.format('DD-MM-YYYY').toString());
   return (
     <AnimatePresence mode="popLayout">
       <h2 className="text-[16px] font-semibold mb-4">
-        Бронирования на {selectedDate.format("DD-MM-YYYY").toString()}
+        Бронирования на {selectedDate.format('DD-MM-YYYY').toString()}
       </h2>
       <div className="mb-8">
         <div className="flex flex-col justify-start overflow-y-scroll max-h-[calc(100vh-450px)] pb-6">

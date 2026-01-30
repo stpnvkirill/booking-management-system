@@ -62,11 +62,6 @@ export default function CalendarBlock() {
   };
   const days = getDaysInMonth(currentYear, currentMonth);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // const getSelectedDayNumber = () => {
-  //   const match = selectedDate.match(/\d+/);
-  //   return match ? match[0] : null;
-  // };
   return (
     <div className="bg-base-100 rounded-2xl p-5 mb-6">
       <div className="flex justify-between items-center mb-5">

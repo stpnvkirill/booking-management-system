@@ -22,9 +22,8 @@ export default function BlockMiniCalendar({
   selectedDate,
   setSelectedDate,
   currentMonth,
-  setCurrentMonth
+  setCurrentMonth,
 }: BlockMiniCalendarProps) {
-
   const generateCalendarDays = (date: Dayjs): CalendarDay[] => {
     const startOfMonth = date.startOf('month');
     const endOfMonth = date.endOf('month');
@@ -33,14 +32,23 @@ export default function BlockMiniCalendar({
     const startPadding = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
     const calendarDays: CalendarDay[] = [];
     for (let i = startPadding; i > 0; i--) {
-      calendarDays.push({ date: startOfMonth.subtract(i, 'day'), isInCurrentMonth: false });
+      calendarDays.push({
+        date: startOfMonth.subtract(i, 'day'),
+        isInCurrentMonth: false,
+      });
     }
     for (let i = 0; i < daysInMonth; i++) {
-      calendarDays.push({ date: startOfMonth.add(i, 'day'), isInCurrentMonth: true });
+      calendarDays.push({
+        date: startOfMonth.add(i, 'day'),
+        isInCurrentMonth: true,
+      });
     }
     const remainingDays = 42 - calendarDays.length;
     for (let i = 1; i <= remainingDays; i++) {
-      calendarDays.push({ date: endOfMonth.add(i, 'day'), isInCurrentMonth: false });
+      calendarDays.push({
+        date: endOfMonth.add(i, 'day'),
+        isInCurrentMonth: false,
+      });
     }
     return calendarDays;
   };
@@ -58,8 +66,8 @@ export default function BlockMiniCalendar({
     }
   };
   const isSelected = (date: Dayjs | null): boolean => {
-    return date ? selectedDate?.isSame(date, 'day') ?? false : false;
-  }
+    return date ? (selectedDate?.isSame(date, 'day') ?? false) : false;
+  };
   return (
     <Card>
       {/* Кнопки листания */}
@@ -73,7 +81,8 @@ export default function BlockMiniCalendar({
           label="←"
         />
         <h2 className="text-lg text-neutral font-semibold">
-          {currentMonth.format('MMMM YYYY').charAt(0).toUpperCase() + currentMonth.format('MMMM YYYY').slice(1)}
+          {currentMonth.format('MMMM YYYY').charAt(0).toUpperCase() +
+            currentMonth.format('MMMM YYYY').slice(1)}
         </h2>
         <Button
           variant="primary"
@@ -86,8 +95,13 @@ export default function BlockMiniCalendar({
       </div>
       {/* Дни недели */}
       <div className="grid grid-cols-7 gap-2 mb-2">
-        {weekdays.map(day => (
-          <div key={day} className="text-center text-xs text-base-content/50 uppercase font-bold">{day}</div>
+        {weekdays.map((day) => (
+          <div
+            key={day}
+            className="text-center text-xs text-base-content/50 uppercase font-bold"
+          >
+            {day}
+          </div>
         ))}
       </div>
       {/* Сетка чисел */}
@@ -98,13 +112,15 @@ export default function BlockMiniCalendar({
             <Button
               key={index}
               label={day.date!.format('D').toString()}
-              onClick={() => { handleDayClick(day.date, day.isInCurrentMonth) }}
+              onClick={() => {
+                handleDayClick(day.date, day.isInCurrentMonth);
+              }}
               size="md"
               width="auto"
               shape="default"
               className={`relative ${isSelected(day.date) ? '' : 'bg-base-100! border-none! shadow-none! hover:bg-[#374151]!'} `}
             />
-          )
+          );
         })}
       </div>
     </Card>

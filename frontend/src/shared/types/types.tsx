@@ -58,7 +58,7 @@ const FILTERS: FiltersArray = [
   'Переговорная',
   'Коттедж',
 ] as const;
-export type DateString = `${number}-${number}-${number}`
+export type DateString = `${number}-${number}-${number}`;
 export type Tabs = 'main' | 'details';
 export type ResourceTabs = 'main' | 'details';
 export { type BookingItem, type ResourceItem, type TimeSlot, FILTERS };

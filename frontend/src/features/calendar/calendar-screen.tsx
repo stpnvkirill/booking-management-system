@@ -16,21 +16,22 @@ export default function CalendarScreen() {
   const utcDatetimeString = currentDateUTC.toISOString();
   console.log(utcDatetimeString);
 
-
   // useEffect для получения данных с бд
   // const [activeFilter, setActiveFilter] = useState<Filters | undefined>('Все');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<BookingItem | undefined>();
 
-
   const [currentMonth, setCurrentMonth] = useState(() => {
-    return data?.start_time ? dayjs(data.end_time).startOf('month') : dayjs().startOf('month');
+    return data?.start_time
+      ? dayjs(data.end_time).startOf('month')
+      : dayjs().startOf('month');
   });
   const [selectedDate, setSelectedDate] = useState(() => {
-    return data?.start_time ? dayjs(data.end_time).startOf('day') : dayjs().startOf('day');
+    return data?.start_time
+      ? dayjs(data.end_time).startOf('day')
+      : dayjs().startOf('day');
   });
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,7 +77,9 @@ export default function CalendarScreen() {
         >
           {error ? (
             <ErrMessage error={error} />
-          ) : !data?.id && !loading ? " " : (
+          ) : !data?.id && !loading ? (
+            ' '
+          ) : (
             ''
           )}
           {loading ? (
@@ -88,7 +91,8 @@ export default function CalendarScreen() {
               setSelectedDate={setSelectedDate}
               currentMonth={currentMonth}
               setCurrentMonth={setCurrentMonth}
-              bookings={undefined} />
+              bookings={undefined}
+            />
           ) : (
             ''
           )}

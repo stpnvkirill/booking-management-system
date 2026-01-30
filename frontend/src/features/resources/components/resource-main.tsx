@@ -64,7 +64,9 @@ export default function ResourceMain({
       {/* Карточки ресурсов */}
       {error ? (
         <ErrMessage error={error} />
-      ) : data.length == 0 && !loading ? "" : (
+      ) : data.length == 0 && !loading ? (
+        ''
+      ) : (
         ''
       )}
       {loading ? (

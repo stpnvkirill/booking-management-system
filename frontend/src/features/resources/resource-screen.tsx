@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import ResourceMain from './components/resource-main';
 import ResourceDetails from './components/resource-details';
-import type { DateString, ResourceItem, ResourceTabs } from '@/shared/types/types';
+import type {
+  DateString,
+  ResourceItem,
+  ResourceTabs,
+} from '@/shared/types/types';
 import { GetDD_MM_YYYY } from '@/shared/types/functions';
 interface ResourcesScreenProps {
   handleResourceClick: (resource: ResourceItem | undefined) => void;
@@ -18,13 +22,13 @@ export default function ResourcesScreen({
   setResourceActiveTab,
   activeResourceTab,
 }: ResourcesScreenProps) {
-  useEffect(() => { });
+  useEffect(() => {});
   const handleBackClick = () => {
     setResourceActiveTab('main');
   };
   const currentDateUTC = new Date();
   const toISOString = currentDateUTC.toISOString();
-  console.log("Сегодня:", GetDD_MM_YYYY(toISOString));
+  console.log('Сегодня:', GetDD_MM_YYYY(toISOString));
   const [selectedDate, setSelectedDate] = useState<DateString>('0000-00-00');
 
   return (
