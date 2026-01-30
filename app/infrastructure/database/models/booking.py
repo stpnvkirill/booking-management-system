@@ -31,7 +31,15 @@ class Resource(Base, CreatedMixin):
         nullable=True,
     )
     resource_type: so.Mapped[str | None] = so.mapped_column(
-        sa.Enum("квартира", "дом", "студия", "офис", name="resource_type"),
+        sa.Enum(
+            "квартира",
+            "дом",
+            "студия",
+            "офис",
+            "переговорная",
+            "коттедж",
+            name="resource_type",
+        ),
         nullable=True,
     )
     location: so.Mapped[str | None] = so.mapped_column(
@@ -40,6 +48,18 @@ class Resource(Base, CreatedMixin):
     )
     price_per_hour: so.Mapped[int | None] = so.mapped_column(
         sa.Integer,
+        nullable=True,
+    )
+    available_date: so.Mapped[sa.Date] = so.mapped_column(
+        sa.DateTime(timezone=True),
+        nullable=True,
+    )
+    available_start: so.Mapped[sa.Time] = so.mapped_column(
+        sa.DateTime(timezone=True),
+        nullable=True,
+    )
+    available_end: so.Mapped[sa.Time] = so.mapped_column(
+        sa.DateTime(timezone=True),
         nullable=True,
     )
 
