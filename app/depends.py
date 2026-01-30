@@ -1,3 +1,4 @@
+import asyncio
 from collections.abc import AsyncIterator
 
 from sqlalchemy.ext.asyncio import (
@@ -46,12 +47,20 @@ class Provider:
                 async with self.session_factory() as session:
                     kwargs["session"] = session
                     try:
-                        res = await func(*args, **kwargs)
+                        # Таймаут 20 секунд на выполнение операции
+                        res = await asyncio.wait_for(
+                            func(*args, **kwargs),
+                            timeout=20.0,
+                        )
                         await session.commit()
+                        return res
+                    except TimeoutError as err:
+                        await session.rollback()
+                        msg = f"Operation {func.__name__} timed out after 20 seconds"
+                        raise TimeoutError(msg) from err
                     except Exception as err:
                         await session.rollback()
                         raise err
-                    return res
 
             return await func(*args, **kwargs)
 

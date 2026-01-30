@@ -16,15 +16,6 @@ from .schema import AddBotModel
 router = APIRouter(tags=["Telegram"])
 
 
-@router.post(config.bot.WEBHOOK_ENDPOINT, include_in_schema=False)
-async def webhook_handler(
-    bot_id: int,
-    update: types.Update,
-    background_tasks: BackgroundTasks,
-):
-    background_tasks.add_task(bot_manager.feed_update, bot_id, update)
-
-
 @router.post(
     "/tg/add_bot",
     status_code=status.HTTP_201_CREATED,
@@ -51,4 +42,13 @@ async def add_bot(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid bot token",
         )
-    return bot_id
+    return int(bot_id)
+
+
+@router.post(config.bot.WEBHOOK_ENDPOINT, include_in_schema=False)
+async def webhook_handler(
+    bot_id: int,
+    update: types.Update,
+    background_tasks: BackgroundTasks,
+):
+    background_tasks.add_task(bot_manager.feed_update, bot_id, update)

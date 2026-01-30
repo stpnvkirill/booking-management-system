@@ -7,16 +7,14 @@ from app.bot.routes.admin.middlewares import (
 
 from .handlers import (
     get_admin_handlers_router,
-    # get_create_owner_router,
+    get_create_owner_router,
 )
 
 
 def create_admin_router() -> Router:
     router = Router()
-    # router.include_router(get_create_owner_router())  # noqa: ERA001
+    router.include_router(get_create_owner_router())
     admin_panel_router = Router()
-    admin_panel_router.message.middleware(DatabaseMiddleware())
-    admin_panel_router.callback_query.middleware(DatabaseMiddleware())
     admin_panel_router.message.middleware(RoleCheckMiddleware())
     admin_panel_router.callback_query.middleware(RoleCheckMiddleware())
 

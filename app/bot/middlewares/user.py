@@ -34,4 +34,5 @@ class UserMiddleware(BaseMiddleware):
                 session=session,
             )
             data["user"] = user
+            await session.commit()
         await handler(event, data)

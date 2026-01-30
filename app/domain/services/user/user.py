@@ -80,6 +80,7 @@ class UserService:
             .on_conflict_do_nothing()
         )
         await session.execute(stmt_member)
+        await session.commit()
         return usr
 
     @provider.inject_session
