@@ -26,6 +26,9 @@ class ResourceCreate(BaseModel):
     )
     location: str | None = Field(None, description="Resource location (free-form)")
     price_per_hour: int | None = Field(None, ge=0, description="Price per hour")
+    available_date: datetime
+    available_start: datetime
+    available_end: datetime
 
 
 class ResourceUpdate(BaseModel):
@@ -36,6 +39,9 @@ class ResourceUpdate(BaseModel):
     resource_type: str | None = Field(None)
     location: str | None = Field(None)
     price_per_hour: int | None = Field(None, ge=0)
+    available_date: datetime
+    available_start: datetime
+    available_end: datetime
 
 
 class ResourceResponse(BaseModel):
@@ -49,6 +55,9 @@ class ResourceResponse(BaseModel):
     location: str | None = None
     price_per_hour: int | None = None
     created_at: datetime
+    available_date: datetime
+    available_start: datetime
+    available_end: datetime
 
     class Config:
         from_attributes = True

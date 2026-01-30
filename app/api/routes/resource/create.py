@@ -40,6 +40,9 @@ async def create_resource(
             resource_type=data.resource_type,
             location=data.location,
             price_per_hour=data.price_per_hour,
+            available_date=data.available_date,
+            available_start=data.available_start,
+            available_end=data.available_end,
         ),
         session=session,
     )

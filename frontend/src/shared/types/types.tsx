@@ -15,6 +15,9 @@ interface ResourceItem {
   resource_type: string;
   location: string;
   price_per_hour: number;
+  available_date: string;
+  available_start: string;
+  available_end: string;
 }
 interface BookingItem {
   id: number;
