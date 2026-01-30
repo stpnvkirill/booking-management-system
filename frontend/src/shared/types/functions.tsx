@@ -1,3 +1,5 @@
+import type { DateString } from "./types";
+
 /* eslint-disable react-refresh/only-export-components */
 export function firstBigLetter(string: string | undefined): string {
   if (!string) return ''; // Обработка пустой строки
@@ -21,5 +23,12 @@ export function getDaysInMonth(year: number, month: number) {
   }
   return days;
 }
-
+export const GetDD_MM_YYYY = (datestr: string): DateString => {
+  const date = new Date(datestr);
+  const day = Number(date.getUTCDate().toString().padStart(2, "0"));
+  const month = Number((date.getUTCMonth() + 1).toString().padStart(2, "0"));
+  const year = Number(date.getUTCFullYear().toString());
+  const date_str: DateString = `${year}-${month}-${day}`
+  return date_str
+}
 // export default { getDaysInMonth, firstBigLetter };

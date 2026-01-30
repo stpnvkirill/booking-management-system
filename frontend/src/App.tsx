@@ -42,6 +42,7 @@ export default function App() {
   const [activeResourceTab, setResourceActiveTab] =
     useState<ResourceTabs>('main');
   // const user = window.Telegram?.WebApp?.initDataUnsafe?.user; //
+  const TG_APP = window.Telegram?.WebApp;
 
   if (!user) {
     if (isAuthenticated) {
@@ -119,7 +120,7 @@ export default function App() {
                 variant="error"
                 size="xl"
                 width="full"
-                onClick={() => {}}
+                onClick={() => { TG_APP?.close() }}
               />
             </Header>
             <Profile />

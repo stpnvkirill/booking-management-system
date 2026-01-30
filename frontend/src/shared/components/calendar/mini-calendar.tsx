@@ -1,76 +1,68 @@
-import Card from './components/card.tsx';
-import Button from '../button/button.tsx';
-import type { ResourceItem } from '@/shared/types/types.tsx';
-import { useState } from 'react';
-const getDaysInMonth = (year: number, month: number) => {
-  const date = new Date(year, month, 1);
-  const days = [];
+import dayjs, { Dayjs } from 'dayjs';
+import ru from 'dayjs/locale/ru';
+import isToday from 'dayjs/plugin/isToday';
+import type { BookingItem, ResourceItem } from '@/shared/types/types';
+import Button from '../button/button';
+import Card from './components/card';
 
-  const firstDayOfWeek = date.getDay();
-
-  const offset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-
-  for (let i = 0; i < offset; i++) {
-    days.push(null);
-  }
-
-  while (date.getMonth() === month) {
-    days.push(date.getDate());
-    date.setDate(date.getDate() + 1);
-  }
-  return days;
-};
+dayjs.locale(ru);
+dayjs.extend(isToday);
+interface CalendarDay {
+  date: Dayjs | null;
+  isInCurrentMonth: boolean;
+}
 interface BlockMiniCalendarProps {
-  data: ResourceItem | undefined | ResourceItem[];
-  selectedDate: string;
-  setSelectedDate: React.Dispatch<React.SetStateAction<string>>;
+  data: ResourceItem | BookingItem | undefined;
+  selectedDate: dayjs.Dayjs;
+  setSelectedDate: React.Dispatch<React.SetStateAction<dayjs.Dayjs>>;
+  currentMonth: dayjs.Dayjs;
+  setCurrentMonth: React.Dispatch<React.SetStateAction<dayjs.Dayjs>>;
 }
 export default function BlockMiniCalendar({
   selectedDate,
   setSelectedDate,
+  currentMonth,
+  setCurrentMonth
 }: BlockMiniCalendarProps) {
-  const monthNames = [
-    'января',
-    'февраля',
-    'марта',
-    'апрреля',
-    'мая',
-    'июня',
-    'июля',
-    'августа',
-    'сентября',
-    'октября',
-    'ноября',
-    'декабря',
-  ];
-  const currentDateUTC = new Date();
-  // const utcDatetimeString = currentDateUTC.toISOString();
-  console.log(currentDateUTC.toISOString());
-  const [viewDate, setViewDate] = useState(currentDateUTC);
 
-  const currentMonth = viewDate.getMonth();
-  const currentYear = viewDate.getFullYear();
+  const generateCalendarDays = (date: Dayjs): CalendarDay[] => {
+    const startOfMonth = date.startOf('month');
+    const endOfMonth = date.endOf('month');
+    const daysInMonth = date.daysInMonth();
+    const firstDayOfWeek = startOfMonth.day();
+    const startPadding = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+    const calendarDays: CalendarDay[] = [];
+    for (let i = startPadding; i > 0; i--) {
+      calendarDays.push({ date: startOfMonth.subtract(i, 'day'), isInCurrentMonth: false });
+    }
+    for (let i = 0; i < daysInMonth; i++) {
+      calendarDays.push({ date: startOfMonth.add(i, 'day'), isInCurrentMonth: true });
+    }
+    const remainingDays = 42 - calendarDays.length;
+    for (let i = 1; i <= remainingDays; i++) {
+      calendarDays.push({ date: endOfMonth.add(i, 'day'), isInCurrentMonth: false });
+    }
+    return calendarDays;
+  };
+  const days = generateCalendarDays(currentMonth);
+  const weekdays = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
   const handlePrevMonth = () => {
-    const newDate = new Date(currentYear, currentMonth - 1, 1);
-    setViewDate(newDate);
-    setSelectedDate(
-      `1 ${monthNames[newDate.getMonth()].slice(0, 3).toLowerCase()}`
-    );
+    setCurrentMonth(currentMonth.subtract(1, 'month'));
   };
   const handleNextMonth = () => {
-    const newDate = new Date(currentYear, currentMonth + 1, 1);
-    setViewDate(newDate);
-    setSelectedDate(
-      `1 ${monthNames[newDate.getMonth()].slice(0, 3).toLowerCase()}`
-    );
+    setCurrentMonth(currentMonth.add(1, 'month'));
   };
-  const days = getDaysInMonth(currentYear, currentMonth);
-  // const [activeButtonId, setActiveButtonId] = useState<number | null>(null);
-
-  const selectedDayNumber = selectedDate.match(/\d+/)?.[0];
-  console.log('selectedDate', selectedDate);
+  const handleDayClick = (date: Dayjs | null, isInCurrentMonth: boolean) => {
+    if (date && isInCurrentMonth) {
+      setSelectedDate(date);
+    }
+  };
+  const isSelected = (date: Dayjs | null): boolean => {
+    return date ? selectedDate?.isSame(date, 'day') ?? false : false;
+  }
   return (
     <Card>
+      {/* Кнопки листания */}
       <div className="flex justify-between items-center mb-5">
         <Button
           variant="primary"
@@ -81,7 +73,7 @@ export default function BlockMiniCalendar({
           label="←"
         />
         <h2 className="text-lg text-neutral font-semibold">
-          {monthNames[currentMonth]} {currentYear}
+          {currentMonth.format('MMMM YYYY').charAt(0).toUpperCase() + currentMonth.format('MMMM YYYY').slice(1)}
         </h2>
         <Button
           variant="primary"
@@ -94,44 +86,25 @@ export default function BlockMiniCalendar({
       </div>
       {/* Дни недели */}
       <div className="grid grid-cols-7 gap-2 mb-2">
-        {['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map((day) => (
-          <div
-            key={day}
-            className="text-center text-xs text-base-content/50 uppercase font-bold"
-          >
-            {day}
-          </div>
+        {weekdays.map(day => (
+          <div key={day} className="text-center text-xs text-base-content/50 uppercase font-bold">{day}</div>
         ))}
       </div>
       {/* Сетка чисел */}
-      <div className="grid grid-cols-7 gap-2">
+      <div className="grid grid-cols-7 gap-2 mb-2">
         {days.map((day, index) => {
-          if (!day) return <div key={`empty-${index}`} />; // Пустая ячейка для отступа
-          const date = new Date(day);
-          const year = date.getFullYear();
-          const dayString = `${day} ${monthNames[currentMonth]} ${year} г.`;
-          // `${day} ${monthNames[currentMonth].slice(0, 3).toLowerCase()}`;
-          const isSelected = day.toString() === selectedDayNumber;
-          // const hasBooking = bookings.some((b) => b.date === dayString);
+          if (!day?.isInCurrentMonth) return <div key={`empty-${index}`} />;
           return (
             <Button
-              key={`btn-${index}`}
-              label={day.toString()}
-              onClick={() => {
-                // if (day && !isSelected) {
-                setSelectedDate(dayString);
-                // }
-              }}
+              key={index}
+              label={day.date!.format('D').toString()}
+              onClick={() => { handleDayClick(day.date, day.isInCurrentMonth) }}
               size="md"
               width="auto"
               shape="default"
-              className={`relative ${isSelected ? '' : 'bg-base-100! border-none! shadow-none! hover:bg-[#374151]!'} `} //${hasBooking ? 'btn-active' : ''}`}
-            >
-              {/* {hasBooking && (
-                <div className="absolute bottom-1 left-[50%] transform -translate-x-1/2 w-1 h-1 bg-accent-content rounded-full"></div>
-              )} */}
-            </Button>
-          );
+              className={`relative ${isSelected(day.date) ? '' : 'bg-base-100! border-none! shadow-none! hover:bg-[#374151]!'} `}
+            />
+          )
         })}
       </div>
     </Card>

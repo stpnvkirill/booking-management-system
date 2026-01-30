@@ -7,6 +7,7 @@
 //   "location": "Новосибирск",
 //   "price_per_hour": 1500
 // }
+
 interface ResourceItem {
   id: string;
   customer_id: string;
@@ -21,18 +22,13 @@ interface ResourceItem {
 }
 interface BookingItem {
   id: number;
-  resource_id: number;
   user_id: string;
+  resource_id: string;
+  resource_name: string;
   start_time: string;
   end_time: string;
   created_at: string;
-  updated_at: string;
-  description: string;
-  booking_type: string;
-  location: string;
 }
-export type Tabs = 'main' | 'details';
-export type ResourceTabs = 'main' | 'details';
 interface TimeSlot {
   time: string;
   available: boolean;
@@ -42,6 +38,7 @@ declare global {
     ready: (name: string) => void;
   }
 }
+
 type ActiveFilter = (typeof FILTERS)[number];
 type Filters =
   | 'Все'
@@ -61,6 +58,8 @@ const FILTERS: FiltersArray = [
   'Переговорная',
   'Коттедж',
 ] as const;
-
+export type DateString = `${number}-${number}-${number}`
+export type Tabs = 'main' | 'details';
+export type ResourceTabs = 'main' | 'details';
 export { type BookingItem, type ResourceItem, type TimeSlot, FILTERS };
 export type { Filters, ActiveFilter };

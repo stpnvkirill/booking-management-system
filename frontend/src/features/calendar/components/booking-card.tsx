@@ -1,13 +1,22 @@
 import { type PropsWithChildren } from 'react';
 import type { BookingItem } from '@/shared/types/types';
 import { AnimatePresence, motion } from 'framer-motion';
+import { monthNames } from '@/shared/types/constants';
+import type dayjs from 'dayjs';
+import { GetDD_MM_YYYY } from '@/shared/types/functions';
 export interface CalendarCardProps {
   bookings: BookingItem[] | undefined;
-  selectedDate?: string | undefined;
+  selectedDate: dayjs.Dayjs;
+  setSelectedDate: React.Dispatch<React.SetStateAction<dayjs.Dayjs>>;
+  currentMonth: dayjs.Dayjs;
+  setCurrentMonth: React.Dispatch<React.SetStateAction<dayjs.Dayjs>>;
 }
 export const CalendarBookingCard = ({
   bookings,
   selectedDate,
+  // setSelectedDate,
+  // currentMonth,
+  // setCurrentMonth
 }: PropsWithChildren<CalendarCardProps>): React.ReactElement => {
   console.log(bookings);
   // const { setSelectedResource, setActiveTab } = useBookingContext();
@@ -16,7 +25,7 @@ export const CalendarBookingCard = ({
   const filteredBookings =
     bookings?.filter(
       (booking: BookingItem) =>
-        booking.start_time === selectedDate && booking.end_time
+        GetDD_MM_YYYY(booking.start_time) === selectedDate.format("YYYY-MM-DD").toString() && booking.end_time
     ) || [];
   console.log('booking-card', bookings);
 
@@ -27,28 +36,15 @@ export const CalendarBookingCard = ({
     const dateObject = new Date(utcString);
     const day = dateObject.getDate();
     const year = dateObject.getFullYear();
-    const monthNames = [
-      'января',
-      'февраля',
-      'марта',
-      'апрреля',
-      'мая',
-      'июня',
-      'июля',
-      'августа',
-      'сентября',
-      'октября',
-      'ноября',
-      'декабря',
-    ];
+
     const month = monthNames[dateObject.getMonth()];
     return `${day} ${month} ${year} г.`;
   };
-  console.log(getDDMMDateFromUTCString(selectedDate));
+  console.log(selectedDate.format("DD-MM-YYYY").toString());
   return (
     <AnimatePresence mode="popLayout">
       <h2 className="text-[16px] font-semibold mb-4">
-        Бронирования на {getDDMMDateFromUTCString(selectedDate)}
+        Бронирования на {selectedDate.format("DD-MM-YYYY").toString()}
       </h2>
       <div className="mb-8">
         <div className="flex flex-col justify-start overflow-y-scroll max-h-[calc(100vh-450px)] pb-6">
@@ -69,11 +65,11 @@ export const CalendarBookingCard = ({
                   </h3>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="bg-accent text-accent-content pt-0.5 pb-0.5 pr-2 pl-2 rounded-xl text-xs font-medium">
-                      {booking?.booking_type}
+                      {booking?.resource_name}
                     </span>
                     <span className="text-accent-content text-sm">•</span>
                     <span className="text-accent-content text-sm">
-                      {booking?.description}
+                      {booking?.resource_name}
                     </span>
                   </div>
                   {booking?.start_time && (

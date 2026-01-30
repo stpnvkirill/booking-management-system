@@ -1,45 +1,63 @@
 import BlockMiniCalendar from '@/shared/components/calendar/mini-calendar';
 import Button from '@/shared/components/button/button';
 import { useState } from 'react';
-// import { firstBigLetter } from "@/shared/types/functions"
-import type {
-  ResourceItem,
-  ResourceTabs,
-  TimeSlot,
-} from '@/shared/types/types';
-// import Header from '@/shared/components/header/header';
+import type { DateString, ResourceItem, ResourceTabs } from '@/shared/types/types';
+import { GetDD_MM_YYYY } from '@/shared/types/functions';
+import dayjs from 'dayjs';
+
 interface ResourceDetailsProps {
   data: ResourceItem | undefined;
   selectedDate: string;
+  setSelectedDate: React.Dispatch<React.SetStateAction<DateString>>;
   handleResourceClick: (data: ResourceItem | undefined) => void;
   handleBackClick: () => void;
   setResourceActiveTab: React.Dispatch<React.SetStateAction<ResourceTabs>>;
   activeResourceTab: ResourceTabs | undefined;
 }
 export default function ResourceDetails({ data }: ResourceDetailsProps) {
-  const [selectedDate, setSelectedDate] = useState<string>('1 янв');
+  const available_date_str: string = GetDD_MM_YYYY(data!.available_date)
+  console.log(available_date_str);
 
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<
-    string | undefined
-  >();
-  const handleConfirmBooking = () => {};
-  const timeSlots: TimeSlot[] = [];
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    return data?.available_date ? dayjs(data.available_date).startOf('month') : dayjs().startOf('month');
+  });
+  const [selectedDate, setSelectedDate] = useState(() => {
+    return data?.available_date ? dayjs(data.available_date).startOf('day') : dayjs().startOf('day');
+  });
 
-  // if (!data) return null;
+
+  const handleConfirmBooking = () => { };
+
+  console.log(data)
   return (
     <>
       {/* Календарь */}
       <BlockMiniCalendar
+        data={data}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
-        data={data}
+        currentMonth={currentMonth}
+        setCurrentMonth={setCurrentMonth}
       />
-
       {/* Слоты времени */}
       <div className="mb-8">
-        <div className="ml-4">{selectedDate}</div>
-        <div className="grid grid-cols-4 gap-2 mb-2">
-          {timeSlots.map((slot) => (
+        <div className="ml-4">{selectedDate.format('YYYY-MM-DD').toString()}</div>
+        <div className="grid grid-cols-4 gap-2 mb-2 mt-6">
+          <Button
+            label="11:00"
+            onClick={() => { }}
+            size="md"
+            variant="secondary"
+            shape="default"
+          />
+          <Button
+            label="12:00"
+            onClick={() => { }}
+            size="md"
+            variant="secondary"
+            shape="default"
+          />
+          {/* {timeSlots.map((slot) => (
             <div className="">
               <Button
                 label={slot.time}
@@ -51,7 +69,7 @@ export default function ResourceDetails({ data }: ResourceDetailsProps) {
                 shape="default"
               />
             </div>
-          ))}
+          ))} */}
         </div>
       </div>
       {/* Итого */}
@@ -63,14 +81,14 @@ export default function ResourceDetails({ data }: ResourceDetailsProps) {
           </span>
         </div>
         <div className="text-accent text-sm">
-          Слот: {selectedTimeSlot || '—'}
+          Слот:  —
         </div>
       </div>
       {/* Кнопка подтверждения */}
       <Button
         label={'Подтвердить'}
         onClick={handleConfirmBooking}
-        disabled={!selectedTimeSlot}
+        disabled={!true}
         size="xl"
         width="full"
         variant="primary"

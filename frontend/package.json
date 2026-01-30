@@ -3,7 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "proxy": "http://localhost:80",
   "scripts": {
     "dev": "vite",
     "dev:https": "vite --host --https",
@@ -19,6 +18,7 @@
     "@telegram-apps/sdk-react": "^3.3.9",
     "axios": "^1.13.3",
     "cors": "^2.8.6",
+    "dayjs": "^1.11.19",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "framer-motion": "^12.29.0",

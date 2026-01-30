@@ -7,7 +7,6 @@ import { Spinner } from '@/shared/components/spinner/spinner';
 import type { ResourceItem, Filters, ResourceTabs } from '@/shared/types/types';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Message from '@/shared/components/messages/message';
 interface ResourceMainProps {
   handleResourceClick: (data: ResourceItem | undefined) => void;
   setResourceActiveTab: React.Dispatch<React.SetStateAction<ResourceTabs>>;
@@ -65,9 +64,7 @@ export default function ResourceMain({
       {/* Карточки ресурсов */}
       {error ? (
         <ErrMessage error={error} />
-      ) : data.length == 0 && !loading ? (
-        <Message message="Нет доступных бронирований" />
-      ) : (
+      ) : data.length == 0 && !loading ? "" : (
         ''
       )}
       {loading ? (
