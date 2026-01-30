@@ -120,7 +120,9 @@ export default function App() {
                 variant="error"
                 size="xl"
                 width="full"
-                onClick={() => { TG_APP?.close() }}
+                onClick={() => {
+                  TG_APP?.close();
+                }}
               />
             </Header>
             <Profile />
