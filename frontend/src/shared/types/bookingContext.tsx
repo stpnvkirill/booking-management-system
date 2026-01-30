@@ -324,7 +324,6 @@
 //     }
 //   };
 
-
 //   const calendarDays = Array.from({ length: 31 }, (_, i) => String(i + 1));
 
 //   const getDaysInMonth = (year: number, month: number) => {
@@ -396,7 +395,6 @@
 //     );
 
 //     // alert(`Бронирование подтверждено: ${selectedResource.description}`);
-
 
 //     setBookingRange({ start: null, end: null });
 //     handleBackClick();

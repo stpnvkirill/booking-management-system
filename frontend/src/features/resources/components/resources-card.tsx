@@ -1,14 +1,13 @@
 import Button from '@/shared/components/button/button';
 import { firstBigLetter } from '@/shared/types/functions';
-import type { ResourceItem } from '@/shared/types/types';
+import type { ResourceItem, ResourceTabs } from '@/shared/types/types';
 
 export interface CardProps {
   data: ResourceItem | undefined;
-  activeTab: Tabs;
-  setActiveTab: React.Dispatch<React.SetStateAction<Tabs>>;
+  activeResourceTab: ResourceTabs | undefined;
+  setResourceActiveTab: React.Dispatch<React.SetStateAction<ResourceTabs>>;
   handleResourceClick: (data: ResourceItem | undefined) => void;
 }
-import type { Tabs } from '@/shared/types/types';
 export default function BookingCard({ handleResourceClick, data }: CardProps) {
   return (
     <div className="bg-base-200 p-5 mb-4 rounded-2xl hover:bg-base-100 duration-200">
@@ -41,13 +40,13 @@ export default function BookingCard({ handleResourceClick, data }: CardProps) {
         </div>
         <div className="text-right">
           <div className="text-xl font-bold mb-2">
-            {data?.price_per_hour ? data.price_per_hour.toLocaleString() : '0'} ₽
+            {data?.price_per_hour ? data.price_per_hour.toLocaleString() : '0'}{' '}
+            ₽
           </div>
           <div className="flex flex-col gap-2">
             <Button
               label="Подробнее"
               onClick={() => {
-                // console.log(data);
                 if (data) handleResourceClick?.(data);
               }}
               size="sm"

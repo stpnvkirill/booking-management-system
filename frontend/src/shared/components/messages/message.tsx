@@ -3,7 +3,5 @@ interface MessageProps {
 }
 
 export default function Message({ message }: MessageProps) {
-  return (
-    <div className='text-center'>{message}</div>
-  );
+  return <div className="text-center">{message}</div>;
 }

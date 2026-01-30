@@ -3,7 +3,6 @@ import type { BookingItem } from '@/shared/types/types';
 // import { useBookingContext } from "../bookingContext/bookingContext.tsx";
 export interface ActiveBookingProps {
   bookings?: string; //потом будет подругому
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: BookingItem | undefined; // Позже замени на BookingItem
   onCancel: () => void;
 }
@@ -22,15 +21,6 @@ export default function ActiveBookingCard({
         </div>
       </div>
       <div className="flex gap-3 justify-center flex-row ">
-        {/* <div className="w-full">
-          <Button
-            onClick={() => {}}
-            label="Открыть"
-            variant="primary"
-            size="md"
-            width="full"
-          ></Button>
-        </div> */}
         <div className="w-full">
           <Button
             onClick={onCancel}

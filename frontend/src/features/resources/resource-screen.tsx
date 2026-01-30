@@ -1,41 +1,40 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import ResourceMain from './components/resource-main';
 import ResourceDetails from './components/resource-details';
-import type { ResourceItem, Tabs } from '@/shared/types/types';
-
-export default function ResourcesScreen() {
-  const [activeTab, setActiveTab] = useState<Tabs>('main');
-  const [, setData] = useState<Array<ResourceItem | undefined | ResourceItem[]>>(
-    []
-  );
-  const [selectedResource, setSelectedResource] = useState<
-    ResourceItem | undefined
-  >(undefined);
-  const handleResourceClick = (resource: ResourceItem | undefined) => {
-    setActiveTab('details');
-    setSelectedResource(resource);
-    setData([resource]);
-    // console.log(resource)
-  };
-  // console.log(data)
-  useEffect(() => { });
+import type { ResourceItem, ResourceTabs } from '@/shared/types/types';
+interface ResourcesScreenProps {
+  handleResourceClick: (resource: ResourceItem | undefined) => void;
+  selectedResource: ResourceItem | undefined;
+  setSelectedResource: React.Dispatch<
+    React.SetStateAction<ResourceItem | undefined>
+  >;
+  setResourceActiveTab: React.Dispatch<React.SetStateAction<ResourceTabs>>;
+  activeResourceTab: ResourceTabs | undefined;
+}
+export default function ResourcesScreen({
+  handleResourceClick,
+  selectedResource,
+  setResourceActiveTab,
+  activeResourceTab,
+}: ResourcesScreenProps) {
+  useEffect(() => {});
   const handleBackClick = () => {
-    setActiveTab('main');
+    setResourceActiveTab('main');
   };
   return (
     <>
-      {activeTab == 'main' ? (
+      {activeResourceTab == 'main' ? (
         <ResourceMain
-          setActiveTab={setActiveTab}
-          activeTab={activeTab}
+          setResourceActiveTab={setResourceActiveTab}
+          activeResourceTab={activeResourceTab}
           handleResourceClick={handleResourceClick}
         />
-      ) : activeTab == 'details' ? (
+      ) : activeResourceTab == 'details' ? (
         <ResourceDetails
           data={selectedResource}
           handleBackClick={handleBackClick}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
+          activeResourceTab={activeResourceTab}
+          setResourceActiveTab={setResourceActiveTab}
           handleResourceClick={handleResourceClick}
           selectedDate={''}
         />

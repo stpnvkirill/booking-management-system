@@ -12,7 +12,7 @@ export default function Profile() {
         variants={pageVariants}
         transition={{ duration: 0.2 }}
       >
-        <ProfileScreen />;
+        <ProfileScreen />
       </motion.div>
     </AnimatePresence>
   );

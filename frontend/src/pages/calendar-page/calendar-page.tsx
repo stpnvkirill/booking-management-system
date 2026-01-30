@@ -12,7 +12,7 @@ export default function Calendar() {
         variants={pageVariants}
         transition={{ duration: 0.2 }}
       >
-        <CalendarScreen />;
+        <CalendarScreen />
       </motion.div>
     </AnimatePresence>
   );

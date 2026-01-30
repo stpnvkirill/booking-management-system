@@ -3,17 +3,28 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite'; // Import the plugin
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import path from 'path';
-
+import browserslist from 'browserslist';
+import { browserslistToTargets } from 'lightningcss';
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    basicSsl(), // Add the plugin to the array
+    basicSsl(),
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'), // @ теперь ссылается на папку src
+      '@': path.resolve(__dirname, './src'),
     },
+  },
+  css: {
+    transformer: 'lightningcss',
+    lightningcss: {
+
+      targets: browserslistToTargets(browserslist('>= 0.25%')),
+    },
+  },
+  build: {
+    cssMinify: 'lightningcss',
   },
   // server: {
   //   proxy: {
@@ -25,5 +36,3 @@ export default defineConfig({
   //   },
   // },
 });
-
-//curl -X GET http://localhost/api/bookings/all \ -H 'Accept: application/json' \ -H 'Authorization: Bearer AzurPmBtfk6yU31ZOF9A'

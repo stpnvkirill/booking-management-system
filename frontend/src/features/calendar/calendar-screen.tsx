@@ -48,39 +48,40 @@ export default function CalendarScreen() {
 
   console.log('CalendarScreen', data);
   return (
-    <div className="pb-20 h-screen bg-neutral-content text-neutral font-sans">
-      <div className="p-4 h-screen overflow-auto">
-        {/* Заголовок */}
-        <div className="mb-6">
-          <h1 className="text-3xl text-neutral font-bold mb-2">Календарь</h1>
-          <p className="text-base-300 text-sm">Расписание бронирований</p>
-        </div>
-        {/* Текущий месяц */}
-        <BlockMiniCalendar
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
-          data={data}
-        />
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedDate.toLocaleString()}
-            initial={{ opacity: 0, y: 0 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {error ? <ErrMessage error={error} /> : data?.length == 0 && !loading ? <Message message="Нет доступных бронирований"/> : ''}
-            {loading ? (
-              <Spinner />
-            ) : data?.length != 0 ? (
-              <CalendarBookingCard
-                bookings={[]} // #TODO переделать получение данных
-                selectedDate={selectedDate}
-              />
-            ) : ""}
-          </motion.div>
-        </AnimatePresence>
-      </div>
-    </div>
+    <>
+      {/* Текущий месяц */}
+      <BlockMiniCalendar
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        data={data}
+      />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={selectedDate.toLocaleString()}
+          initial={{ opacity: 0, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {error ? (
+            <ErrMessage error={error} />
+          ) : data?.length == 0 && !loading ? (
+            <Message message="Нет доступных бронирований" />
+          ) : (
+            ''
+          )}
+          {loading ? (
+            <Spinner />
+          ) : data?.length != 0 ? (
+            <CalendarBookingCard
+              bookings={[]} // #TODO переделать получение данных
+              selectedDate={selectedDate}
+            />
+          ) : (
+            ''
+          )}
+        </motion.div>
+      </AnimatePresence>
+    </>
   );
 }

@@ -29,6 +29,7 @@ interface BookingItem {
   location: string;
 }
 export type Tabs = 'main' | 'details';
+export type ResourceTabs = 'main' | 'details';
 interface TimeSlot {
   time: string;
   available: boolean;

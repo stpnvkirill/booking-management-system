@@ -2,7 +2,7 @@
 export function firstBigLetter(string: string | undefined): string {
   if (!string) return ''; // Обработка пустой строки
   return string.charAt(0).toUpperCase() + string.slice(1);
-};
+}
 export function getDaysInMonth(year: number, month: number) {
   const date = new Date(year, month, 1);
   const days = [];
@@ -20,7 +20,6 @@ export function getDaysInMonth(year: number, month: number) {
     date.setDate(date.getDate() + 1);
   }
   return days;
-};
-
+}
 
 // export default { getDaysInMonth, firstBigLetter };
