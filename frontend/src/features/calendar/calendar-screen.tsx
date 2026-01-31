@@ -58,7 +58,7 @@ export default function CalendarScreen() {
 
   console.log('CalendarScreen', data);
   return (
-    <>
+    <div className='min-h-[calc(100vh-190px)]'>
       {/* Текущий месяц */}
       <BlockMiniCalendar
         data={data}
@@ -98,6 +98,6 @@ export default function CalendarScreen() {
           )}
         </motion.div>
       </AnimatePresence>
-    </>
+    </div>
   );
 }

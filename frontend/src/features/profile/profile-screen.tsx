@@ -17,7 +17,7 @@ export default function ProfileScreen() {
       {/* Если нет активных бронирований */}
       {activeBookings.length === 0 ? <CardEmpty /> : ''}
       {/* Список активных карточек */}
-      <div className="flex-1 overflow-y-auto pb-24 touch-pan-y scrollbar-hide">
+      <div className="flex-1 overflow-y-auto pb-24 touch-pan-y scrollbar-hide min-h-[calc(100vh-350px)] max-h-[calc(100vh-350px)]">
         <div className="flex flex-col gap-4">
           <AnimatePresence>
             {activeBookings.map((booking) => (

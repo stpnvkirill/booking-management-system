@@ -7,7 +7,12 @@ import type {
   ResourceTabs,
 } from '@/shared/types/types';
 import { GetDD_MM_YYYY } from '@/shared/types/functions';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+dayjs().format()
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface ResourceDetailsProps {
   data: ResourceItem | undefined;
@@ -33,11 +38,29 @@ export default function ResourceDetails({ data }: ResourceDetailsProps) {
       : dayjs().startOf('day');
   });
 
-  const handleConfirmBooking = () => {};
+  const handleConfirmBooking = () => { };
 
-  console.log(data);
+  const generateTimeSlots = (
+    start: string,
+    end: string,
+    step: number = 30,
+    tz: string = 'Asia/Novosibirsk',
+  ) => {
+    const Start = dayjs.tz(start, tz)
+    const End = dayjs.tz(end, tz)
+    const slots: string[] = [];
+    let current: Dayjs = Start;
+    while (current.isBefore(End) || current.isSame(End, "minute")) {
+      slots.push(current.format("HH:mm"));
+      current = current.add(step, "minute")
+    }
+    return slots;
+  }
+  const TimeSlots = generateTimeSlots(data!.available_start, data!.available_end, 30)
+
+  const [selectedTimeSlot, setTimeSlot] = useState<string>(TimeSlots[0])
   return (
-    <>
+    <div className="h-max max-h-[calc(100vh-185px)]  overflow-y-scroll">
       {/* Календарь */}
       <BlockMiniCalendar
         data={data}
@@ -52,33 +75,26 @@ export default function ResourceDetails({ data }: ResourceDetailsProps) {
           {selectedDate.format('YYYY-MM-DD').toString()}
         </div>
         <div className="grid grid-cols-4 gap-2 mb-2 mt-6">
-          <Button
-            label="11:00"
-            onClick={() => {}}
-            size="md"
-            variant="secondary"
-            shape="default"
-          />
-          <Button
-            label="12:00"
-            onClick={() => {}}
-            size="md"
-            variant="secondary"
-            shape="default"
-          />
-          {/* {timeSlots.map((slot) => (
-            <div className="">
-              <Button
-                label={slot.time}
-                onClick={() => setSelectedTimeSlot(slot.time)}
-                size="md"
-                variant={
-                  selectedTimeSlot === slot.time ? 'primary' : 'secondary'
-                }
-                shape="default"
-              />
-            </div>
-          ))} */}
+          {TimeSlots.map((slot) => {
+            const isSelected = slot === selectedTimeSlot;
+            return (
+              <div className="">
+                <Button
+                  label={`${slot}`}
+                  onClick={() => {
+                    setTimeSlot(slot);
+                    console.log(selectedTimeSlot);
+                  }}
+                  size="sm"
+                  variant={
+                    isSelected ? "primary" : "tertiary"
+                  }
+                  shape={isSelected ? "rounded" : "default"}
+                />
+              </div>
+            )
+
+          })}
         </div>
       </div>
       {/* Итого */}
@@ -101,6 +117,6 @@ export default function ResourceDetails({ data }: ResourceDetailsProps) {
         variant="primary"
         shape="default"
       />
-    </>
+    </div >
   );
 }

@@ -71,7 +71,8 @@ export default function App() {
     };
     console.log('App.tsx[80]:', data);
     return (
-      <div className="pb-20 h-screen bg-neutral-content text-neutral font-sans p-4">
+      // h-screen 
+      <div className="pb-20 bg-neutral-content text-neutral font-sans p-4">
         {activeTab == 'resources' ? (
           <>
             {activeResourceTab === 'main' ? (
