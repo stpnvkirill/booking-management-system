@@ -38,18 +38,26 @@ export default function ResourceDetails({ data }: ResourceDetailsProps) {
       : dayjs().startOf('day');
   });
 
-  const handleConfirmBooking = () => { };
+  const handleConfirmBooking = () => {
+    alert(`Бронирование "${data?.name}" на время ${selectedTimeSlotStart}-${selectedTimeSlotEnd}. Подтверждено!`)
+  };
 
   const generateTimeSlots = (
     start: string,
     end: string,
     step: number = 30,
+    selectedSlot?: string,
     tz: string = 'Asia/Novosibirsk',
   ) => {
     const Start = dayjs.tz(start, tz)
     const End = dayjs.tz(end, tz)
     const slots: string[] = [];
     let current: Dayjs = Start;
+    if (selectedSlot) {
+      current = dayjs.tz(`${dayjs(start).format('YYYY-MM-DD')} ${selectedSlot}`, tz).add(step, 'minute');
+    } else {
+      current = dayjs.tz(start, tz);
+    }
     while (current.isBefore(End) || current.isSame(End, "minute")) {
       slots.push(current.format("HH:mm"));
       current = current.add(step, "minute")
@@ -58,9 +66,20 @@ export default function ResourceDetails({ data }: ResourceDetailsProps) {
   }
   const TimeSlots = generateTimeSlots(data!.available_start, data!.available_end, 30)
 
-  const [selectedTimeSlot, setTimeSlot] = useState<string>(TimeSlots[0])
+  const [selectedTimeSlotStart, setTimeSlotStart] = useState<string>()
+  const [selectedTimeSlotEnd, setTimeSlotEnd] = useState<string>()
+  const [TimeSlotsLeft, setTimeSlotStartsLeft] = useState<string[]>()
+
+  const getTimeSlotsLeft = (slot: string) => {
+    const GetTimeSlotsLeft = generateTimeSlots(data!.available_start, data!.available_end, 30, slot)
+    console.log(`${dayjs(data!.available_start).format("YYYY-MM-DD")}T${slot}:00Z`)
+    setTimeSlotStartsLeft(GetTimeSlotsLeft)
+    console.log(GetTimeSlotsLeft)
+  }
+
+  // console.log(generateTimeSlots(`${dayjs().format("YYYY-MM-DD")}T${selectedTimeSlotStart}:00Z`, data!.available_end, 30))
   return (
-    <div className="h-max max-h-[calc(100vh-185px)]  overflow-y-scroll">
+    <div className="h-max max-h-[calc(100vh-185px)] overflow-y-scroll">
       {/* Календарь */}
       <BlockMiniCalendar
         data={data}
@@ -71,31 +90,66 @@ export default function ResourceDetails({ data }: ResourceDetailsProps) {
       />
       {/* Слоты времени */}
       <div className="mb-8">
-        <div className="ml-4">
+        {/* <div className="ml-4">
           {selectedDate.format('YYYY-MM-DD').toString()}
-        </div>
-        <div className="grid grid-cols-4 gap-2 mb-2 mt-6">
-          {TimeSlots.map((slot) => {
-            const isSelected = slot === selectedTimeSlot;
-            return (
-              <div className="">
-                <Button
-                  label={`${slot}`}
-                  onClick={() => {
-                    setTimeSlot(slot);
-                    console.log(selectedTimeSlot);
-                  }}
-                  size="sm"
-                  variant={
-                    isSelected ? "primary" : "tertiary"
-                  }
-                  shape={isSelected ? "rounded" : "default"}
-                />
+        </div> */}
+        {
+          !selectedTimeSlotStart ?
+            <div className="grid grid-cols-4 gap-2 mb-2 mt-6">
+              {TimeSlots.map((slot) => {
+                const isSelected = slot === selectedTimeSlotStart;
+                return (
+                  <div>
+                    <Button
+                      label={`${slot}`}
+                      onClick={() => {
+                        setTimeSlotStart(slot);
+                        getTimeSlotsLeft(slot)
+                      }}
+                      size="sm"
+                      variant={
+                        isSelected ? "primary" : "tertiary"
+                      }
+                      shape={isSelected ? "rounded" : "default"}
+                    />
+                  </div>
+                )
+              })}
+            </div> :
+            !selectedTimeSlotEnd ?
+              <div className="grid grid-cols-4 gap-2 mb-2 mt-6">
+                {TimeSlotsLeft!.map((slot) => {
+                  const isSelected = slot === selectedTimeSlotEnd;
+                  return (
+                    <div>
+                      <Button
+                        label={`${slot}`}
+                        onClick={() => {
+                          setTimeSlotEnd(slot);
+                          console.log(selectedTimeSlotEnd);
+                        }}
+                        size="sm"
+                        variant={
+                          isSelected ? "primary" : "tertiary"
+                        }
+                        shape={isSelected ? "rounded" : "outline"}
+                      />
+                    </div>
+                  )
+                })}
               </div>
-            )
-
-          })}
-        </div>
+              : ""}
+        {
+          selectedTimeSlotStart ?
+            <Button
+              variant="primary"
+              shape="text"
+              width="full"
+              size="xs"
+              label={`Выбрать другое время?(Сейчас ${selectedTimeSlotStart || ""}-${selectedTimeSlotEnd || ""})`}
+              onClick={() => { setTimeSlotStart(undefined); setTimeSlotEnd(undefined) }}
+            /> : ""
+        }
       </div>
       {/* Итого */}
       <div className="rounded-2xl p-5 mb-6 text-neutral">
@@ -105,13 +159,13 @@ export default function ResourceDetails({ data }: ResourceDetailsProps) {
             {(data?.price_per_hour ?? 0).toLocaleString('ru-RU')} ₽ / Час
           </span>
         </div>
-        <div className="text-accent text-sm">Слот: —</div>
+        <div className="text-accent text-sm">Слот: {selectedTimeSlotStart! ? `${selectedTimeSlotStart || ""}-${selectedTimeSlotEnd || ""}` : "—"}</div>
       </div>
       {/* Кнопка подтверждения */}
       <Button
         label={'Подтвердить'}
         onClick={handleConfirmBooking}
-        disabled={!true}
+        disabled={!selectedTimeSlotEnd}
         size="xl"
         width="full"
         variant="primary"
