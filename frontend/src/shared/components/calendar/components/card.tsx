@@ -25,7 +25,7 @@ export default function Card({
   };
   const cardClasses = `card shadow-sm border ${variantClasses[variant]} ${shape} ${className}`;
   return (
-    <div className={`${cardClasses}  mb-6`}>
+    <div className={`${cardClasses}`}>
       <div className="card-body p-5">
         {(title || extra) && (
           <div className="flex justify-between items-center mb-4 text-neutral">

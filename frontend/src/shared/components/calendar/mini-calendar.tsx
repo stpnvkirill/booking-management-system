@@ -1,7 +1,7 @@
 import dayjs, { Dayjs } from 'dayjs';
 import ru from 'dayjs/locale/ru';
 import isToday from 'dayjs/plugin/isToday';
-import type { BookingItem, ResourceItem } from '@/shared/types/types';
+import type { ResourceItem } from '@/shared/types/types';
 import Button from '../button/button';
 import Card from './components/card';
 
@@ -12,7 +12,7 @@ interface CalendarDay {
   isInCurrentMonth: boolean;
 }
 interface BlockMiniCalendarProps {
-  data: ResourceItem | BookingItem | undefined;
+  data: ResourceItem | undefined;
   selectedDate: dayjs.Dayjs;
   setSelectedDate: React.Dispatch<React.SetStateAction<dayjs.Dayjs>>;
   currentMonth: dayjs.Dayjs;
@@ -107,6 +107,8 @@ export default function BlockMiniCalendar({
       {/* Сетка чисел */}
       <div className="grid grid-cols-7 gap-2 mb-2">
         {days.map((day, index) => {
+          // if (!day.isInCurrentMonth)
+          // console.log(dayjs(day.date).format("YYYY-MM-DD"))
           if (!day?.isInCurrentMonth) return <div key={`empty-${index}`} />;
           return (
             <Button

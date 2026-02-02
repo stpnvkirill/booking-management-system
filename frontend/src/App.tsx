@@ -76,7 +76,7 @@ export default function App() {
         {activeTab == 'resources' ? (
           <>
             {activeResourceTab === 'main' ? (
-              <Header title="NightBooks" subtitle="Ресурсы" children={null} />
+              <Header title={import.meta.env.VITE_APP_NAME} subtitle="Ресурсы" children={null} />
             ) : activeResourceTab === 'details' ? (
               <Header
                 title={`${data?.name}`}

@@ -1,42 +1,28 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { CalendarBookingCard } from './components/booking-card';
-import type { BookingItem } from '@/shared/types/types';
+import { type BookingItem } from '@/shared/types/types';
 import BlockMiniCalendar from '../../shared/components/calendar/mini-calendar';
 import axios from 'axios';
-// import ErrMessage from '../resources/components/resource-error';
 import { Spinner } from '@/shared/components/spinner/spinner';
 import ErrMessage from '../../shared/components/messages/error-message';
 import dayjs from 'dayjs';
-// interface CalendarScreenProps {
-//   data: BookingItem | undefined;
-// }
-export default function CalendarScreen() {
-  const currentDateUTC = new Date();
-  const utcDatetimeString = currentDateUTC.toISOString();
-  console.log(utcDatetimeString);
 
-  // useEffect для получения данных с бд
-  // const [activeFilter, setActiveFilter] = useState<Filters | undefined>('Все');
+export default function CalendarScreen() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<BookingItem | undefined>();
+  const [data, setData] = useState<BookingItem[] | undefined>();
 
   const [currentMonth, setCurrentMonth] = useState(() => {
-    return data?.start_time
-      ? dayjs(data.end_time).startOf('month')
-      : dayjs().startOf('month');
+    return dayjs().startOf('month')
   });
   const [selectedDate, setSelectedDate] = useState(() => {
-    return data?.start_time
-      ? dayjs(data.end_time).startOf('day')
-      : dayjs().startOf('day');
+    return dayjs().startOf("day")
   });
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<BookingItem>(
+        const response = await axios.get<BookingItem[]>(
           `${import.meta.env.VITE_SERVER_IP}/api/bookings/all`,
           {
             headers: {
@@ -45,23 +31,26 @@ export default function CalendarScreen() {
             },
           }
         );
-        setData(response?.data);
+        const ResourcesFilteredByDate = response?.data.filter((booking: BookingItem) => {
+          return (
+            dayjs(booking?.start_time).format("YYYY-MM-DD") === dayjs(selectedDate).format("YYYY-MM-DD")
+          );
+        });
+        setData(ResourcesFilteredByDate)
       } catch (err) {
         setError('Error fetching data. Please try again later.');
-        console.error(err);
+        console.error(err)
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
-  }, []);
-
-  console.log('CalendarScreen', data);
+    fetchData()
+  }, [selectedDate])
   return (
-    <div className='min-h-[calc(100vh-190px)]'>
+    <div className="flex flex-col gap-4 max-h-[calc(100vh-150px)] overflow-y-scroll">
       {/* Текущий месяц */}
       <BlockMiniCalendar
-        data={data}
+        data={undefined}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
         currentMonth={currentMonth}
@@ -75,27 +64,21 @@ export default function CalendarScreen() {
           exit={{ opacity: 0, y: 0 }}
           transition={{ duration: 0.2 }}
         >
-          {error ? (
-            <ErrMessage error={error} />
-          ) : !data?.id && !loading ? (
-            ' '
-          ) : (
-            ''
-          )}
-          {loading ? (
-            <Spinner />
-          ) : !data?.id ? (
-            <CalendarBookingCard
-              // bookings={} // #TODO переделать получение данных
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-              currentMonth={currentMonth}
-              setCurrentMonth={setCurrentMonth}
-              bookings={undefined}
-            />
-          ) : (
-            ''
-          )}
+          {
+            error ? (<ErrMessage error={error} />) :
+              loading ? (<Spinner />) :
+                !loading && !error ?
+                  (
+                    <CalendarBookingCard
+                      selectedDate={selectedDate}
+                      setSelectedDate={setSelectedDate}
+                      currentMonth={currentMonth}
+                      setCurrentMonth={setCurrentMonth}
+                      bookings={data}
+                    />
+                  ) : ""
+          }
+
         </motion.div>
       </AnimatePresence>
     </div>

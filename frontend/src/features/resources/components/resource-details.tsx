@@ -1,15 +1,16 @@
 import BlockMiniCalendar from '@/shared/components/calendar/mini-calendar';
 import Button from '@/shared/components/button/button';
-import { useState } from 'react';
+// import { useEffect, useState } from 'react';
 import type {
   DateString,
   ResourceItem,
   ResourceTabs,
 } from '@/shared/types/types';
-import { GetDD_MM_YYYY } from '@/shared/types/functions';
 import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import { useState } from 'react';
+// import axios from 'axios';
 dayjs().format()
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -24,8 +25,6 @@ interface ResourceDetailsProps {
   activeResourceTab: ResourceTabs | undefined;
 }
 export default function ResourceDetails({ data }: ResourceDetailsProps) {
-  const available_date_str: string = GetDD_MM_YYYY(data!.available_date);
-  console.log(available_date_str);
 
   const [currentMonth, setCurrentMonth] = useState(() => {
     return data?.available_date
@@ -76,6 +75,7 @@ export default function ResourceDetails({ data }: ResourceDetailsProps) {
     setTimeSlotStartsLeft(GetTimeSlotsLeft)
     console.log(GetTimeSlotsLeft)
   }
+
 
   // console.log(generateTimeSlots(`${dayjs().format("YYYY-MM-DD")}T${selectedTimeSlotStart}:00Z`, data!.available_end, 30))
   return (

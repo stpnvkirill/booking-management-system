@@ -20,7 +20,7 @@ export default function BookingList({
     );
   }
   return (
-    <div className="flex flex-col gap-4 max-h-[calc(100vh-310px)] overflow-y-scroll">
+    <div className="flex flex-col gap-4 max-h-[calc(100vh-280px)] overflow-y-scroll">
       <AnimatePresence mode="popLayout">
         {data.map((ResourceItem) => (
           <motion.div
