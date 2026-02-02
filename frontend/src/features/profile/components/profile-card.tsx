@@ -1,5 +1,6 @@
 import Button from '@/shared/components/button/button';
 import type { BookingItem } from '@/shared/types/types';
+import dayjs from 'dayjs';
 // import { useBookingContext } from "../bookingContext/bookingContext.tsx";
 export interface ActiveBookingProps {
   bookings?: string; //потом будет подругому
@@ -17,7 +18,7 @@ export default function ActiveBookingCard({
           {data?.resource_name}
         </div>
         <div className="text-sm text-base-content/60">
-          {data?.start_time} • {data?.end_time}
+          {dayjs(data?.start_time).format("DD.MM.YYYY")} • {dayjs(data?.start_time).format("hh:mm")}-{dayjs(data?.end_time).format("hh:mm")}
         </div>
       </div>
       <div className="flex gap-3 justify-center flex-row ">
